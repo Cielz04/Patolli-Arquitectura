@@ -38,8 +38,9 @@ public class FrmInicio extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(200, 147, 108));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jLabel1.setFont(new java.awt.Font("Segoe UI Semibold", 1, 70)); // NOI18N
         jLabel1.setText("Patolli");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 70, 281, 59));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 200, 59));
 
         btnIniciarPartida.setText("Crear partida");
         jPanel1.add(btnIniciarPartida, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 260, 230, 60));
