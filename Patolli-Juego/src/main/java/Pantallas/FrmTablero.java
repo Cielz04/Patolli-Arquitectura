@@ -27,7 +27,9 @@ public class FrmTablero extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        btnRendirse = new javax.swing.JButton();
+        btnLanzar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -35,24 +37,46 @@ public class FrmTablero extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(72, 11, 11));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 750, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 470, Short.MAX_VALUE)
-        );
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Utilerias/TableroFichas.png"))); // NOI18N
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 50, 590, 420));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 750, 470));
+        btnRendirse.setBackground(new java.awt.Color(185, 92, 0));
+        btnRendirse.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
+        btnRendirse.setForeground(new java.awt.Color(255, 255, 255));
+        btnRendirse.setText("Rendirse");
+        btnRendirse.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnRendirse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRendirseActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnRendirse, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 20, 130, 40));
+
+        btnLanzar.setBackground(new java.awt.Color(185, 92, 0));
+        btnLanzar.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
+        btnLanzar.setForeground(new java.awt.Color(255, 255, 255));
+        btnLanzar.setText("Lanzar Frijoles");
+        btnLanzar.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnLanzar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLanzarActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnLanzar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 470, 130, 40));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 530));
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnRendirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnRendirseActionPerformed
+
+    private void btnLanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanzarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnLanzarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -84,6 +108,7 @@ public class FrmTablero extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new FrmTablero().setVisible(true);
             }
@@ -91,7 +116,9 @@ public class FrmTablero extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnLanzar;
+    private javax.swing.JButton btnRendirse;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
 }
