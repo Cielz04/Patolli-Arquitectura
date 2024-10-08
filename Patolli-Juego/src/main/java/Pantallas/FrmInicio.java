@@ -26,8 +26,31 @@ public class FrmInicio extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        btnIniciarPartida = new javax.swing.JButton();
+        btnSalir = new javax.swing.JButton();
+        btnUnirse = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel1.setBackground(new java.awt.Color(200, 147, 108));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel1.setText("Patolli");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 70, 281, 59));
+
+        btnIniciarPartida.setText("Crear partida");
+        jPanel1.add(btnIniciarPartida, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 260, 230, 60));
+
+        btnSalir.setText("Salir");
+        jPanel1.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 420, 230, 61));
+
+        btnUnirse.setText("Unirse a partida");
+        jPanel1.add(btnUnirse, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 340, 230, 60));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 530));
 
         pack();
         setLocationRelativeTo(null);
@@ -70,5 +93,10 @@ public class FrmInicio extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnIniciarPartida;
+    private javax.swing.JButton btnSalir;
+    private javax.swing.JButton btnUnirse;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }
