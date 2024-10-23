@@ -1,5 +1,7 @@
 package Pantallas;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Enrique Rodriguez
@@ -23,35 +25,58 @@ public class FrmInicio extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        btnSalir = new javax.swing.JButton();
+        btnReglas = new javax.swing.JButton();
         btnUnirse = new javax.swing.JButton();
+        btnSalir1 = new javax.swing.JButton();
         btnIniciarPartida = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        panel = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Inicio");
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel1.setBackground(new java.awt.Color(72, 11, 11));
+        jPanel1.setBackground(new java.awt.Color(51, 0, 0));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        btnSalir.setBackground(new java.awt.Color(185, 92, 0));
-        btnSalir.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
-        btnSalir.setForeground(new java.awt.Color(255, 255, 255));
-        btnSalir.setText("Salir");
-        btnSalir.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jPanel1.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 410, 220, 70));
+        btnReglas.setBackground(new java.awt.Color(153, 0, 0));
+        btnReglas.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
+        btnReglas.setForeground(new java.awt.Color(255, 255, 255));
+        btnReglas.setText("Reglas del Juego");
+        btnReglas.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnReglas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReglasActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnReglas, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 480, 160, 40));
 
-        btnUnirse.setBackground(new java.awt.Color(185, 92, 0));
+        btnUnirse.setBackground(new java.awt.Color(153, 0, 0));
         btnUnirse.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
         btnUnirse.setForeground(new java.awt.Color(255, 255, 255));
         btnUnirse.setText("Unirse a partida");
         btnUnirse.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jPanel1.add(btnUnirse, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 330, 220, 70));
+        jPanel1.add(btnUnirse, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 330, 220, 70));
 
-        btnIniciarPartida.setBackground(new java.awt.Color(185, 92, 0));
+        btnSalir1.setBackground(new java.awt.Color(153, 0, 0));
+        btnSalir1.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
+        btnSalir1.setForeground(new java.awt.Color(255, 255, 255));
+        btnSalir1.setText("Salir");
+        btnSalir1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnSalir1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalir1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnSalir1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 410, 220, 70));
+
+        btnIniciarPartida.setBackground(new java.awt.Color(153, 0, 0));
         btnIniciarPartida.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
         btnIniciarPartida.setForeground(new java.awt.Color(255, 255, 255));
         btnIniciarPartida.setText("Crear partida");
@@ -61,33 +86,37 @@ public class FrmInicio extends javax.swing.JFrame {
                 btnIniciarPartidaActionPerformed(evt);
             }
         });
-        jPanel1.add(btnIniciarPartida, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 250, 220, 70));
-
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/azteca.png"))); // NOI18N
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 190, -1, 350));
+        jPanel1.add(btnIniciarPartida, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 250, 220, 70));
 
         jLabel1.setBackground(new java.awt.Color(255, 255, 255));
         jLabel1.setFont(new java.awt.Font("STXinwei", 1, 100)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Patolli");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 140, 310, 90));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 150, 310, 90));
 
-        panel.setBackground(new java.awt.Color(185, 92, 0));
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/pajaro.png"))); // NOI18N
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 360, 210, 160));
 
-        javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
-        panel.setLayout(panelLayout);
-        panelLayout.setHorizontalGroup(
-            panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 820, Short.MAX_VALUE)
-        );
-        panelLayout.setVerticalGroup(
-            panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/vizu.png"))); // NOI18N
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 370, 210, 160));
 
-        jPanel1.add(panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -20, 820, -1));
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/tortuga.png"))); // NOI18N
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 310, 170, 160));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 530));
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/chango.png"))); // NOI18N
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, -60, 250, 230));
+
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/sol.png"))); // NOI18N
+        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(-40, -20, 310, 230));
+
+        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/pez.png"))); // NOI18N
+        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, -20, 290, 200));
+
+        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/rana.png"))); // NOI18N
+        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 150, 200, 150));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 540));
 
         pack();
         setLocationRelativeTo(null);
@@ -96,6 +125,27 @@ public class FrmInicio extends javax.swing.JFrame {
     private void btnIniciarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarPartidaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnIniciarPartidaActionPerformed
+
+    private void btnReglasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReglasActionPerformed
+        // TODO add your handling code here:
+        dispose();
+        DlgReglas control = new DlgReglas();
+        control.setVisible(true);
+    }//GEN-LAST:event_btnReglasActionPerformed
+
+    private void btnSalir1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalir1ActionPerformed
+        // TODO add your handling code here:
+        String[] botones = {"Si", "No"};
+
+        int variable = JOptionPane.showOptionDialog(null, "¿Desea cerrar el juego?",
+                "Confirmación", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null/*icono*/, botones, botones[0]);
+        if (variable == 0) {
+            dispose();
+        } else {
+            return;
+        }
+    }//GEN-LAST:event_btnSalir1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -135,11 +185,17 @@ public class FrmInicio extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnIniciarPartida;
-    private javax.swing.JButton btnSalir;
+    private javax.swing.JButton btnReglas;
+    private javax.swing.JButton btnSalir1;
     private javax.swing.JButton btnUnirse;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel panel;
     // End of variables declaration//GEN-END:variables
 }
