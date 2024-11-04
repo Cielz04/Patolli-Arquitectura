@@ -1,16 +1,65 @@
 package Pantallas;
 
+import dibujado.TableroCanvas;
+import entidades.Juego;
+import entidades.Tablero;
+import java.awt.Dimension;
+
 /**
  *
  * @author Enrique Rodriguez
  */
 public class FrmTablero extends javax.swing.JFrame {
 
+    private TableroCanvas tbCanvas;
+    private static FrmTablero tableroS;
+
+    Tablero tablero = new Tablero();
+
     /**
      * Creates new form Tablero
      */
     public FrmTablero() {
         initComponents();
+    }
+
+    public static FrmTablero getInstance() {
+        if (tableroS == null) {
+            tableroS = new FrmTablero();
+        }
+
+        return tableroS;
+    }
+
+    /**
+     * Metodo que inicializa el tablero estableciando medidas y generando las
+     * casillas
+     */
+    public void inicializar() {
+//        this.lbMontoApuesta.setText(Juego.getInstance().getApuesta() + "");
+
+        tbCanvas = new TableroCanvas(tablero.getCasillas(), Juego.getInstance().getNumCasillasAspa(), this.getWidth());
+        tablero.setCasillas(tbCanvas.generarCasillas());
+
+        Juego.getInstance().setTablero(tablero);
+
+        tbCanvas.setSize(600, 400);
+        Dimension dim = super.getToolkit().getScreenSize();
+        System.out.println(dim.getWidth() + "" + dim.getHeight());
+        tbCanvas.setLocation((int) dim.getWidth() / 5, (int) dim.getHeight() / 9);
+        jPanel3.add(tbCanvas);
+    }
+
+    /**
+     * Metodo que dibuja el tablero
+     */
+    public void pintarTablero() {
+        tbCanvas.setCasillas(Juego.getInstance().getTablero().getCasillas());
+        this.repaint();
+
+//		for (int i = 0; i < Juego.getInstance().getListaJugador().size(); i++) {
+//			System.out.println(Juego.getInstance().getListaJugador().get(i).getNombre());
+//		}
     }
 
     /**
@@ -27,7 +76,6 @@ public class FrmTablero extends javax.swing.JFrame {
         btnLanzar = new javax.swing.JButton();
         btnRendirse = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
@@ -55,7 +103,7 @@ public class FrmTablero extends javax.swing.JFrame {
                 btnLanzarActionPerformed(evt);
             }
         });
-        jPanel2.add(btnLanzar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 480, 130, 40));
+        jPanel2.add(btnLanzar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 480, 160, 40));
 
         btnRendirse.setBackground(new java.awt.Color(204, 153, 0));
         btnRendirse.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
@@ -70,29 +118,24 @@ public class FrmTablero extends javax.swing.JFrame {
         jPanel2.add(btnRendirse, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 10, 130, 40));
 
         jPanel3.setBackground(new java.awt.Color(51, 0, 0));
-        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Utilerias/TableroFichas.png"))); // NOI18N
-        jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 630, 430));
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 690, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 450, Short.MAX_VALUE)
+        );
 
         jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, 690, 450));
-
-        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Utilerias/sol.png"))); // NOI18N
         jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(-90, -80, 320, 290));
-
-        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Utilerias/vizu.png"))); // NOI18N
         jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 300, 320, 290));
-
-        jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Utilerias/tortuga.png"))); // NOI18N
         jPanel2.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(-70, 260, 320, 330));
-
-        jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Utilerias/pez.png"))); // NOI18N
         jPanel2.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, -110, 320, 290));
-
-        jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Utilerias/rana.png"))); // NOI18N
         jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, -100, 320, 330));
-
-        fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Utilerias/fondo.png"))); // NOI18N
         jPanel2.add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(-50, 0, 870, 530));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 530));
@@ -156,7 +199,6 @@ public class FrmTablero extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

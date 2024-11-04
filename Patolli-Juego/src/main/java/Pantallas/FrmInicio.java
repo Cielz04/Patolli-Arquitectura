@@ -8,13 +8,24 @@ import javax.swing.JOptionPane;
  */
 public class FrmInicio extends javax.swing.JFrame {
 
+    DlgApuesta crearPartida;
+    private static FrmInicio menuS;
+    
     /**
      * Creates new form PantallaInicio
      */
     public FrmInicio() {
         initComponents();
+        crearPartida = new DlgApuesta(this, rootPaneCheckingEnabled);
     }
-
+    
+    public static FrmInicio getInstance(){
+        if (menuS == null) {
+            menuS = new FrmInicio();
+        }
+        return menuS;
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -49,7 +60,7 @@ public class FrmInicio extends javax.swing.JFrame {
         btnReglas.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
         btnReglas.setForeground(new java.awt.Color(255, 255, 255));
         btnReglas.setText("Reglas del Juego");
-        btnReglas.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnReglas.setBorder(null);
         btnReglas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnReglasActionPerformed(evt);
@@ -61,14 +72,14 @@ public class FrmInicio extends javax.swing.JFrame {
         btnUnirse.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
         btnUnirse.setForeground(new java.awt.Color(255, 255, 255));
         btnUnirse.setText("Unirse a partida");
-        btnUnirse.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnUnirse.setBorder(null);
         jPanel1.add(btnUnirse, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 330, 220, 70));
 
         btnSalir1.setBackground(new java.awt.Color(153, 0, 0));
         btnSalir1.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
         btnSalir1.setForeground(new java.awt.Color(255, 255, 255));
         btnSalir1.setText("Salir");
-        btnSalir1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnSalir1.setBorder(null);
         btnSalir1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSalir1ActionPerformed(evt);
@@ -80,7 +91,7 @@ public class FrmInicio extends javax.swing.JFrame {
         btnIniciarPartida.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
         btnIniciarPartida.setForeground(new java.awt.Color(255, 255, 255));
         btnIniciarPartida.setText("Crear partida");
-        btnIniciarPartida.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnIniciarPartida.setBorder(null);
         btnIniciarPartida.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnIniciarPartidaActionPerformed(evt);
@@ -123,7 +134,8 @@ public class FrmInicio extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIniciarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarPartidaActionPerformed
-        // TODO add your handling code here:
+        crearPartida.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnIniciarPartidaActionPerformed
 
     private void btnReglasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReglasActionPerformed

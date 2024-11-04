@@ -15,7 +15,7 @@ public class DibujaFicha implements IDibujar {
 
     @Override
     public void dibujar(Graphics2D g2d, Casilla casilla, int numCasillasAspa, int TAMANIOCASILLA) {
-        if (casilla.equals(ficha.getPosicionActual())) {
+        if (casilla != null && ficha.getPosicionActual() != null && casilla.equals(ficha.getPosicionActual())) {
             // Establecer el color de la ficha
             g2d.setColor(Color.RED);
             // Dibujar la ficha en la posición de la casilla actual
@@ -24,4 +24,5 @@ public class DibujaFicha implements IDibujar {
             g2d.fill(rect);
         }
     }
+
 }
