@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
  */
 public class FrmInicio extends javax.swing.JFrame {
 
-    DlgApuesta crearPartida;
+    FrmConfigurarPartida crearPartida;
     private static FrmInicio menuS;
     
     /**
@@ -16,7 +16,7 @@ public class FrmInicio extends javax.swing.JFrame {
      */
     public FrmInicio() {
         initComponents();
-        crearPartida = new DlgApuesta(this, rootPaneCheckingEnabled);
+        crearPartida = new FrmConfigurarPartida();
     }
     
     public static FrmInicio getInstance(){
@@ -73,6 +73,11 @@ public class FrmInicio extends javax.swing.JFrame {
         btnUnirse.setForeground(new java.awt.Color(255, 255, 255));
         btnUnirse.setText("Unirse a partida");
         btnUnirse.setBorder(null);
+        btnUnirse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUnirseActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnUnirse, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 330, 220, 70));
 
         btnSalir1.setBackground(new java.awt.Color(153, 0, 0));
@@ -158,6 +163,10 @@ public class FrmInicio extends javax.swing.JFrame {
             return;
         }
     }//GEN-LAST:event_btnSalir1ActionPerformed
+
+    private void btnUnirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnirseActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnUnirseActionPerformed
 
     /**
      * @param args the command line arguments
