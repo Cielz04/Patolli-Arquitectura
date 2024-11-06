@@ -37,7 +37,7 @@ public class TableroCanvas extends JPanel {
     public TableroCanvas(LinkedList<Casilla> casillas, int numCasillasAspa, int anchoPantalla) {
         this.casillas = casillas;
         this.numCasillasAspa = numCasillasAspa;
-        this.anchoPantalla = anchoPantalla / 6;
+        this.anchoPantalla = anchoPantalla; // El valor original de anchoPantalla sin dividir
         this.listaDibujar = new ArrayList<>();
         listaDibujar.add(new DibujaNormal());
         listaDibujar.add(new DibujaPropia());
@@ -84,10 +84,12 @@ public class TableroCanvas extends JPanel {
     public LinkedList<Casilla> generarCasillas() {
         int tamanioCasilla = TAMANIOCASILLA;
         int casilla = 0;
-        int x = anchoPantalla;
+        // Ajustamos x para centrar el tablero
+        int x = (anchoPantalla - TAMANIOCASILLA * numCasillasAspa) / 2;
         int y = 0;
+
         if (numCasillasAspa % 2 == 0) {
-            //Verticales arriba izquierda
+            // Verticales arriba izquierda
             casillas.add(new Casilla(x, y, casilla, LugarSemicirculo.TOP, null, "circulo"));
             casilla++;
             y += tamanioCasilla;
@@ -147,7 +149,7 @@ public class TableroCanvas extends JPanel {
             casilla++;
             y += tamanioCasilla;
 
-            //Vertical abajo izquierda
+            // Vertical abajo izquierda
             casillas.add(new Casilla(x, y, casilla, null, null, "propia"));
             casilla++;
             y += tamanioCasilla;
@@ -169,7 +171,7 @@ public class TableroCanvas extends JPanel {
             casilla++;
             x += tamanioCasilla;
 
-            //Vertical abajo derecha
+            // Vertical abajo derecha
             casillas.add(new Casilla(x, y, casilla, null, null, "circulo"));
             casilla++;
             y -= tamanioCasilla;
@@ -190,7 +192,7 @@ public class TableroCanvas extends JPanel {
             casilla++;
             x += tamanioCasilla;
 
-            //Horizontal derecha abajo
+            // Horizontal derecha abajo
             casillas.add(new Casilla(x, y, casilla, null, null, "propia"));
             casilla++;
             x += tamanioCasilla;
@@ -212,7 +214,7 @@ public class TableroCanvas extends JPanel {
             casilla++;
             y -= tamanioCasilla;
 
-            //Horizontal derecha arriba
+            // Horizontal derecha arriba
             casillas.add(new Casilla(x, y, casilla, LugarSemicirculo.RIGHT, null, "circulo"));
             casilla++;
             x -= tamanioCasilla;
@@ -233,7 +235,8 @@ public class TableroCanvas extends JPanel {
             casillas.add(new Casilla(x, y, casilla, null, null, "centro"));
             casilla++;
             y -= tamanioCasilla;
-            //Vertical arriba derecha
+
+            // Vertical arriba derecha
             casillas.add(new Casilla(x, y, casilla, null, null, "propia"));
             casilla++;
             y -= tamanioCasilla;
@@ -259,7 +262,7 @@ public class TableroCanvas extends JPanel {
     public void setCasillas(LinkedList<Casilla> casillas) {
         this.casillas = casillas;
     }
-    
+
     public void moverFicha(Casilla nuevaCasilla) {
         ficha.setPosicionAnterior(ficha.getPosicionActual());
         ficha.setPosicionActual(nuevaCasilla);

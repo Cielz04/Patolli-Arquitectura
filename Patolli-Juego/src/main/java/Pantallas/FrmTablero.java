@@ -73,11 +73,11 @@ public class FrmTablero extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        btnLanzar = new javax.swing.JButton();
-        btnRendirse = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        jLabel9 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
+        btnRendirse = new javax.swing.JButton();
+        btnLanzar = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
@@ -93,17 +93,7 @@ public class FrmTablero extends javax.swing.JFrame {
         jPanel2.setBackground(new java.awt.Color(163, 151, 124));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        btnLanzar.setBackground(new java.awt.Color(204, 153, 0));
-        btnLanzar.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
-        btnLanzar.setForeground(new java.awt.Color(255, 255, 255));
-        btnLanzar.setText("Lanzar Frijoles");
-        btnLanzar.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        btnLanzar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLanzarActionPerformed(evt);
-            }
-        });
-        jPanel2.add(btnLanzar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 480, 160, 40));
+        jPanel3.setBackground(new java.awt.Color(51, 0, 0));
 
         btnRendirse.setBackground(new java.awt.Color(204, 153, 0));
         btnRendirse.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
@@ -115,30 +105,52 @@ public class FrmTablero extends javax.swing.JFrame {
                 btnRendirseActionPerformed(evt);
             }
         });
-        jPanel2.add(btnRendirse, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 10, 130, 40));
 
-        jPanel3.setBackground(new java.awt.Color(51, 0, 0));
+        btnLanzar.setBackground(new java.awt.Color(204, 153, 0));
+        btnLanzar.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
+        btnLanzar.setForeground(new java.awt.Color(255, 255, 255));
+        btnLanzar.setText("Lanzar Frijoles");
+        btnLanzar.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnLanzar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLanzarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 690, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 882, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(1234, 1234, 1234))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 450, Short.MAX_VALUE)
+            .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 379, Short.MAX_VALUE)
+                .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(35, 35, 35))
         );
 
-        jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, 690, 450));
+        jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 890, 510));
         jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(-90, -80, 320, 290));
-        jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 300, 320, 290));
         jPanel2.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(-70, 260, 320, 330));
         jPanel2.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, -110, 320, 290));
         jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, -100, 320, 330));
-        jPanel2.add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(-50, 0, 870, 530));
+        jPanel2.add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 740, 440));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 530));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 920, 580));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 530));
 
@@ -146,13 +158,13 @@ public class FrmTablero extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnRendirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnRendirseActionPerformed
-
     private void btnLanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanzarActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnLanzarActionPerformed
+
+    private void btnRendirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnRendirseActionPerformed
 
     /**
      * @param args the command line arguments
