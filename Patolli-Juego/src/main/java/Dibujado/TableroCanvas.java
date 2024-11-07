@@ -25,7 +25,8 @@ public class TableroCanvas extends JPanel {
     private Graphics2D g2d;
     private final int TAMANIOCASILLA = 25;
     private List<IDibujar> listaDibujar;
-    private Ficha ficha; // Agregar la ficha
+    private List<DibujaFicha> fichasDibujar; // Lista para múltiples fichas
+    private List<Ficha> fichas; // Cambiar de Ficha a List<Ficha>
 
     /**
      * Método constructor que recibe e instancia los valores enviados
@@ -44,7 +45,8 @@ public class TableroCanvas extends JPanel {
         listaDibujar.add(new DibujaCentro());
         listaDibujar.add(new DibujaCircular());
         listaDibujar.add(new DibujaTriangulo());
-        this.ficha = new Ficha(); // Inicializar la ficha
+        this.fichasDibujar = new ArrayList<>(); // Inicializa la lista de fichas
+        this.fichas = new ArrayList<>(); // Inicializa la lista de fichas
         inicializar();
     }
 
@@ -65,14 +67,17 @@ public class TableroCanvas extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         this.g2d = (Graphics2D) g;
+
+        // Dibujar las casillas
         for (Casilla casilla : casillas) {
             for (IDibujar dibuja : listaDibujar) {
                 dibuja.dibujar(g2d, casilla, numCasillasAspa, TAMANIOCASILLA);
             }
         }
-        // Dibujar la ficha
-        DibujaFicha dibujaFicha = new DibujaFicha(ficha);
-        dibujaFicha.dibujar(g2d, ficha.getPosicionActual(), numCasillasAspa, TAMANIOCASILLA);
+        // Dibujar todas las fichas
+        for (DibujaFicha dibujaFicha : fichasDibujar) {
+            dibujaFicha.dibujar(g2d, dibujaFicha.getFicha().getPosicionActual(), numCasillasAspa, TAMANIOCASILLA);
+        }
     }
 
     /**
@@ -263,10 +268,25 @@ public class TableroCanvas extends JPanel {
         this.casillas = casillas;
     }
 
-    public void moverFicha(Casilla nuevaCasilla) {
-        ficha.setPosicionAnterior(ficha.getPosicionActual());
-        ficha.setPosicionActual(nuevaCasilla);
-        repaint(); // Redibujar el tablero para reflejar el nuevo movimiento
+    /**
+     * Método para posicionar las fichas en la posición inicial en el tablero.
+     *
+     * @param nuevaCasilla recibe la casilla donde se dibujará.
+     */
+    public void sacarFicha(Casilla nuevaCasilla, Color colorFicha) {
+        // Crear una nueva ficha
+        Ficha nuevaFicha = new Ficha();
+        nuevaFicha.setPosicionActual(nuevaCasilla);
+
+        // Crear un nuevo DibujaFicha con el color proporcionado
+        DibujaFicha dibujaFicha = new DibujaFicha(nuevaFicha);
+        dibujaFicha.setColorEquipo(colorFicha); // Establece el color de la ficha
+
+        // Agregar la nueva ficha a la lista para ser dibujada
+        fichasDibujar.add(dibujaFicha);
+
+        // Redibujar el tablero
+        repaint();
     }
 
 }

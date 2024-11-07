@@ -163,7 +163,9 @@ public class FrmTablero extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLanzarActionPerformed
 
     private void btnRendirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
+        FrmInicio on = new FrmInicio();
+        on.setVisible(true);
     }//GEN-LAST:event_btnRendirseActionPerformed
 
     /**

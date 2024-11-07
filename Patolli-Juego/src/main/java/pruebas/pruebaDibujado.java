@@ -6,6 +6,7 @@ package pruebas;
 
 import dibujado.TableroCanvas;
 import entidades.Casilla;
+import java.awt.Color;
 import java.util.LinkedList;
 import javax.swing.JFrame;
 
@@ -21,6 +22,7 @@ public class pruebaDibujado {
     public static void main(String[] args) {
         // Crear la lista de casillas
         LinkedList<Casilla> casillas = new LinkedList<>();
+        
         int numCasillasAspa = 20; // Establece un número apropiado de casillas para el aspa
         int anchoPantalla = 1500; // Ancho de la ventana
 
@@ -35,8 +37,18 @@ public class pruebaDibujado {
         ventana.add(tablero); // Añadir el tableroCanvas a la ventana
         ventana.setVisible(true); // Hacer la ventana visible
         
-        Casilla nuevaCasilla = casillas.get(15); // Por ejemplo, mover a la segunda casilla
-        tablero.moverFicha(nuevaCasilla);
+        Casilla fichaJugador1 = casillas.get(10); // Por ejemplo, mover a la segunda casilla
+        tablero.sacarFicha(fichaJugador1, Color.RED);
+        
+        Casilla fichaJugador2 = casillas.get(31); // Por ejemplo, mover a la segunda casilla
+        tablero.sacarFicha(fichaJugador2, Color.BLUE);
+        
+        Casilla fichaJugador3 = casillas.get(52); // Por ejemplo, mover a la segunda casilla
+        tablero.sacarFicha(fichaJugador3, Color.GREEN);
+        
+        Casilla fichaJugador4 = casillas.get(73); // Por ejemplo, mover a la segunda casilla
+        tablero.sacarFicha(fichaJugador4, Color.YELLOW);
+        
     }
     
 }
