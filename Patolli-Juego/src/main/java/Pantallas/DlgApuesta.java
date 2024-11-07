@@ -213,7 +213,6 @@ public class DlgApuesta extends javax.swing.JDialog {
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
         if (Juego.getInstance().ispCreada() == false) {
             this.setVisible(false);
-            Juego.getInstance().setNumCasillasAspa(14);
             Juego.getInstance().setApuesta(Integer.parseInt(this.txtApuesta.getText()));
             Juego.getInstance().setpCreada(true);
             FrmTablero.getInstance().inicializar();

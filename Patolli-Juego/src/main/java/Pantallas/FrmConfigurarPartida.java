@@ -1,5 +1,8 @@
 package Pantallas;
 
+import entidades.Juego;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author molin
@@ -25,6 +28,7 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jCheckBox1 = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
@@ -34,9 +38,9 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
         aspa14 = new javax.swing.JRadioButton();
         txtSubTitulo = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
-        aspa9 = new javax.swing.JRadioButton();
-        aspa11 = new javax.swing.JRadioButton();
-        aspa15 = new javax.swing.JRadioButton();
+        fichas2 = new javax.swing.JRadioButton();
+        fichas4 = new javax.swing.JRadioButton();
+        fichas6 = new javax.swing.JRadioButton();
         btnApuesta = new javax.swing.JButton();
         txtSubTitulo1 = new javax.swing.JLabel();
         txtTituloConf = new javax.swing.JLabel();
@@ -44,6 +48,8 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
         txtImgRanaConf = new javax.swing.JLabel();
         txtImgChangoConf = new javax.swing.JLabel();
         txtImgPezConf = new javax.swing.JLabel();
+
+        jCheckBox1.setText("jCheckBox1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -88,10 +94,10 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(110, 110, 110)
                 .addComponent(aspa8, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 112, Short.MAX_VALUE)
-                .addComponent(aspa10, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(111, 111, 111)
-                .addComponent(aspa14, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(aspa10, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(91, 91, 91)
+                .addComponent(aspa14, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(123, 123, 123))
         );
         jPanel3Layout.setVerticalGroup(
@@ -111,25 +117,25 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
 
         jPanel4.setBackground(new java.awt.Color(153, 0, 0));
 
-        aspa9.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
-        aspa9.setForeground(new java.awt.Color(255, 255, 255));
-        aspa9.setText("2 Fichas");
+        fichas2.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
+        fichas2.setForeground(new java.awt.Color(255, 255, 255));
+        fichas2.setText("2 Fichas");
 
-        aspa11.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
-        aspa11.setForeground(new java.awt.Color(255, 255, 255));
-        aspa11.setText("4 Fichas");
-        aspa11.addActionListener(new java.awt.event.ActionListener() {
+        fichas4.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
+        fichas4.setForeground(new java.awt.Color(255, 255, 255));
+        fichas4.setText("4 Fichas");
+        fichas4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aspa11ActionPerformed(evt);
+                fichas4ActionPerformed(evt);
             }
         });
 
-        aspa15.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
-        aspa15.setForeground(new java.awt.Color(255, 255, 255));
-        aspa15.setText("6 Fichas");
-        aspa15.addActionListener(new java.awt.event.ActionListener() {
+        fichas6.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
+        fichas6.setForeground(new java.awt.Color(255, 255, 255));
+        fichas6.setText("6 Fichas");
+        fichas6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aspa15ActionPerformed(evt);
+                fichas6ActionPerformed(evt);
             }
         });
 
@@ -139,11 +145,11 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(110, 110, 110)
-                .addComponent(aspa9, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(fichas2, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 112, Short.MAX_VALUE)
-                .addComponent(aspa11, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(fichas4, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(111, 111, 111)
-                .addComponent(aspa15, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(fichas6, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(123, 123, 123))
         );
         jPanel4Layout.setVerticalGroup(
@@ -151,9 +157,9 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap(14, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(aspa9)
-                    .addComponent(aspa11)
-                    .addComponent(aspa15))
+                    .addComponent(fichas2)
+                    .addComponent(fichas4)
+                    .addComponent(fichas6))
                 .addContainerGap())
         );
 
@@ -257,16 +263,27 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_aspa14ActionPerformed
 
-    private void aspa11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aspa11ActionPerformed
+    private void fichas4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fichas4ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_aspa11ActionPerformed
+    }//GEN-LAST:event_fichas4ActionPerformed
 
-    private void aspa15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aspa15ActionPerformed
+    private void fichas6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fichas6ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_aspa15ActionPerformed
+    }//GEN-LAST:event_fichas6ActionPerformed
 
     private void btnApuestaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApuestaActionPerformed
         dispose();
+        if (Juego.getInstance().ispCreada() == false) {
+            if (aspa8.isSelected()) {
+                Juego.getInstance().setNumCasillasAspa(16);
+            } else if (aspa10.isSelected()){
+                Juego.getInstance().setNumCasillasAspa(20);
+            } else {
+                Juego.getInstance().setNumCasillasAspa(28);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Sexo");
+        }
         crearApuesta.setVisible(true);        
     }//GEN-LAST:event_btnApuestaActionPerformed
 
@@ -307,12 +324,13 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton aspa10;
-    private javax.swing.JRadioButton aspa11;
     private javax.swing.JRadioButton aspa14;
-    private javax.swing.JRadioButton aspa15;
     private javax.swing.JRadioButton aspa8;
-    private javax.swing.JRadioButton aspa9;
     private javax.swing.JButton btnApuesta;
+    private javax.swing.JRadioButton fichas2;
+    private javax.swing.JRadioButton fichas4;
+    private javax.swing.JRadioButton fichas6;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
