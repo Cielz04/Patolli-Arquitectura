@@ -3,6 +3,7 @@ package Pantallas;
 import dibujado.TableroCanvas;
 import entidades.Juego;
 import entidades.Tablero;
+import java.awt.Color;
 import java.awt.Dimension;
 
 /**
@@ -36,18 +37,22 @@ public class FrmTablero extends javax.swing.JFrame {
      * casillas
      */
     public void inicializar() {
-//        this.lbMontoApuesta.setText(Juego.getInstance().getApuesta() + "");
-
-        tbCanvas = new TableroCanvas(tablero.getCasillas(), Juego.getInstance().getNumCasillasAspa(), this.getWidth());
+        tbCanvas = new TableroCanvas(tablero.getCasillas(), Juego.getInstance().getNumCasillasAspa(), jPanel3.getWidth());
         tablero.setCasillas(tbCanvas.generarCasillas());
 
         Juego.getInstance().setTablero(tablero);
 
-        tbCanvas.setSize(600, 400);
-        Dimension dim = super.getToolkit().getScreenSize();
-        System.out.println(dim.getWidth() + "" + dim.getHeight());
-        tbCanvas.setLocation((int) dim.getWidth() / 5, (int) dim.getHeight() / 9);
+        // Ajustamos el tamaño de tbCanvas al tamaño de jPanel3 o a un tamaño específico
+        tbCanvas.setSize(jPanel3.getWidth(), jPanel3.getHeight());
+
+        // Centramos tbCanvas dentro de jPanel3
+        int xPos = (jPanel3.getWidth() - tbCanvas.getWidth()) / 2;
+        int yPos = (jPanel3.getHeight() - tbCanvas.getHeight()) / 2;
+        tbCanvas.setLocation(xPos, yPos);
+
         jPanel3.add(tbCanvas);
+        jPanel3.revalidate();
+        jPanel3.repaint();
     }
 
     /**
@@ -75,7 +80,6 @@ public class FrmTablero extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         btnRendirse = new javax.swing.JButton();
         btnLanzar = new javax.swing.JButton();
@@ -84,19 +88,21 @@ public class FrmTablero extends javax.swing.JFrame {
         lblCania4 = new javax.swing.JLabel();
         lblCania3 = new javax.swing.JLabel();
         lblCania5 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tablero");
+        setBackground(new java.awt.Color(51, 0, 0));
+        setMaximumSize(new java.awt.Dimension(1280, 720));
+        setMinimumSize(new java.awt.Dimension(1280, 720));
+        setPreferredSize(new java.awt.Dimension(1280, 720));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(51, 0, 0));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel2.setBackground(new java.awt.Color(163, 151, 124));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
         jPanel3.setBackground(new java.awt.Color(51, 0, 0));
+        jPanel3.setMaximumSize(new java.awt.Dimension(1280, 720));
+        jPanel3.setMinimumSize(new java.awt.Dimension(1280, 720));
 
         btnRendirse.setBackground(new java.awt.Color(204, 153, 0));
         btnRendirse.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
@@ -145,7 +151,7 @@ public class FrmTablero extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(22, 22, 22)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(jPanel3Layout.createSequentialGroup()
@@ -160,17 +166,15 @@ public class FrmTablero extends javax.swing.JFrame {
                             .addComponent(lblCania5)
                             .addGap(16, 16, 16))
                         .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(644, Short.MAX_VALUE))
+                    .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(1098, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(22, 22, 22)
                 .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 343, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 499, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCania5)
                     .addComponent(lblCania4)
@@ -179,15 +183,12 @@ public class FrmTablero extends javax.swing.JFrame {
                     .addComponent(lblCania1))
                 .addGap(8, 8, 8)
                 .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(35, 35, 35))
+                .addGap(63, 63, 63))
         );
 
-        jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 530));
-        jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 530));
+        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 720));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 920, 580));
-
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 530));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
         setLocationRelativeTo(null);
@@ -268,9 +269,7 @@ public class FrmTablero extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLanzar;
     private javax.swing.JButton btnRendirse;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel lblCania1;
     private javax.swing.JLabel lblCania2;

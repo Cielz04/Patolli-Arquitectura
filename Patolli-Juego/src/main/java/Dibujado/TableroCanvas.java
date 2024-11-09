@@ -23,7 +23,7 @@ public class TableroCanvas extends JPanel {
     private int numCasillasAspa;
     private int anchoPantalla;
     private Graphics2D g2d;
-    private final int TAMANIOCASILLA = 25;
+    private final int TAMANIOCASILLA = 15;
     private List<IDibujar> listaDibujar;
     private List<DibujaFicha> fichasDibujar; // Lista para múltiples fichas
     private List<Ficha> fichas; // Cambiar de Ficha a List<Ficha>
@@ -90,8 +90,8 @@ public class TableroCanvas extends JPanel {
         int tamanioCasilla = TAMANIOCASILLA;
         int casilla = 0;
         // Ajustamos x para centrar el tablero
-        int x = (anchoPantalla - TAMANIOCASILLA * numCasillasAspa) / 2;
-        int y = 0;
+        int x = (anchoPantalla - TAMANIOCASILLA * numCasillasAspa)/2;
+        int y = x/3;
 
         if (numCasillasAspa % 2 == 0) {
             // Verticales arriba izquierda
