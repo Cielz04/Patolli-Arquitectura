@@ -7,6 +7,10 @@
         <Property name="text" type="java.lang.String" value="jCheckBox1"/>
       </Properties>
     </Component>
+    <Component class="javax.swing.ButtonGroup" name="btnGroupAspas">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="btnGroupFichas">
+    </Component>
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
@@ -177,6 +181,9 @@
                     </Property>
                     <Property name="text" type="java.lang.String" value="8 por aspa"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="aspa8ActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JRadioButton" name="aspa10">
                   <Properties>

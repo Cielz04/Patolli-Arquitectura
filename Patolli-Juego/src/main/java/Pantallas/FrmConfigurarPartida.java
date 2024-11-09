@@ -17,6 +17,12 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
     public FrmConfigurarPartida() {
         initComponents();
         crearApuesta= new DlgApuesta(this, rootPaneCheckingEnabled);
+        btnGroupAspas.add(aspa8);
+        btnGroupAspas.add(aspa10);
+        btnGroupAspas.add(aspa14);
+        btnGroupFichas.add(fichas2);
+        btnGroupFichas.add(fichas4);
+        btnGroupFichas.add(fichas6);
     }
 
     /**
@@ -29,6 +35,8 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
     private void initComponents() {
 
         jCheckBox1 = new javax.swing.JCheckBox();
+        btnGroupAspas = new javax.swing.ButtonGroup();
+        btnGroupFichas = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
@@ -68,6 +76,11 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
         aspa8.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
         aspa8.setForeground(new java.awt.Color(255, 255, 255));
         aspa8.setText("8 por aspa");
+        aspa8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aspa8ActionPerformed(evt);
+            }
+        });
 
         aspa10.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
         aspa10.setForeground(new java.awt.Color(255, 255, 255));
@@ -287,6 +300,10 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
         crearApuesta.setVisible(true);        
     }//GEN-LAST:event_btnApuestaActionPerformed
 
+    private void aspa8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aspa8ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_aspa8ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -327,6 +344,8 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
     private javax.swing.JRadioButton aspa14;
     private javax.swing.JRadioButton aspa8;
     private javax.swing.JButton btnApuesta;
+    private javax.swing.ButtonGroup btnGroupAspas;
+    private javax.swing.ButtonGroup btnGroupFichas;
     private javax.swing.JRadioButton fichas2;
     private javax.swing.JRadioButton fichas4;
     private javax.swing.JRadioButton fichas6;

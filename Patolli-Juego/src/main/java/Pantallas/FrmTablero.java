@@ -62,6 +62,9 @@ public class FrmTablero extends javax.swing.JFrame {
 //		}
     }
 
+    
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -76,6 +79,11 @@ public class FrmTablero extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         btnRendirse = new javax.swing.JButton();
         btnLanzar = new javax.swing.JButton();
+        lblCania1 = new javax.swing.JLabel();
+        lblCania2 = new javax.swing.JLabel();
+        lblCania4 = new javax.swing.JLabel();
+        lblCania3 = new javax.swing.JLabel();
+        lblCania5 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -112,14 +120,46 @@ public class FrmTablero extends javax.swing.JFrame {
             }
         });
 
+        lblCania1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lblCania1.setForeground(new java.awt.Color(255, 255, 255));
+        lblCania1.setText("-");
+
+        lblCania2.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lblCania2.setForeground(new java.awt.Color(255, 255, 255));
+        lblCania2.setText("-");
+
+        lblCania4.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lblCania4.setForeground(new java.awt.Color(255, 255, 255));
+        lblCania4.setText("-");
+
+        lblCania3.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lblCania3.setForeground(new java.awt.Color(255, 255, 255));
+        lblCania3.setText("-");
+
+        lblCania5.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lblCania5.setForeground(new java.awt.Color(255, 255, 255));
+        lblCania5.setText("-");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+            .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(lblCania1)
+                            .addGap(18, 18, 18)
+                            .addComponent(lblCania2)
+                            .addGap(15, 15, 15)
+                            .addComponent(lblCania3)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(lblCania4)
+                            .addGap(18, 18, 18)
+                            .addComponent(lblCania5)
+                            .addGap(16, 16, 16))
+                        .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -130,7 +170,14 @@ public class FrmTablero extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 399, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 343, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblCania5)
+                    .addComponent(lblCania4)
+                    .addComponent(lblCania3)
+                    .addComponent(lblCania2)
+                    .addComponent(lblCania1))
+                .addGap(8, 8, 8)
                 .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(35, 35, 35))
         );
@@ -147,9 +194,34 @@ public class FrmTablero extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanzarActionPerformed
-        // TODO add your handling code here:
+        int[] canias = new int[5];
+        int i=0;
+        
+        while (i<5){
+            canias[i] = (int) (Math.random() * 2); 
+            i++;
+        }
+        escribirCanias(canias);
     }//GEN-LAST:event_btnLanzarActionPerformed
 
+    private void escribirCanias(int canias[]){
+        if (canias[0]==1){
+            lblCania1.setText("•");
+        }
+        if (canias[1]==1){
+            lblCania2.setText("•");
+        }
+        if (canias[2]==1){
+            lblCania3.setText("•");
+        }
+        if (canias[3]==1){
+            lblCania4.setText("•");
+        }
+        if (canias[4]==1){
+            lblCania5.setText("•");
+        }
+    }
+    
     private void btnRendirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
         this.dispose();
         FrmInicio on = new FrmInicio();
@@ -200,5 +272,10 @@ public class FrmTablero extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel lblCania1;
+    private javax.swing.JLabel lblCania2;
+    private javax.swing.JLabel lblCania3;
+    private javax.swing.JLabel lblCania4;
+    private javax.swing.JLabel lblCania5;
     // End of variables declaration//GEN-END:variables
 }
