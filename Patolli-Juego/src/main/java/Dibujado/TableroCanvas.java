@@ -288,5 +288,9 @@ public class TableroCanvas extends JPanel {
         // Redibujar el tablero
         repaint();
     }
+    
+    public LinkedList<Casilla> getCasillas(){
+        return casillas;
+    }
 
 }

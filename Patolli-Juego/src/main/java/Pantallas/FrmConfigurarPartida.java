@@ -295,7 +295,7 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
                 Juego.getInstance().setNumCasillasAspa(28);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Sexo");
+            JOptionPane.showMessageDialog(null, "Error al crear tablero");
         }
         crearApuesta.setVisible(true);        
     }//GEN-LAST:event_btnApuestaActionPerformed

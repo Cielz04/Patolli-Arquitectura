@@ -1,17 +1,19 @@
 package entidades;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Jugador {
 
 	private String nombre;
 	private int fondo;
-	private String color;
+	private Color color;
         private List<Ficha> fichas = new ArrayList<>();
-	public Jugador(String nombre, int fondo) {
+	public Jugador(String nombre, Color color) {
 		this.nombre = nombre;
-		this.fondo = fondo;
+		this.color = color;
 	}
 
 	public Jugador() {
@@ -33,11 +35,11 @@ public class Jugador {
 		this.fondo = fondo;
 	}
 
-	public String getColor() {
+	public Color getColor() {
 		return color;
 	}
 
-	public void setColor(String color) {
+	public void setColor(Color color) {
 		this.color = color;
 	}
 
@@ -50,6 +52,30 @@ public class Jugador {
             this.fichas.add(new Ficha(false,null,null));
         }
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 61 * hash + Objects.hashCode(this.color);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Jugador other = (Jugador) obj;
+        return Objects.equals(this.color, other.color);
+    }
+    
+    
         
         
 }

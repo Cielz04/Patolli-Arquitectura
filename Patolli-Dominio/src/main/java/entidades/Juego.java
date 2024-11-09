@@ -108,4 +108,8 @@ public class Juego implements Serializable {
     public void setValorUltTiro(int valorUltTiro) {
         this.valorUltTiro = valorUltTiro;
     }
+    
+    public List<Jugador> getJugadores(){
+        return jugadores;
+    }
 }

@@ -44,15 +44,20 @@ public class FrmTablero extends javax.swing.JFrame {
 
         // Ajustamos el tamaño de tbCanvas al tamaño de jPanel3 o a un tamaño específico
         tbCanvas.setSize(jPanel3.getWidth(), jPanel3.getHeight());
+        
+        
 
         // Centramos tbCanvas dentro de jPanel3
         int xPos = (jPanel3.getWidth() - tbCanvas.getWidth()) / 2;
         int yPos = (jPanel3.getHeight() - tbCanvas.getHeight()) / 2;
         tbCanvas.setLocation(xPos, yPos);
 
+        Juego juego = Juego.getInstance();
+        
         jPanel3.add(tbCanvas);
         jPanel3.revalidate();
         jPanel3.repaint();
+        tbCanvas.sacarFicha(tbCanvas.getCasillas().get(10), Juego.getInstance().getJugadores().get(1).getColor());
     }
 
     /**
@@ -94,7 +99,6 @@ public class FrmTablero extends javax.swing.JFrame {
         setBackground(new java.awt.Color(51, 0, 0));
         setMaximumSize(new java.awt.Dimension(1280, 720));
         setMinimumSize(new java.awt.Dimension(1280, 720));
-        setPreferredSize(new java.awt.Dimension(1280, 720));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(51, 0, 0));
