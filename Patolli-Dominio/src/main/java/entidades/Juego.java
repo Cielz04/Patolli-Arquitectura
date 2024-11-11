@@ -1,7 +1,9 @@
 package entidades;
 
+import java.awt.Color;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Juego implements Serializable {
@@ -14,6 +16,8 @@ public class Juego implements Serializable {
         private boolean pIniciada = false;
         private int turno = 0;
         private int valorUltTiro = 0;
+        private int cantFichas;
+        private int canJugadores;
 	
 	public Juego(Tablero tablero, int apuesta, int fondoFijo,int numCasillasAspa, List<Jugador> jugadores) {
 		this.tablero = tablero;
@@ -60,8 +64,26 @@ public class Juego implements Serializable {
 		this.numCasillasAspa = numCasillasAspa;
 	}
 	
-	public void addJugador(Jugador jugador){
-		this.jugadores.add(jugador);
+	public void addJugador(){
+            if (jugadores!=null && (canJugadores>1)){
+                jugadores = new LinkedList<>();
+                jugadores.add(new Jugador("Jugador 1", Color.RED));
+                
+                if (canJugadores==2){
+                    jugadores.add(new Jugador("Jugador 2", Color.GREEN));
+                    
+                }else if(canJugadores==3){
+                    jugadores.add(new Jugador("Jugador 2", Color.GREEN));
+                    jugadores.add(new Jugador("Jugador 3", Color.YELLOW));
+                    
+                }else if(canJugadores==4){
+                    jugadores.add(new Jugador("Jugador 2", Color.GREEN));
+                    jugadores.add(new Jugador("Jugador 3", Color.YELLOW));
+                    jugadores.add(new Jugador("Jugador 4", Color.BLUE));
+                    
+                }         
+            }
+		
 	}
 	
 	public List<Jugador> getListaJugador(){
@@ -112,4 +134,24 @@ public class Juego implements Serializable {
     public List<Jugador> getJugadores(){
         return jugadores;
     }
+
+    public int getCantFichas() {
+        return cantFichas;
+    }
+
+    public void setCantFichas(int cantFichas) {
+        this.cantFichas = cantFichas;
+    }
+
+    public int getCanJugadores() {
+        return canJugadores;
+    }
+
+    public void setCanJugadores(int canJugadores) {
+        this.canJugadores = canJugadores;
+    }
+    
+    
+    
+    
 }

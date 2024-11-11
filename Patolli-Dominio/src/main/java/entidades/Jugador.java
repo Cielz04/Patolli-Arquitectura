@@ -11,13 +11,17 @@ public class Jugador {
 	private int fondo;
 	private Color color;
         private List<Ficha> fichas = new ArrayList<>();
-	public Jugador(String nombre, Color color) {
+	
+        
+        public Jugador(String nombre, Color color) {
 		this.nombre = nombre;
 		this.color = color;
 	}
 
 	public Jugador() {
 	}
+        
+        
 
 	public String getNombre() {
 		return nombre;

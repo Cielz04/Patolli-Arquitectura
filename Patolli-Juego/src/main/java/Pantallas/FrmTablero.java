@@ -1,7 +1,8 @@
 package Pantallas;
 
+import Control.ControlPatolli;
 import dibujado.TableroCanvas;
-import entidades.Juego;
+
 import entidades.Tablero;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -37,10 +38,10 @@ public class FrmTablero extends javax.swing.JFrame {
      * casillas
      */
     public void inicializar() {
-        tbCanvas = new TableroCanvas(tablero.getCasillas(), Juego.getInstance().getNumCasillasAspa(), jPanel3.getWidth());
+        tbCanvas = new TableroCanvas(tablero.getCasillas(), ControlPatolli.getInstance().getCasillasAspas(), jPanel3.getWidth());
         tablero.setCasillas(tbCanvas.generarCasillas());
 
-        Juego.getInstance().setTablero(tablero);
+        ControlPatolli.getInstance().setTablero(tablero);
 
         // Ajustamos el tamaño de tbCanvas al tamaño de jPanel3 o a un tamaño específico
         tbCanvas.setSize(jPanel3.getWidth(), jPanel3.getHeight());
@@ -52,23 +53,23 @@ public class FrmTablero extends javax.swing.JFrame {
         int yPos = (jPanel3.getHeight() - tbCanvas.getHeight()) / 2;
         tbCanvas.setLocation(xPos, yPos);
 
-        Juego juego = Juego.getInstance();
+        ControlPatolli control =  ControlPatolli.getInstance();
         
         jPanel3.add(tbCanvas);
         jPanel3.revalidate();
         jPanel3.repaint();
-        tbCanvas.sacarFicha(tbCanvas.getCasillas().get(10), Juego.getInstance().getJugadores().get(1).getColor());
+        tbCanvas.sacarFicha(tbCanvas.getCasillas().get(10), ControlPatolli.getInstance().getColorTurnoJugador());
     }
 
     /**
      * Metodo que dibuja el tablero
      */
     public void pintarTablero() {
-        tbCanvas.setCasillas(Juego.getInstance().getTablero().getCasillas());
+        tbCanvas.setCasillas(ControlPatolli.getInstance().getTablero().getCasillas());
         this.repaint();
 
-//		for (int i = 0; i < Juego.getInstance().getListaJugador().size(); i++) {
-//			System.out.println(Juego.getInstance().getListaJugador().get(i).getNombre());
+//		for (int i = 0; i < ControlPatolli.getInstance().getListaJugador().size(); i++) {
+//			System.out.println  ControlPatolli.getInstance().getListaJugador().get(i).getNombre());
 //		}
     }
 
@@ -97,7 +98,6 @@ public class FrmTablero extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tablero");
         setBackground(new java.awt.Color(51, 0, 0));
-        setMaximumSize(new java.awt.Dimension(1280, 720));
         setMinimumSize(new java.awt.Dimension(1280, 720));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
