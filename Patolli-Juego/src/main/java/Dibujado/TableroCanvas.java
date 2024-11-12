@@ -4,293 +4,281 @@ import entidades.Casilla;
 import entidades.Ficha;
 import entidades.LugarSemicirculo;
 import entidades.LugarTriangulo;
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.geom.Arc2D;
-import java.util.ArrayList;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.BorderFactory;
 
 public class TableroCanvas extends JPanel {
 
     private LinkedList<Casilla> casillas;
     private int numCasillasAspa;
     private int anchoPantalla;
-    private Graphics2D g2d;
     private final int TAMANIOCASILLA = 15;
-    private List<IDibujar> listaDibujar;
-    private List<DibujaFicha> fichasDibujar; // Lista para múltiples fichas
-    private List<Ficha> fichas; // Cambiar de Ficha a List<Ficha>
+    private List<JLabel> labelsCasillas; // Lista para manejar las casillas representadas como JLabel
 
-    /**
-     * Método constructor que recibe e instancia los valores enviados
-     *
-     * @param casillas
-     * @param numCasillasAspa
-     * @param anchoPantalla
-     */
     public TableroCanvas(LinkedList<Casilla> casillas, int numCasillasAspa, int anchoPantalla) {
         this.casillas = casillas;
         this.numCasillasAspa = numCasillasAspa;
-        this.anchoPantalla = anchoPantalla; // El valor original de anchoPantalla sin dividir
-        this.listaDibujar = new ArrayList<>();
-        listaDibujar.add(new DibujaNormal());
-        listaDibujar.add(new DibujaPropia());
-        listaDibujar.add(new DibujaCentro());
-        listaDibujar.add(new DibujaCircular());
-        listaDibujar.add(new DibujaTriangulo());
-        this.fichasDibujar = new ArrayList<>(); // Inicializa la lista de fichas
-        this.fichas = new ArrayList<>(); // Inicializa la lista de fichas
-        inicializar();
+        this.anchoPantalla = anchoPantalla;
+        this.labelsCasillas = new LinkedList<>();
+
+        // Inicializar el panel
+        setLayout(null); // Usar un layout absoluto para posicionar las casillas
+        setPreferredSize(new Dimension(anchoPantalla, anchoPantalla));
+        generarCasillas(); // Generar las casillas
     }
 
-    /**
-     * Metodo que pone en blanco el fondo de la ventana
-     */
-    private void inicializar() {
-        this.setBackground(new Color(0, 0, 0, 0));
-    }
-
-    /**
-     * Metodo que dibuja todas las casillas del tablero, estas se dibujan
-     * mediante la lista Casillas
-     *
-     * @param g
-     */
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        this.g2d = (Graphics2D) g;
-
-        // Dibujar las casillas
-        for (Casilla casilla : casillas) {
-            for (IDibujar dibuja : listaDibujar) {
-                dibuja.dibujar(g2d, casilla, numCasillasAspa, TAMANIOCASILLA);
-            }
-        }
-        // Dibujar todas las fichas
-        for (DibujaFicha dibujaFicha : fichasDibujar) {
-            dibujaFicha.dibujar(g2d, dibujaFicha.getFicha().getPosicionActual(), numCasillasAspa, TAMANIOCASILLA);
-        }
-    }
-
-    /**
-     * Metodo que genera todas las casillas del juego Aqui se calcula en donde
-     * se dibujara espesificamente cada casilla
-     *
-     * @return
-     */
     public LinkedList<Casilla> generarCasillas() {
         int tamanioCasilla = TAMANIOCASILLA;
-        int casilla = 0;
+        int casillaIndex = 0;
         // Ajustamos x para centrar el tablero
-        int x = (anchoPantalla - TAMANIOCASILLA * numCasillasAspa)/2;
-        int y = x/3;
+        int x = (anchoPantalla - TAMANIOCASILLA * numCasillasAspa) / 2;
+        int y = x / 3;
 
         if (numCasillasAspa % 2 == 0) {
             // Verticales arriba izquierda
-            casillas.add(new Casilla(x, y, casilla, LugarSemicirculo.TOP, null, "circulo"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, LugarSemicirculo.TOP, null, "circulo");
+            casillaIndex++;
             y += tamanioCasilla;
-            casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-            casilla++;
+
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+            casillaIndex++;
             y += tamanioCasilla;
-            casillas.add(new Casilla(x, y, casilla, null, LugarTriangulo.TOP_LEFT, "triangulo"));
-            casilla++;
+
+            agregarCasillaComoLabel(x, y, casillaIndex, null, LugarTriangulo.TOP_LEFT, "triangulo");
+            casillaIndex++;
             y += tamanioCasilla;
 
             for (int i = 0; i < (numCasillasAspa / 2) - 3; i++) {
-                casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-                casilla++;
+                agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+                casillaIndex++;
                 y += tamanioCasilla;
             }
 
-            casillas.add(new Casilla(x, y, casilla, null, null, "centro"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "centro");
+            casillaIndex++;
             x -= tamanioCasilla;
 
-            casillas.add(new Casilla(x, y, casilla, null, null, "propia"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "propia");
+            casillaIndex++;
             x -= tamanioCasilla;
 
             for (int i = 0; i < (numCasillasAspa / 2) - 4; i++) {
-                casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-                casilla++;
+                agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+                casillaIndex++;
                 x -= tamanioCasilla;
             }
 
-            casillas.add(new Casilla(x, y, casilla, null, LugarTriangulo.LEFT_TOP, "triangulo"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, LugarTriangulo.LEFT_TOP, "triangulo");
+            casillaIndex++;
             x -= tamanioCasilla;
-            casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-            casilla++;
+
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+            casillaIndex++;
             x -= tamanioCasilla;
-            casillas.add(new Casilla(x, y, casilla, LugarSemicirculo.LEFT, null, "circulo"));
-            casilla++;
+
+            agregarCasillaComoLabel(x, y, casillaIndex, LugarSemicirculo.LEFT, null, "circulo");
+            casillaIndex++;
             y += tamanioCasilla;
-            casillas.add(new Casilla(x, y, casilla, null, null, "circulo"));
-            casilla++;
+
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "circulo");
+            casillaIndex++;
             x += tamanioCasilla;
-            casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-            casilla++;
+
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+            casillaIndex++;
             x += tamanioCasilla;
-            casillas.add(new Casilla(x, y, casilla, null, LugarTriangulo.LEFT_BOTTOM, "triangulo"));
-            casilla++;
+
+            agregarCasillaComoLabel(x, y, casillaIndex, null, LugarTriangulo.LEFT_BOTTOM, "triangulo");
+            casillaIndex++;
             x += tamanioCasilla;
 
             for (int i = 0; i < (numCasillasAspa / 2) - 3; i++) {
-                casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-                casilla++;
+                agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+                casillaIndex++;
                 x += tamanioCasilla;
             }
 
-            casillas.add(new Casilla(x, y, casilla, null, null, "centro"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "centro");
+            casillaIndex++;
             y += tamanioCasilla;
 
             // Vertical abajo izquierda
-            casillas.add(new Casilla(x, y, casilla, null, null, "propia"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "propia");
+            casillaIndex++;
             y += tamanioCasilla;
 
             for (int i = 0; i < (numCasillasAspa / 2) - 4; i++) {
-                casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-                casilla++;
+                agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+                casillaIndex++;
                 y += tamanioCasilla;
             }
 
-            casillas.add(new Casilla(x, y, casilla, null, LugarTriangulo.BOTTOM_LEFT, "triangulo"));
-            casilla++;
-            y += tamanioCasilla;
-            casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, LugarTriangulo.BOTTOM_LEFT, "triangulo");
+            casillaIndex++;
             y += tamanioCasilla;
 
-            casillas.add(new Casilla(x, y, casilla, LugarSemicirculo.BOTTOM, null, "circulo"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+            casillaIndex++;
+            y += tamanioCasilla;
+
+            agregarCasillaComoLabel(x, y, casillaIndex, LugarSemicirculo.BOTTOM, null, "circulo");
+            casillaIndex++;
             x += tamanioCasilla;
 
             // Vertical abajo derecha
-            casillas.add(new Casilla(x, y, casilla, null, null, "circulo"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "circulo");
+            casillaIndex++;
             y -= tamanioCasilla;
-            casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-            casilla++;
+
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+            casillaIndex++;
             y -= tamanioCasilla;
-            casillas.add(new Casilla(x, y, casilla, null, LugarTriangulo.BOTTOM_RIGHT, "triangulo"));
-            casilla++;
+
+            agregarCasillaComoLabel(x, y, casillaIndex, null, LugarTriangulo.BOTTOM_RIGHT, "triangulo");
+            casillaIndex++;
             y -= tamanioCasilla;
 
             for (int i = 0; i < (numCasillasAspa / 2) - 3; i++) {
-                casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-                casilla++;
+                agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+                casillaIndex++;
                 y -= tamanioCasilla;
             }
 
-            casillas.add(new Casilla(x, y, casilla, null, null, "centro"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "centro");
+            casillaIndex++;
             x += tamanioCasilla;
 
             // Horizontal derecha abajo
-            casillas.add(new Casilla(x, y, casilla, null, null, "propia"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "propia");
+            casillaIndex++;
             x += tamanioCasilla;
 
             for (int i = 0; i < (numCasillasAspa / 2) - 4; i++) {
-                casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-                casilla++;
+                agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+                casillaIndex++;
                 x += tamanioCasilla;
             }
 
-            casillas.add(new Casilla(x, y, casilla, null, LugarTriangulo.RIGHT_BOTTOM, "triangulo"));
-            casilla++;
-            x += tamanioCasilla;
-            casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, LugarTriangulo.RIGHT_BOTTOM, "triangulo");
+            casillaIndex++;
             x += tamanioCasilla;
 
-            casillas.add(new Casilla(x, y, casilla, null, null, "circulo"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+            casillaIndex++;
+            x += tamanioCasilla;
+
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "circulo");
+            casillaIndex++;
             y -= tamanioCasilla;
 
             // Horizontal derecha arriba
-            casillas.add(new Casilla(x, y, casilla, LugarSemicirculo.RIGHT, null, "circulo"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, LugarSemicirculo.RIGHT, null, "circulo");
+            casillaIndex++;
             x -= tamanioCasilla;
 
-            casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+            casillaIndex++;
             x -= tamanioCasilla;
-            casillas.add(new Casilla(x, y, casilla, null, LugarTriangulo.RIGHT_TOP, "triangulo"));
-            casilla++;
+
+            agregarCasillaComoLabel(x, y, casillaIndex, null, LugarTriangulo.RIGHT_TOP, "triangulo");
+            casillaIndex++;
             x -= tamanioCasilla;
 
             for (int i = 0; i < (numCasillasAspa / 2) - 3; i++) {
-                casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-                casilla++;
+                agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+                casillaIndex++;
                 x -= tamanioCasilla;
             }
 
-            casillas.add(new Casilla(x, y, casilla, null, null, "centro"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "centro");
+            casillaIndex++;
             y -= tamanioCasilla;
 
             // Vertical arriba derecha
-            casillas.add(new Casilla(x, y, casilla, null, null, "propia"));
-            casilla++;
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "propia");
+            casillaIndex++;
             y -= tamanioCasilla;
+
             for (int i = 0; i < (numCasillasAspa / 2) - 4; i++) {
-                casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
-                casilla++;
+                agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
+                casillaIndex++;
                 y -= tamanioCasilla;
             }
-            casillas.add(new Casilla(x, y, casilla, null, LugarTriangulo.TOP_RIGHT, "triangulo"));
-            casilla++;
+
+            agregarCasillaComoLabel(x, y, casillaIndex, null, LugarTriangulo.TOP_RIGHT, "triangulo");
+            casillaIndex++;
             y -= tamanioCasilla;
-            casillas.add(new Casilla(x, y, casilla, null, null, "normal"));
+
+            agregarCasillaComoLabel(x, y, casillaIndex, null, null, "normal");
         }
         return casillas;
     }
 
     /**
-     * Metodo que establece una lista de casillas por otra recibida en el
-     * parametro
-     *
-     * @param casillas
+     * Agrega una casilla representada como JLabel al panel.
      */
-    public void setCasillas(LinkedList<Casilla> casillas) {
-        this.casillas = casillas;
+    private void agregarCasillaComoLabel(int x, int y, int casillaIndex, LugarSemicirculo semicirculo, LugarTriangulo triangulo, String tipo) {
+        JLabel casillaLabel = new JLabel();
+        casillaLabel.setBounds(x, y, TAMANIOCASILLA, TAMANIOCASILLA);
+        casillaLabel.setOpaque(true);
+        casillaLabel.setBackground(Color.LIGHT_GRAY); // Color por defecto para "normal"
+        casillaLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        // Ajustar color o comportamiento según el tipo de casilla
+        switch (tipo) {
+            case "circulo":
+                casillaLabel.setBackground(Color.CYAN);
+                break;
+            case "triangulo":
+                casillaLabel.setBackground(Color.YELLOW);
+                break;
+            case "centro":
+                casillaLabel.setBackground(Color.GREEN);
+                break;
+            case "propia":
+                casillaLabel.setBackground(Color.PINK);
+                break;
+            default:
+                break;
+        }
+
+        casillaLabel.setText(String.valueOf(casillaIndex)); // Opcional: texto para identificar
+
+        // Agregar el JLabel al panel y la lista
+        this.add(casillaLabel);
+        labelsCasillas.add(casillaLabel);
+
+        // Crear y agregar la casilla lógica
+        Casilla nuevaCasilla = new Casilla(casillaIndex ,x, y, casillaIndex, semicirculo, triangulo, tipo);
+        casillas.add(nuevaCasilla);
     }
 
     /**
-     * Método para posicionar las fichas en la posición inicial en el tablero.
+     * Posiciona una ficha en una casilla representada por JLabel.
      *
-     * @param nuevaCasilla recibe la casilla donde se dibujará.
+     * @param nuevaCasilla Casilla donde se colocará la ficha.
+     * @param colorFicha Color de la ficha.
      */
     public void sacarFicha(Casilla nuevaCasilla, Color colorFicha) {
-        // Crear una nueva ficha
-        Ficha nuevaFicha = new Ficha();
-        nuevaFicha.setPosicionActual(nuevaCasilla);
+        // Encontrar la casilla correspondiente
+        for (JLabel casillaLabel : labelsCasillas) {
+            if (nuevaCasilla.getCoordenadaX() == casillaLabel.getX()
+                    && nuevaCasilla.getCoordenadaY() == casillaLabel.getY()) {
 
-        // Crear un nuevo DibujaFicha con el color proporcionado
-        DibujaFicha dibujaFicha = new DibujaFicha(nuevaFicha);
-        dibujaFicha.setColorEquipo(colorFicha); // Establece el color de la ficha
-
-        // Agregar la nueva ficha a la lista para ser dibujada
-        fichasDibujar.add(dibujaFicha);
-
-        // Redibujar el tablero
-        repaint();
+                // Cambiar el color de fondo para representar la ficha
+                casillaLabel.setBackground(colorFicha);
+                break;
+            }
+        }
     }
-    
-    public LinkedList<Casilla> getCasillas(){
+
+    public LinkedList<Casilla> getCasillas() {
         return casillas;
     }
-
 }

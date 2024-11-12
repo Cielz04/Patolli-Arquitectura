@@ -1,81 +1,88 @@
 package entidades;
 
 public class Casilla {
-	private Ficha ficha;
-	private int coordenadaX;
-	private int coordenadaY;
-	private int numero;
-	private LugarSemicirculo lugarcirculo;
-	private LugarTriangulo lugarTriangulo;
-	private String tipoCasilla;
-        
-	public Casilla() {
-		
-	}
 
-	 public Casilla(int coordenadaX, int coordenadaY, int numero,LugarSemicirculo lugarcirulo,LugarTriangulo lugarTriangulo,String tipoCasilla) {
-		this.coordenadaX = coordenadaX;
-		this.coordenadaY = coordenadaY;
-		this.numero=numero;
-		this.tipoCasilla=tipoCasilla;
-		this.lugarcirculo = lugarcirulo;
-		this.lugarTriangulo = lugarTriangulo;
-	}
+    private Ficha ficha;
+    private int coordenadaX;
+    private int coordenadaY;
+    private int numero;
+    private int id; // Nuevo campo agregado
+    private LugarSemicirculo lugarcirculo;
+    private LugarTriangulo lugarTriangulo;
+    private String tipoCasilla;
 
-	public int getCoordenadaX() {
-		return coordenadaX;
-	}
+    public Casilla(int id, int coordenadaX, int coordenadaY, int numero, LugarSemicirculo lugarcirulo, LugarTriangulo lugarTriangulo, String tipoCasilla) {
+        this.id = id;
+        this.coordenadaX = coordenadaX;
+        this.coordenadaY = coordenadaY;
+        this.numero = numero;
+        this.tipoCasilla = tipoCasilla;
+        this.lugarcirculo = lugarcirulo;
+        this.lugarTriangulo = lugarTriangulo;
+    }
 
-	public void setCoordenadaX(int coordenadaX) {
-		this.coordenadaX = coordenadaX;
-	}
+    public Casilla() {
 
-	public int getCoordenadaY() {
-		return coordenadaY;
-	}
+    }
+    
+    public int getID() {
+        return id;
+    }
 
-	public void setCoordenadaY(int coordenadaY) {
-		this.coordenadaY = coordenadaY;
-	}
+    public int getCoordenadaX() {
+        return coordenadaX;
+    }
 
-	public int getNumero() {
-		return numero;
-	}
+    public void setCoordenadaX(int coordenadaX) {
+        this.coordenadaX = coordenadaX;
+    }
 
-	public void setNumero(int numero) {
-		this.numero = numero;
-	}
+    public int getCoordenadaY() {
+        return coordenadaY;
+    }
 
-	public LugarSemicirculo getLugarcirculo() {
-		return lugarcirculo;
-	}
+    public void setCoordenadaY(int coordenadaY) {
+        this.coordenadaY = coordenadaY;
+    }
 
-	public void setLugarcirculo(LugarSemicirculo lugarcirculo) {
-		this.lugarcirculo = lugarcirculo;
-	}
+    public int getNumero() {
+        return numero;
+    }
 
-	public LugarTriangulo getLugarTriangulo() {
-		return lugarTriangulo;
-	}
+    public void setNumero(int numero) {
+        this.numero = numero;
+    }
 
-	public void setLugarTriangulo(LugarTriangulo lugarTriangulo) {
-		this.lugarTriangulo = lugarTriangulo;
-	}
+    public LugarSemicirculo getLugarcirculo() {
+        return lugarcirculo;
+    }
 
-	public String getTipoCasilla() {
-		return tipoCasilla;
-	}
+    public void setLugarcirculo(LugarSemicirculo lugarcirculo) {
+        this.lugarcirculo = lugarcirculo;
+    }
 
-	public void setTipoCasilla(String tipoCasilla) {
-		this.tipoCasilla = tipoCasilla;
-	}
+    public LugarTriangulo getLugarTriangulo() {
+        return lugarTriangulo;
+    }
 
-	public Ficha getFicha() {
-		return ficha;
-	}
+    public void setLugarTriangulo(LugarTriangulo lugarTriangulo) {
+        this.lugarTriangulo = lugarTriangulo;
+    }
 
-	public void setFicha(Ficha ficha) {
-		this.ficha = ficha;
-	}
-	
+    public String getTipoCasilla() {
+        return tipoCasilla;
+    }
+
+    public void setTipoCasilla(String tipoCasilla) {
+        this.tipoCasilla = tipoCasilla;
+    }
+
+    public Ficha getFicha() {
+        return ficha;
+    }
+
+    public void setFicha(Ficha ficha) {
+        this.ficha = ficha;
+    }
+
 }

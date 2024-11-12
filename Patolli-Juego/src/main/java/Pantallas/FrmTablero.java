@@ -5,6 +5,7 @@ import entidades.Juego;
 import entidades.Tablero;
 import java.awt.Color;
 import java.awt.Dimension;
+import javax.swing.JLabel;
 
 /**
  *
@@ -12,40 +13,41 @@ import java.awt.Dimension;
  */
 public class FrmTablero extends javax.swing.JFrame {
 
-    private TableroCanvas tbCanvas;
     private static FrmTablero tableroS;
-
-    Tablero tablero = new Tablero();
+    private Tablero tablero;
 
     /**
-     * Creates new form Tablero
+     * Creates new form FrmTablero
      */
     public FrmTablero() {
         initComponents();
+        tablero = new Tablero();
     }
 
     public static FrmTablero getInstance() {
         if (tableroS == null) {
             tableroS = new FrmTablero();
         }
-
         return tableroS;
     }
 
     /**
      * Metodo que inicializa el tablero estableciando medidas y generando las
-     * casillas
+     * casillas como JLabel
      */
     public void inicializar() {
-        tbCanvas = new TableroCanvas(tablero.getCasillas(), Juego.getInstance().getNumCasillasAspa(), jPanel3.getWidth());
-        tablero.setCasillas(tbCanvas.generarCasillas());
+        // Obtenemos los valores necesarios
+        int numCasillasAspa = Juego.getInstance().getNumCasillasAspa();  // Número de casillas
+        int tamanioCasilla = 15;  // Tamaño de la casilla, puedes ajustarlo
+        int anchoPantalla = jPanel3.getWidth();  // Ancho del panel
+        // Creamos la instancia de TableroCanvas con las casillas generadas
+        TableroCanvas tbCanvas = new TableroCanvas(tablero.getCasillas(), numCasillasAspa, anchoPantalla);
+        tablero.setCasillas(tbCanvas.generarCasillas()); // Llamada con los parámetros
 
         Juego.getInstance().setTablero(tablero);
 
         // Ajustamos el tamaño de tbCanvas al tamaño de jPanel3 o a un tamaño específico
         tbCanvas.setSize(jPanel3.getWidth(), jPanel3.getHeight());
-        
-        
 
         // Centramos tbCanvas dentro de jPanel3
         int xPos = (jPanel3.getWidth() - tbCanvas.getWidth()) / 2;
@@ -53,7 +55,7 @@ public class FrmTablero extends javax.swing.JFrame {
         tbCanvas.setLocation(xPos, yPos);
 
         Juego juego = Juego.getInstance();
-        
+
         jPanel3.add(tbCanvas);
         jPanel3.revalidate();
         jPanel3.repaint();
@@ -61,20 +63,13 @@ public class FrmTablero extends javax.swing.JFrame {
     }
 
     /**
-     * Metodo que dibuja el tablero
+     * Metodo que pinta el tablero actualizando sus elementos visuales
      */
     public void pintarTablero() {
-        tbCanvas.setCasillas(Juego.getInstance().getTablero().getCasillas());
+        // En este caso, las casillas ya son representadas con JLabel, por lo que no es necesario redibujar manualmente
         this.repaint();
-
-//		for (int i = 0; i < Juego.getInstance().getListaJugador().size(); i++) {
-//			System.out.println(Juego.getInstance().getListaJugador().get(i).getNombre());
-//		}
     }
 
-    
-    
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -200,33 +195,33 @@ public class FrmTablero extends javax.swing.JFrame {
 
     private void btnLanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanzarActionPerformed
         int[] canias = new int[5];
-        int i=0;
-        
-        while (i<5){
-            canias[i] = (int) (Math.random() * 2); 
+        int i = 0;
+
+        while (i < 5) {
+            canias[i] = (int) (Math.random() * 2);
             i++;
         }
         escribirCanias(canias);
     }//GEN-LAST:event_btnLanzarActionPerformed
 
-    private void escribirCanias(int canias[]){
-        if (canias[0]==1){
+    private void escribirCanias(int canias[]) {
+        if (canias[0] == 1) {
             lblCania1.setText("•");
         }
-        if (canias[1]==1){
+        if (canias[1] == 1) {
             lblCania2.setText("•");
         }
-        if (canias[2]==1){
+        if (canias[2] == 1) {
             lblCania3.setText("•");
         }
-        if (canias[3]==1){
+        if (canias[3] == 1) {
             lblCania4.setText("•");
         }
-        if (canias[4]==1){
+        if (canias[4] == 1) {
             lblCania5.setText("•");
         }
     }
-    
+
     private void btnRendirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
         this.dispose();
         FrmInicio on = new FrmInicio();
