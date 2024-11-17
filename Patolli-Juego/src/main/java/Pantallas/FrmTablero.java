@@ -2,7 +2,6 @@ package Pantallas;
 
 import Control.ControlJugador;
 import Control.ControlPatolli;
-import dibujado.TableroCanvas;
 
 import entidades.Tablero;
 import java.awt.Color;
@@ -22,7 +21,6 @@ import javax.swing.border.LineBorder;
  */
 public class FrmTablero extends javax.swing.JFrame {
 
-    private TableroCanvas tbCanvas;
     private static FrmTablero tableroS;
     private boolean numerarCasillas;
     Tablero tablero = new Tablero();
@@ -106,21 +104,21 @@ public class FrmTablero extends javax.swing.JFrame {
                 if (invertir) {
                     if (columnas > filas) {
                         if (i == columnas || i == columnas * filas) {
-                            label.setBackground(Color.getHSBColor(57, 84, 96)); // DERECHA
+                            label.setBackground(Color.getHSBColor(0.33f, 0.3f, 0.8f));// DERECHA
                         }
                     } else {
                         if (i == filas * columnas || i == filas * columnas - 1) {
-                            label.setBackground(Color.getHSBColor(57, 84, 96)); // ABAJO
+                            label.setBackground(Color.getHSBColor(0.33f, 0.3f, 0.8f)); // ABAJO 104, 28, 76
                         }
                     }
                 } else {
                     if (columnas > filas) {
                         if (i == 1 || i == columnas + 1) {
-                            label.setBackground(Color.getHSBColor(57, 84, 96)); // IZQUIERDA
+                            label.setBackground(Color.getHSBColor(0.33f, 0.3f, 0.8f)); // IZQUIERDA
                         }
                     } else {
                         if (i == 1 || i == 2) {
-                            label.setBackground(Color.getHSBColor(57, 84, 96)); // ARRIBA
+                            label.setBackground(Color.getHSBColor(0.33f, 0.3f, 0.8f)); // ARRIBA
                         }
                     }
                 }
@@ -129,21 +127,21 @@ public class FrmTablero extends javax.swing.JFrame {
                 if (invertir) {
                     if (columnas > filas) {
                         if (i == columnas - 3 || i == columnas * filas - 3) {
-                            label.setBackground(Color.RED); // DERECHA
+                            label.setBackground(Color.getHSBColor(0.08f, 0.7f, 0.5f)); // DERECHA
                         }
                     } else {
                         if (i == filas * columnas - 7 || i == filas * columnas - 6) {
-                            label.setBackground(Color.RED); // ABAJO
+                            label.setBackground(Color.getHSBColor(0.08f, 0.7f, 0.5f)); // ABAJO
                         }
                     }
                 } else {
                     if (columnas > filas) {
                         if (i == 4 || i == columnas + 4) {
-                            label.setBackground(Color.RED); // IZQUIERDA
+                            label.setBackground(Color.getHSBColor(0.08f, 0.7f, 0.5f));  // IZQUIERDA
                         }
                     } else {
                         if (i == 7 || i == 8) {
-                            label.setBackground(Color.RED); // ARRIBA
+                            label.setBackground(Color.getHSBColor(0.08f, 0.7f, 0.5f));  // ARRIBA
                         }
                     }
                 }
@@ -406,7 +404,7 @@ public class FrmTablero extends javax.swing.JFrame {
             escribirCanias(canias);
             
             if (i>0){
-                if (ControlJugador.getInstance().obtenerJugadorTurno()==ControlPatolli.getInstance().getJugadorTurno(ControlPatolli.getInstance().getTurno())){
+                if (ControlJugador.getInstance().obtenerJugadorTurno().equals(ControlPatolli.getInstance().getJugadorTurno(ControlPatolli.getInstance().getTurno()))){
                     JOptionPane.showMessageDialog(rootPane, "ALAVERGA");
                     lblCania1.setText("-");
                     lblCania2.setText("-");

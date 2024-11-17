@@ -33,14 +33,17 @@ public class ControlJugador {
     }
     
     public Jugador obtenerJugadorTurno(){
+        if (jugadorTurno == null){
+            jugadorTurno = jugadores.get(0);
+        }
         return jugadorTurno;
     }
     
     public void cambiarSiguienteTurno(){
         
-        if (turno<jugadores.size()){
+        if (turno < jugadores.size()){
             turno++;
-        }else if (turno==jugadores.size()){
+        }else if (turno == jugadores.size()){
             turno=0;
         }
         
