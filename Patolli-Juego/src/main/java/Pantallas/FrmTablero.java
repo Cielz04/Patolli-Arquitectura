@@ -6,6 +6,12 @@ import dibujado.TableroCanvas;
 import entidades.Tablero;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.util.LinkedList;
+import java.util.List;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 
 /**
  *
@@ -15,13 +21,16 @@ public class FrmTablero extends javax.swing.JFrame {
 
     private TableroCanvas tbCanvas;
     private static FrmTablero tableroS;
-
+    private boolean numerarCasillas;
     Tablero tablero = new Tablero();
+    private int numeroCasilla;
+    private final List<JLabel> casillas;
 
     /**
      * Creates new form Tablero
      */
     public FrmTablero() {
+        casillas = new LinkedList<>();
         initComponents();
     }
 
@@ -38,39 +47,109 @@ public class FrmTablero extends javax.swing.JFrame {
      * casillas
      */
     public void inicializar() {
-        tbCanvas = new TableroCanvas(tablero.getCasillas(), ControlPatolli.getInstance().getCasillasAspas(), jPanel3.getWidth());
-        tablero.setCasillas(tbCanvas.generarCasillas());
-
-        ControlPatolli.getInstance().setTablero(tablero);
-
-        // Ajustamos el tamaño de tbCanvas al tamaño de jPanel3 o a un tamaño específico
-        tbCanvas.setSize(jPanel3.getWidth(), jPanel3.getHeight());
-        
-        
-
-        // Centramos tbCanvas dentro de jPanel3
-        int xPos = (jPanel3.getWidth() - tbCanvas.getWidth()) / 2;
-        int yPos = (jPanel3.getHeight() - tbCanvas.getHeight()) / 2;
-        tbCanvas.setLocation(xPos, yPos);
-
-        ControlPatolli control =  ControlPatolli.getInstance();
-        
-        jPanel3.add(tbCanvas);
-        jPanel3.revalidate();
-        jPanel3.repaint();
-        tbCanvas.sacarFicha(tbCanvas.getCasillas().get(10), ControlPatolli.getInstance().getColorTurnoJugador());
+        inicializarAspa(tableroArriba, ControlPatolli.getInstance().getCasillasAspas(), 2, false);
+        inicializarAspa(tableroAbajo, ControlPatolli.getInstance().getCasillasAspas(), 2, true);
+        inicializarAspa(tableroDerecha, 2, ControlPatolli.getInstance().getCasillasAspas(), true);
+        inicializarAspa(tableroIzq, 2, ControlPatolli.getInstance().getCasillasAspas(), false);
+        inicializarAspa(tableroCentro, 2, 2, true);
     }
 
     /**
      * Metodo que dibuja el tablero
      */
-    public void pintarTablero() {
-        tbCanvas.setCasillas(ControlPatolli.getInstance().getTablero().getCasillas());
-        this.repaint();
+     private void inicializarAspa(JPanel tablero, int filas, int columnas, boolean invertir) {
+        tablero.setLayout(new GridLayout(filas, columnas));
+        tablero.setPreferredSize(tablero.getSize());
+        tablero.setMinimumSize(tablero.getSize());
+        tablero.setMaximumSize(tablero.getSize());
 
-//		for (int i = 0; i < ControlPatolli.getInstance().getListaJugador().size(); i++) {
-//			System.out.println  ControlPatolli.getInstance().getListaJugador().get(i).getNombre());
-//		}
+        for (int i = 1; i <= filas * columnas; i++) {
+            JLabel label = new JLabel(""); // Crea un nuevo JLabel
+            label.setBorder(new LineBorder(Color.BLACK, 1)); // Añadir borde negro
+            label.setOpaque(true); // Hacer el fondo visible
+            label.setBackground(Color.WHITE);
+            if (numerarCasillas) {
+                label.setText(String.valueOf(numeroCasilla));
+                numeroCasilla++;
+            }
+            
+
+            // Lógica para asignar colores a las casillas del tablero
+            if (filas * columnas > 6) {
+                // Colocar casilla inicial (Amarilla)
+                if (invertir) {
+                    if (columnas > filas) {
+                        if (i == columnas + 1) {
+                            label.setBackground(Color.YELLOW); // DERECHA
+                        }
+                    } else {
+                        if (i == 1) {
+                            label.setBackground(Color.YELLOW); // ABAJO
+                        }
+                    }
+                } else {
+                    if (columnas > filas) {
+                        if (i == columnas) {
+                            label.setBackground(Color.YELLOW); // IZQUIERDA
+                        }
+                    } else {
+                        if (i == filas * columnas) {
+                            label.setBackground(Color.YELLOW); // ARRIBA
+                        }
+                    }
+                }
+
+                // Colocar casilla doble turno (Azul)
+                if (invertir) {
+                    if (columnas > filas) {
+                        if (i == columnas || i == columnas * filas) {
+                            label.setBackground(Color.BLUE); // DERECHA
+                        }
+                    } else {
+                        if (i == filas * columnas || i == filas * columnas - 1) {
+                            label.setBackground(Color.BLUE); // ABAJO
+                        }
+                    }
+                } else {
+                    if (columnas > filas) {
+                        if (i == 1 || i == columnas + 1) {
+                            label.setBackground(Color.BLUE); // IZQUIERDA
+                        }
+                    } else {
+                        if (i == 1 || i == 2) {
+                            label.setBackground(Color.BLUE); // ARRIBA
+                        }
+                    }
+                }
+
+                // Colocar casilla pagar apuesta (ROJA)
+                if (invertir) {
+                    if (columnas > filas) {
+                        if (i == columnas - 3 || i == columnas * filas - 3) {
+                            label.setBackground(Color.RED); // DERECHA
+                        }
+                    } else {
+                        if (i == filas * columnas - 7 || i == filas * columnas - 6) {
+                            label.setBackground(Color.RED); // ABAJO
+                        }
+                    }
+                } else {
+                    if (columnas > filas) {
+                        if (i == 4 || i == columnas + 4) {
+                            label.setBackground(Color.RED); // IZQUIERDA
+                        }
+                    } else {
+                        if (i == 7 || i == 8) {
+                            label.setBackground(Color.RED); // ARRIBA
+                        }
+                    }
+                }
+            }
+
+            // Añadir el JLabel al tablero y a la lista de casillas
+            tablero.add(label);
+            casillas.add(label);
+        }
     }
 
     
@@ -94,6 +173,11 @@ public class FrmTablero extends javax.swing.JFrame {
         lblCania4 = new javax.swing.JLabel();
         lblCania3 = new javax.swing.JLabel();
         lblCania5 = new javax.swing.JLabel();
+        tableroIzq = new javax.swing.JPanel();
+        tableroArriba = new javax.swing.JPanel();
+        tableroAbajo = new javax.swing.JPanel();
+        tableroDerecha = new javax.swing.JPanel();
+        tableroCentro = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tablero");
@@ -150,44 +234,154 @@ public class FrmTablero extends javax.swing.JFrame {
         lblCania5.setForeground(new java.awt.Color(255, 255, 255));
         lblCania5.setText("-");
 
+        tableroIzq.setBackground(new java.awt.Color(51, 0, 0));
+        tableroIzq.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+
+        javax.swing.GroupLayout tableroIzqLayout = new javax.swing.GroupLayout(tableroIzq);
+        tableroIzq.setLayout(tableroIzqLayout);
+        tableroIzqLayout.setHorizontalGroup(
+            tableroIzqLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 304, Short.MAX_VALUE)
+        );
+        tableroIzqLayout.setVerticalGroup(
+            tableroIzqLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 153, Short.MAX_VALUE)
+        );
+
+        tableroArriba.setBackground(new java.awt.Color(51, 0, 0));
+        tableroArriba.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+
+        javax.swing.GroupLayout tableroArribaLayout = new javax.swing.GroupLayout(tableroArriba);
+        tableroArriba.setLayout(tableroArribaLayout);
+        tableroArribaLayout.setHorizontalGroup(
+            tableroArribaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 165, Short.MAX_VALUE)
+        );
+        tableroArribaLayout.setVerticalGroup(
+            tableroArribaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 254, Short.MAX_VALUE)
+        );
+
+        tableroAbajo.setBackground(new java.awt.Color(51, 0, 0));
+        tableroAbajo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+
+        javax.swing.GroupLayout tableroAbajoLayout = new javax.swing.GroupLayout(tableroAbajo);
+        tableroAbajo.setLayout(tableroAbajoLayout);
+        tableroAbajoLayout.setHorizontalGroup(
+            tableroAbajoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 171, Short.MAX_VALUE)
+        );
+        tableroAbajoLayout.setVerticalGroup(
+            tableroAbajoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 254, Short.MAX_VALUE)
+        );
+
+        tableroDerecha.setBackground(new java.awt.Color(51, 0, 0));
+        tableroDerecha.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+
+        javax.swing.GroupLayout tableroDerechaLayout = new javax.swing.GroupLayout(tableroDerecha);
+        tableroDerecha.setLayout(tableroDerechaLayout);
+        tableroDerechaLayout.setHorizontalGroup(
+            tableroDerechaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 304, Short.MAX_VALUE)
+        );
+        tableroDerechaLayout.setVerticalGroup(
+            tableroDerechaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        tableroCentro.setBackground(new java.awt.Color(51, 0, 0));
+        tableroCentro.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+
+        javax.swing.GroupLayout tableroCentroLayout = new javax.swing.GroupLayout(tableroCentro);
+        tableroCentro.setLayout(tableroCentroLayout);
+        tableroCentroLayout.setHorizontalGroup(
+            tableroCentroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        tableroCentroLayout.setVerticalGroup(
+            tableroCentroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 153, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addComponent(lblCania1)
-                            .addGap(18, 18, 18)
-                            .addComponent(lblCania2)
-                            .addGap(15, 15, 15)
-                            .addComponent(lblCania3)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(lblCania4)
-                            .addGap(18, 18, 18)
-                            .addComponent(lblCania5)
-                            .addGap(16, 16, 16))
-                        .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(1098, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addContainerGap(370, Short.MAX_VALUE)
+                        .addComponent(tableroIzq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(22, 22, 22)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addGroup(jPanel3Layout.createSequentialGroup()
+                                        .addComponent(lblCania1)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(lblCania2)
+                                        .addGap(15, 15, 15)
+                                        .addComponent(lblCania3)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(lblCania4)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(lblCania5)
+                                        .addGap(16, 16, 16))
+                                    .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(tableroArriba, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(tableroCentro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(tableroAbajo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(tableroDerecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(113, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 499, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblCania5)
-                    .addComponent(lblCania4)
-                    .addComponent(lblCania3)
-                    .addComponent(lblCania2)
-                    .addComponent(lblCania1))
-                .addGap(8, 8, 8)
-                .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(63, 63, 63))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(0, 4, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(232, 232, 232))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(tableroArriba, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(lblCania5)
+                                    .addComponent(lblCania4)
+                                    .addComponent(lblCania3)
+                                    .addComponent(lblCania2)
+                                    .addComponent(lblCania1))
+                                .addGap(8, 8, 8))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(tableroIzq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(184, 184, 184)))
+                        .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(63, 63, 63))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(tableroDerecha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(tableroCentro, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(11, 11, 11)
+                        .addComponent(tableroAbajo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(22, Short.MAX_VALUE))))
         );
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 720));
@@ -280,5 +474,10 @@ public class FrmTablero extends javax.swing.JFrame {
     private javax.swing.JLabel lblCania3;
     private javax.swing.JLabel lblCania4;
     private javax.swing.JLabel lblCania5;
+    private javax.swing.JPanel tableroAbajo;
+    private javax.swing.JPanel tableroArriba;
+    private javax.swing.JPanel tableroCentro;
+    private javax.swing.JPanel tableroDerecha;
+    private javax.swing.JPanel tableroIzq;
     // End of variables declaration//GEN-END:variables
 }

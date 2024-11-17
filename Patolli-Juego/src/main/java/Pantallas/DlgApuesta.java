@@ -220,7 +220,7 @@ public class DlgApuesta extends javax.swing.JDialog {
             FrmTablero.getInstance().inicializar();
             dispose();
             FrmTablero.getInstance().setVisible(true);
-            FrmTablero.getInstance().pintarTablero();
+            //FrmTablero.getInstance().pintarTablero();
             
             
         }

@@ -299,11 +299,11 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
             }
             
             if (aspa8.isSelected()){
-                ControlPatolli.getInstance().setCantidadCasillas(16);
+                ControlPatolli.getInstance().setCantidadCasillas(8);
             }else if(aspa10.isSelected()){
-                ControlPatolli.getInstance().setCantidadCasillas(20);
+                ControlPatolli.getInstance().setCantidadCasillas(10);
             }else if(aspa14.isSelected()){
-                ControlPatolli.getInstance().setCantidadCasillas(28);
+                ControlPatolli.getInstance().setCantidadCasillas(14);
             }
         }
         else {
