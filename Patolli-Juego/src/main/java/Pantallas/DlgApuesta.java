@@ -1,6 +1,9 @@
 package Pantallas;
 
+import Control.ControlJugador;
 import Control.ControlPatolli;
+import entidades.Jugador;
+import java.awt.Color;
 
 
 /**
@@ -220,6 +223,14 @@ public class DlgApuesta extends javax.swing.JDialog {
             FrmTablero.getInstance().inicializar();
             dispose();
             FrmTablero.getInstance().setVisible(true);
+            
+            if (Integer.valueOf(CmBJugadores.getSelectedItem().toString())==2) {
+                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 1", Color.RED));
+                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 2", Color.GREEN));
+
+                
+            }            
+            
             //FrmTablero.getInstance().pintarTablero();
             
             

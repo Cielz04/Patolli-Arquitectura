@@ -1,6 +1,7 @@
 package Control;
 
 import entidades.Juego;
+import entidades.Jugador;
 import entidades.Tablero;
 import java.awt.Color;
 
@@ -15,10 +16,11 @@ public class ControlPatolli {
     
     
   public void configurarJugadores(int canJugadores){
-      Juego.getInstance().setCanJugadores(4);
+      Juego.getInstance().setCanJugadores(canJugadores);
       
       Juego.getInstance().addJugador();
   } 
+  
   
   public void setCantidadCasillas (int casillas){
       Juego.getInstance().setNumCasillasAspa(casillas);  
@@ -58,6 +60,18 @@ public class ControlPatolli {
           controlSingleTon = new ControlPatolli();
       }
       return controlSingleTon;
+  }
+  
+  public int getTurno (){
+      return Juego.getInstance().getTurno();
+  }
+  
+  public void cambiarTurno (){
+      Juego.getInstance().setTurno();
+  }
+  
+  public Jugador getJugadorTurno (int turno){
+      return Juego.getInstance().getJugadores().get(turno);
   }
     
 }

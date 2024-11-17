@@ -1,5 +1,6 @@
 package Pantallas;
 
+import Control.ControlJugador;
 import Control.ControlPatolli;
 import dibujado.TableroCanvas;
 
@@ -10,8 +11,10 @@ import java.awt.GridLayout;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
+
 
 /**
  *
@@ -52,12 +55,13 @@ public class FrmTablero extends javax.swing.JFrame {
         inicializarAspa(tableroDerecha, 2, ControlPatolli.getInstance().getCasillasAspas(), true);
         inicializarAspa(tableroIzq, 2, ControlPatolli.getInstance().getCasillasAspas(), false);
         inicializarAspa(tableroCentro, 2, 2, true);
+
     }
 
     /**
      * Metodo que dibuja el tablero
      */
-     private void inicializarAspa(JPanel tablero, int filas, int columnas, boolean invertir) {
+    private void inicializarAspa(JPanel tablero, int filas, int columnas, boolean invertir) {
         tablero.setLayout(new GridLayout(filas, columnas));
         tablero.setPreferredSize(tablero.getSize());
         tablero.setMinimumSize(tablero.getSize());
@@ -72,7 +76,6 @@ public class FrmTablero extends javax.swing.JFrame {
                 label.setText(String.valueOf(numeroCasilla));
                 numeroCasilla++;
             }
-            
 
             // Lógica para asignar colores a las casillas del tablero
             if (filas * columnas > 6) {
@@ -80,21 +83,21 @@ public class FrmTablero extends javax.swing.JFrame {
                 if (invertir) {
                     if (columnas > filas) {
                         if (i == columnas + 1) {
-                            label.setBackground(Color.YELLOW); // DERECHA
+                            label.setBackground(Color.RED); // DERECHA
                         }
                     } else {
                         if (i == 1) {
-                            label.setBackground(Color.YELLOW); // ABAJO
+                            label.setBackground(Color.RED); // ABAJO
                         }
                     }
                 } else {
                     if (columnas > filas) {
                         if (i == columnas) {
-                            label.setBackground(Color.YELLOW); // IZQUIERDA
+                            label.setBackground(Color.RED); // IZQUIERDA
                         }
                     } else {
                         if (i == filas * columnas) {
-                            label.setBackground(Color.YELLOW); // ARRIBA
+                            label.setBackground(Color.RED); // ARRIBA
                         }
                     }
                 }
@@ -103,21 +106,21 @@ public class FrmTablero extends javax.swing.JFrame {
                 if (invertir) {
                     if (columnas > filas) {
                         if (i == columnas || i == columnas * filas) {
-                            label.setBackground(Color.BLUE); // DERECHA
+                            label.setBackground(Color.getHSBColor(57, 84, 96)); // DERECHA
                         }
                     } else {
                         if (i == filas * columnas || i == filas * columnas - 1) {
-                            label.setBackground(Color.BLUE); // ABAJO
+                            label.setBackground(Color.getHSBColor(57, 84, 96)); // ABAJO
                         }
                     }
                 } else {
                     if (columnas > filas) {
                         if (i == 1 || i == columnas + 1) {
-                            label.setBackground(Color.BLUE); // IZQUIERDA
+                            label.setBackground(Color.getHSBColor(57, 84, 96)); // IZQUIERDA
                         }
                     } else {
                         if (i == 1 || i == 2) {
-                            label.setBackground(Color.BLUE); // ARRIBA
+                            label.setBackground(Color.getHSBColor(57, 84, 96)); // ARRIBA
                         }
                     }
                 }
@@ -152,9 +155,6 @@ public class FrmTablero extends javax.swing.JFrame {
         }
     }
 
-    
-    
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -393,34 +393,51 @@ public class FrmTablero extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanzarActionPerformed
-        int[] canias = new int[5];
-        int i=0;
-        
-        while (i<5){
-            canias[i] = (int) (Math.random() * 2); 
-            i++;
-        }
-        escribirCanias(canias);
+
+//        if () {
+
+            int[] canias = new int[5];
+            int i = 0;
+
+            while (i < 5) {
+                canias[i] = (int) (Math.random() * 2);
+                i++;
+            }
+            escribirCanias(canias);
+            
+            if (i>0){
+                if (ControlJugador.getInstance().obtenerJugadorTurno()==ControlPatolli.getInstance().getJugadorTurno(ControlPatolli.getInstance().getTurno())){
+                    JOptionPane.showMessageDialog(rootPane, "ALAVERGA");
+                    lblCania1.setText("-");
+                    lblCania2.setText("-");
+                    lblCania3.setText("-");
+                    lblCania4.setText("-");
+                    lblCania5.setText("-");
+                }
+            }
+
+//        }
     }//GEN-LAST:event_btnLanzarActionPerformed
 
-    private void escribirCanias(int canias[]){
-        if (canias[0]==1){
+    private void escribirCanias(int canias[]) {
+        if (canias[0] == 1) {
             lblCania1.setText("•");
         }
-        if (canias[1]==1){
+        if (canias[1] == 1) {
             lblCania2.setText("•");
         }
-        if (canias[2]==1){
+        if (canias[2] == 1) {
             lblCania3.setText("•");
         }
-        if (canias[3]==1){
+        if (canias[3] == 1) {
             lblCania4.setText("•");
         }
-        if (canias[4]==1){
+        if (canias[4] == 1) {
             lblCania5.setText("•");
         }
+        
     }
-    
+
     private void btnRendirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
         this.dispose();
         FrmInicio on = new FrmInicio();
