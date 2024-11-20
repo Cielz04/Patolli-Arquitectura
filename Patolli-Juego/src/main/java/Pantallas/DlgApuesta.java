@@ -1,9 +1,10 @@
 package Pantallas;
 
-import entidades.Juego;
+import Control.ControlJugador;
+import Control.ControlPatolli;
 import entidades.Jugador;
 import java.awt.Color;
-import javax.swing.JOptionPane;
+
 
 /**
  *
@@ -213,44 +214,66 @@ public class DlgApuesta extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
-        if (Juego.getInstance().ispCreada() == false) {
-            this.setVisible(false);
-            Juego.getInstance().setApuesta(Integer.parseInt(this.txtApuesta.getText()));
-            Juego.getInstance().setpCreada(true);
-            
+        if (ControlPatolli.getInstance()!=null){
             String jugadores = (String) CmBJugadores.getSelectedItem();
             int numJugadores = Integer.parseInt(jugadores);
-            
-            
-                
-                if (numJugadores==2){
-                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
-                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
-                }
-                if (numJugadores==3){
-                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
-                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
-                    Juego.getInstance().addJugador(new Jugador("Jugador 3", Color.YELLOW));
-                }
-                
-                if (numJugadores==4){
-                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
-                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
-                    Juego.getInstance().addJugador(new Jugador("Jugador 3", Color.YELLOW));
-                    Juego.getInstance().addJugador(new Jugador("Jugador 4", Color.GREEN));
-                }
-                
-                
-            
-                
-            
+            ControlPatolli.getInstance().configurarJugadores(numJugadores);
+            ControlPatolli.getInstance().setApuesta(Integer.parseInt(this.txtApuesta.getText()));
             
             FrmTablero.getInstance().inicializar();
+            dispose();
             FrmTablero.getInstance().setVisible(true);
-            FrmTablero.getInstance().pintarTablero();
-        } else {
-            JOptionPane.showMessageDialog(null, "Sexo");
+            
+            if (Integer.valueOf(CmBJugadores.getSelectedItem().toString())==2) {
+                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 1", Color.RED));
+                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 2", Color.GREEN));
+
+                
+            }            
+            
+            //FrmTablero.getInstance().pintarTablero();
+            
+            
         }
+
+//        if (Juego.getInstance().ispCreada() == false) {
+//            this.setVisible(false);
+//            Juego.getInstance().setApuesta(Integer.parseInt(this.txtApuesta.getText()));
+//            Juego.getInstance().setpCreada(true);
+//            
+//            String jugadores = (String) CmBJugadores.getSelectedItem();
+//            int numJugadores = Integer.parseInt(jugadores);
+//            
+//            
+//                
+//                if (numJugadores==2){
+//                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
+//                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
+//                }
+//                if (numJugadores==3){
+//                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
+//                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
+//                    Juego.getInstance().addJugador(new Jugador("Jugador 3", Color.YELLOW));
+//                }
+//                
+//                if (numJugadores==4){
+//                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
+//                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
+//                    Juego.getInstance().addJugador(new Jugador("Jugador 3", Color.YELLOW));
+//                    Juego.getInstance().addJugador(new Jugador("Jugador 4", Color.GREEN));
+//                }
+//                
+//                
+//            
+//                
+//            
+//            
+//            FrmTablero.getInstance().inicializar();
+//            FrmTablero.getInstance().setVisible(true);
+//            FrmTablero.getInstance().pintarTablero();
+//        } else {
+//            JOptionPane.showMessageDialog(null, "Sexo");
+//        }
     }//GEN-LAST:event_btnCrearActionPerformed
 
     /**

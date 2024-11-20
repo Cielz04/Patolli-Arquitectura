@@ -1,5 +1,8 @@
 package Pantallas;
 
+
+
+import Control.ControlPatolli;
 import entidades.Juego;
 import javax.swing.JOptionPane;
 
@@ -286,15 +289,24 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
 
     private void btnApuestaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApuestaActionPerformed
         dispose();
-        if (Juego.getInstance().ispCreada() == false) {
-            if (aspa8.isSelected()) {
-                Juego.getInstance().setNumCasillasAspa(16);
-            } else if (aspa10.isSelected()){
-                Juego.getInstance().setNumCasillasAspa(20);
-            } else {
-                Juego.getInstance().setNumCasillasAspa(28);
+        if (ControlPatolli.getInstance()!=null){
+            if (fichas2.isSelected()){
+                ControlPatolli.getInstance().setCantidadFichas(2);
+            }else if (fichas4.isSelected()){
+                ControlPatolli.getInstance().setCantidadFichas(4);
+            }else if (fichas6.isSelected()){
+                ControlPatolli.getInstance().setCantidadFichas(6);
             }
-        } else {
+            
+            if (aspa8.isSelected()){
+                ControlPatolli.getInstance().setCantidadCasillas(8);
+            }else if(aspa10.isSelected()){
+                ControlPatolli.getInstance().setCantidadCasillas(10);
+            }else if(aspa14.isSelected()){
+                ControlPatolli.getInstance().setCantidadCasillas(14);
+            }
+        }
+        else {
             JOptionPane.showMessageDialog(null, "Error al crear tablero");
         }
         crearApuesta.setVisible(true);        
