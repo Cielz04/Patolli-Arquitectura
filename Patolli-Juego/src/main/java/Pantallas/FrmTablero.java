@@ -4,16 +4,18 @@ import Control.ControlJugador;
 import Control.ControlPatolli;
 
 import entidades.Tablero;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
-
 
 /**
  *
@@ -53,6 +55,9 @@ public class FrmTablero extends javax.swing.JFrame {
         inicializarAspa(tableroDerecha, 2, ControlPatolli.getInstance().getCasillasAspas(), true);
         inicializarAspa(tableroIzq, 2, ControlPatolli.getInstance().getCasillasAspas(), false);
         inicializarAspa(tableroCentro, 2, 2, true);
+        // Ejemplo de uso
+        JLabel casilla = casillas.get(0); // Obtener la primera casilla (por ejemplo)
+        agregarFicha(casilla, "/Utilerias/ficha_roja.png");
 
     }
 
@@ -150,6 +155,30 @@ public class FrmTablero extends javax.swing.JFrame {
             // Añadir el JLabel al tablero y a la lista de casillas
             tablero.add(label);
             casillas.add(label);
+        }
+    }
+
+    private void agregarFicha(JLabel casillaBase, String rutaImagen) {
+        try {
+            ImageIcon icono = new ImageIcon(getClass().getResource(rutaImagen));
+            Image imagenOriginal = icono.getImage();
+
+            int nuevoAncho = 70; 
+            int nuevoAlto = 100; 
+            Image imagenEscalada = imagenOriginal.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+
+            JLabel ficha = new JLabel(new ImageIcon(imagenEscalada));
+            ficha.setHorizontalAlignment(JLabel.CENTER);
+            ficha.setVerticalAlignment(JLabel.CENTER); 
+
+            casillaBase.setLayout(new BorderLayout());
+            casillaBase.add(ficha, BorderLayout.CENTER);
+
+            casillaBase.revalidate();
+            casillaBase.repaint();
+        } catch (NullPointerException e) {
+            System.err.println("No se pudo cargar la imagen: " + rutaImagen);
+            e.printStackTrace();
         }
     }
 
@@ -393,26 +422,25 @@ public class FrmTablero extends javax.swing.JFrame {
     private void btnLanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanzarActionPerformed
 
 //        if () {
+        int[] canias = new int[5];
+        int i = 0;
 
-            int[] canias = new int[5];
-            int i = 0;
+        while (i < 5) {
+            canias[i] = (int) (Math.random() * 2);
+            i++;
+        }
+        escribirCanias(canias);
 
-            while (i < 5) {
-                canias[i] = (int) (Math.random() * 2);
-                i++;
+        if (i > 0) {
+            if (ControlJugador.getInstance().obtenerJugadorTurno().equals(ControlPatolli.getInstance().getJugadorTurno(ControlPatolli.getInstance().getTurno()))) {
+                JOptionPane.showMessageDialog(rootPane, "ALAVERGA");
+                lblCania1.setText("-");
+                lblCania2.setText("-");
+                lblCania3.setText("-");
+                lblCania4.setText("-");
+                lblCania5.setText("-");
             }
-            escribirCanias(canias);
-            
-            if (i>0){
-                if (ControlJugador.getInstance().obtenerJugadorTurno().equals(ControlPatolli.getInstance().getJugadorTurno(ControlPatolli.getInstance().getTurno()))){
-                    JOptionPane.showMessageDialog(rootPane, "ALAVERGA");
-                    lblCania1.setText("-");
-                    lblCania2.setText("-");
-                    lblCania3.setText("-");
-                    lblCania4.setText("-");
-                    lblCania5.setText("-");
-                }
-            }
+        }
 
 //        }
     }//GEN-LAST:event_btnLanzarActionPerformed
@@ -433,7 +461,7 @@ public class FrmTablero extends javax.swing.JFrame {
         if (canias[4] == 1) {
             lblCania5.setText("•");
         }
-        
+
     }
 
     private void btnRendirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
