@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class ControlJugador {
     
-    private List <Jugador> jugadores;//Lista de jugadores en juego
+    private List <Jugador> jugadores; //Lista de jugadores en juego
     private static ControlJugador jugadoresControl;
     private Jugador jugadorTurno;
     private int turno=0;

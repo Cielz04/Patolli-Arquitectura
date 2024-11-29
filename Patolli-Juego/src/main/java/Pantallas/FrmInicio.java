@@ -1,6 +1,13 @@
 package Pantallas;
 
+import Cliente.Cliente;
+import Cliente.Servidor;
+import entidades.EstadoDelJuego;
+import entidades.Jugador;
+import java.io.IOException;
+import java.net.Socket;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -10,22 +17,53 @@ public class FrmInicio extends javax.swing.JFrame {
 
     FrmConfigurarPartida crearPartida;
     private static FrmInicio menuS;
-    
+    private Servidor servidor;
+
     /**
      * Creates new form PantallaInicio
      */
     public FrmInicio() {
         initComponents();
         crearPartida = new FrmConfigurarPartida();
+        servidor = new Servidor();
+        // Conectar automáticamente al servidor cuando se inicia la interfaz
+//        iniciarServidor();
+
     }
-    
-    public static FrmInicio getInstance(){
+
+    public static FrmInicio getInstance() {
         if (menuS == null) {
             menuS = new FrmInicio();
         }
         return menuS;
     }
-    
+
+    public void conectarJugador() {
+
+        if (Servidor.getInstance().isServerInitialized()) {
+
+            String codigoPartida = "HolaMundo2307";
+            if (codigoPartida.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor ingresa un código de partida.");
+                return;
+            }
+
+            Jugador jugador = new Jugador("Jugador");
+
+            boolean exito = Servidor.getInstance().unirsePartida(codigoPartida, jugador);
+
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Jugador unido a la partida con éxito.");
+                new FrmTablero().setVisible(true);
+                this.setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo unir a la partida. Verifica el código.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "El servidor no está en ejecución.");
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -108,7 +146,7 @@ public class FrmInicio extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("STXinwei", 1, 100)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Patolli");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 150, 310, 90));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 150, 360, 90));
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/pajaro.png"))); // NOI18N
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 360, 210, 160));
@@ -139,8 +177,33 @@ public class FrmInicio extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIniciarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarPartidaActionPerformed
-        crearPartida.setVisible(true);
-        this.dispose();
+        try {
+            new Thread(() -> {
+                try {
+
+                    servidor.crearPartida();
+
+                    SwingUtilities.invokeLater(() -> {
+                        crearPartida.setVisible(true);
+                        JOptionPane.showMessageDialog(this, "Partida creada con éxito. Esperando jugadores...");
+                        setVisible(false);
+                    });
+                } catch (IllegalStateException e) {
+
+                    SwingUtilities.invokeLater(() -> {
+                        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+                    });
+                } catch (Exception e) {
+
+                    SwingUtilities.invokeLater(() -> {
+                        JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
+                    });
+                    e.printStackTrace();
+                }
+            }).start();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
+        }
     }//GEN-LAST:event_btnIniciarPartidaActionPerformed
 
     private void btnReglasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReglasActionPerformed
@@ -165,7 +228,32 @@ public class FrmInicio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSalir1ActionPerformed
 
     private void btnUnirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnirseActionPerformed
-        // TODO add your handling code here:
+        // Crear un nuevo hilo para la conexión al servidor
+        new Thread(() -> {
+            try {
+
+                Socket socket = new Socket("localhost", 50065);
+                JOptionPane.showMessageDialog(this, "Conexión exitosa a la partida.");
+
+                FrmUnirse frmUnirsePartida = new FrmUnirse();
+                frmUnirsePartida.setVisible(true);
+                this.dispose();
+            } catch (IOException e) {
+
+                JOptionPane.showMessageDialog(this, "Error al conectarse a la partida: " + e.getMessage());
+            }
+        }).start();
+
+//        btnUnirse.addActionListener(e ->{
+//                    int variable = JOptionPane.showOptionDialog(null, "Ingrese el codigo", "Ingresar", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, boton, );
+//            String codigo = txtCodigo.getText();
+//            Jugador jugador = new Jugador("Jugador: " );
+//            if(servidor.unirsePartida(codigo, jugador)){
+//                JOptionPane.showMessageDialog(null, " Te uniste");
+//            }else{
+//                JOptionPane.showMessageDialog(null, "Codigo incorrecto");
+//            }
+//        });
     }//GEN-LAST:event_btnUnirseActionPerformed
 
     /**

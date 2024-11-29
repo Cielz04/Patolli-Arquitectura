@@ -11,41 +11,43 @@ public class Jugador {
 	private int fondo;
 	private Color color;
         private List<Ficha> fichas = new ArrayList<>();
-	
-        
-        public Jugador(String nombre, Color color) {
-		this.nombre = nombre;
-		this.color = color;
-	}
+//
+//    public Jugador(String nombre, Color color) {
+//        this.nombre = nombre;
+//        this.color = color;
+//    }
 
-	public Jugador() {
-	}
-        
-        
+    
+    public Jugador() {
+    }
 
-	public String getNombre() {
-		return nombre;
-	}
+    public Jugador(String nombre) {
+        this.nombre = nombre;
+    }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    public String getNombre() {
+        return nombre;
+    }
 
-	public int getFondo() {
-		return fondo;
-	}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	public void setFondo(int fondo) {
-		this.fondo = fondo;
-	}
+    public int getFondo() {
+        return fondo;
+    }
 
-	public Color getColor() {
-		return color;
-	}
+    public void setFondo(int fondo) {
+        this.fondo = fondo;
+    }
 
-	public void setColor(Color color) {
-		this.color = color;
-	}
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
 
     public List<Ficha> getFichas() {
         return fichas;
@@ -53,7 +55,7 @@ public class Jugador {
 
     public void setFichas() {
         for (int i = 0; i < 6; i++) {
-            this.fichas.add(new Ficha(false,null,null));
+            this.fichas.add(new Ficha(false, null, null));
         }
     }
 
@@ -78,8 +80,5 @@ public class Jugador {
         final Jugador other = (Jugador) obj;
         return Objects.equals(this.color, other.color);
     }
-    
-    
-        
-        
+
 }

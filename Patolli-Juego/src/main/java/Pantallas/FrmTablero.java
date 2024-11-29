@@ -1,7 +1,9 @@
 package Pantallas;
 
+import Cliente.Servidor;
 import Control.ControlJugador;
 import Control.ControlPatolli;
+
 
 import entidades.Tablero;
 import java.awt.BorderLayout;
@@ -28,22 +30,38 @@ public class FrmTablero extends javax.swing.JFrame {
     Tablero tablero = new Tablero();
     private int numeroCasilla;
     private final List<JLabel> casillas;
+    private Servidor servidor;
 
     /**
      * Creates new form Tablero
      */
     public FrmTablero() {
         casillas = new LinkedList<>();
-        initComponents();
-    }
 
+        try {
+           
+            if (!Servidor.isRunning()) {
+               
+                servidor = Servidor.getInstance(); 
+                System.out.println("Servidor iniciado.");
+            } else {
+              
+                System.out.println("Conectado al servidor existente.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error al conectar con el servidor: " + e.getMessage());
+        }
+
+        initComponents(); 
+    }
+    
     public static FrmTablero getInstance() {
         if (tableroS == null) {
             tableroS = new FrmTablero();
         }
-
         return tableroS;
     }
+    
 
     /**
      * Metodo que inicializa el tablero estableciando medidas y generando las
@@ -54,6 +72,7 @@ public class FrmTablero extends javax.swing.JFrame {
         inicializarAspa(tableroAbajo, ControlPatolli.getInstance().getCasillasAspas(), 2, true);
         inicializarAspa(tableroDerecha, 2, ControlPatolli.getInstance().getCasillasAspas(), true);
         inicializarAspa(tableroIzq, 2, ControlPatolli.getInstance().getCasillasAspas(), false);
+
         inicializarAspa(tableroCentro, 2, 2, true);
         // Ejemplo de uso
         JLabel casilla = casillas.get(0); // Obtener la primera casilla (por ejemplo)
@@ -152,7 +171,6 @@ public class FrmTablero extends javax.swing.JFrame {
                 }
             }
 
-            // Añadir el JLabel al tablero y a la lista de casillas
             tablero.add(label);
             casillas.add(label);
         }
@@ -163,13 +181,13 @@ public class FrmTablero extends javax.swing.JFrame {
             ImageIcon icono = new ImageIcon(getClass().getResource(rutaImagen));
             Image imagenOriginal = icono.getImage();
 
-            int nuevoAncho = 70; 
-            int nuevoAlto = 100; 
+            int nuevoAncho = 70;
+            int nuevoAlto = 100;
             Image imagenEscalada = imagenOriginal.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
 
             JLabel ficha = new JLabel(new ImageIcon(imagenEscalada));
             ficha.setHorizontalAlignment(JLabel.CENTER);
-            ficha.setVerticalAlignment(JLabel.CENTER); 
+            ficha.setVerticalAlignment(JLabel.CENTER);
 
             casillaBase.setLayout(new BorderLayout());
             casillaBase.add(ficha, BorderLayout.CENTER);
@@ -205,6 +223,8 @@ public class FrmTablero extends javax.swing.JFrame {
         tableroAbajo = new javax.swing.JPanel();
         tableroDerecha = new javax.swing.JPanel();
         tableroCentro = new javax.swing.JPanel();
+        txtCodigo = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tablero");
@@ -331,6 +351,14 @@ public class FrmTablero extends javax.swing.JFrame {
             .addGap(0, 153, Short.MAX_VALUE)
         );
 
+        txtCodigo.setFont(new java.awt.Font("STIX Two Text", 1, 14)); // NOI18N
+        txtCodigo.setForeground(new java.awt.Color(255, 255, 255));
+        txtCodigo.setText("HolaMundo2307");
+
+        jLabel1.setFont(new java.awt.Font("STIX Two Text", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Codigo de la partida:");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -338,30 +366,26 @@ public class FrmTablero extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addContainerGap(370, Short.MAX_VALUE)
-                        .addComponent(tableroIzq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                        .addContainerGap(294, Short.MAX_VALUE)
+                        .addComponent(tableroIzq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(22, 22, 22)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(22, 22, 22)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addComponent(lblCania1)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(lblCania2)
-                                        .addGap(15, 15, 15)
-                                        .addComponent(lblCania3)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(lblCania4)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(lblCania5)
-                                        .addGap(16, 16, 16))
-                                    .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(lblCania1)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblCania2)
+                                .addGap(15, 15, 15)
+                                .addComponent(lblCania3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lblCania4)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblCania5)
+                                .addGap(16, 16, 16))
+                            .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
@@ -369,9 +393,21 @@ public class FrmTablero extends javax.swing.JFrame {
                             .addComponent(tableroArriba, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(tableroCentro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(tableroAbajo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tableroDerecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(113, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(tableroDerecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(195, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(27, 27, 27))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(105, 105, 105))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -382,13 +418,17 @@ public class FrmTablero extends javax.swing.JFrame {
                         .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(232, 232, 232))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(tableroArriba, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(tableroArriba, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(lblCania5)
                                     .addComponent(lblCania4)
@@ -470,46 +510,11 @@ public class FrmTablero extends javax.swing.JFrame {
         on.setVisible(true);
     }//GEN-LAST:event_btnRendirseActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(FrmTablero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(FrmTablero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(FrmTablero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(FrmTablero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//        //</editor-fold>
-//        //</editor-fold>
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                new FrmTablero().setVisible(true);
-//            }
-//        });
-//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLanzar;
     private javax.swing.JButton btnRendirse;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel lblCania1;
@@ -522,5 +527,6 @@ public class FrmTablero extends javax.swing.JFrame {
     private javax.swing.JPanel tableroCentro;
     private javax.swing.JPanel tableroDerecha;
     private javax.swing.JPanel tableroIzq;
+    private javax.swing.JLabel txtCodigo;
     // End of variables declaration//GEN-END:variables
 }

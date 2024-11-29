@@ -24,9 +24,19 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>itson.mx</groupId>
+            <artifactId>ServidorPatolli</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>PatolliControl</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.chat</groupId>
+            <artifactId>tcpCommons</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <properties>
@@ -35,4 +45,5 @@
         <maven.compiler.target>9</maven.compiler.target>
         <exec.mainClass>com.mycompany.patolli.juego.PatolliJuego</exec.mainClass>
     </properties>
+    <name>Patolli-Juego1</name>
 </project>

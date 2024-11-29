@@ -16,4 +16,6 @@ public class Tablero {
 	public void setCasillas(LinkedList<Casilla> casillas) {
 		this.casillas = casillas;
 	}
+        
+        
 }
