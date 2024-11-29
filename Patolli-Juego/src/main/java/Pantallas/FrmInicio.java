@@ -1,5 +1,6 @@
 package Pantallas;
 
+import Control.ServidorDelJuego;
 import javax.swing.JOptionPane;
 
 /**
@@ -10,7 +11,7 @@ public class FrmInicio extends javax.swing.JFrame {
 
     FrmConfigurarPartida crearPartida;
     private static FrmInicio menuS;
-    
+
     /**
      * Creates new form PantallaInicio
      */
@@ -18,14 +19,14 @@ public class FrmInicio extends javax.swing.JFrame {
         initComponents();
         crearPartida = new FrmConfigurarPartida();
     }
-    
-    public static FrmInicio getInstance(){
+
+    public static FrmInicio getInstance() {
         if (menuS == null) {
             menuS = new FrmInicio();
         }
         return menuS;
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -139,8 +140,15 @@ public class FrmInicio extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIniciarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarPartidaActionPerformed
+        if (ServidorDelJuego.isRunning()) {
+        // Si el servidor está corriendo, cerramos la ventana actual y mostramos el tablero
+        dispose();
+        FrmTablero.getInstance().setVisible(true);
+    } else {
+        // Si el servidor no está corriendo, mostramos la ventana de creación de partida
         crearPartida.setVisible(true);
         this.dispose();
+    }
     }//GEN-LAST:event_btnIniciarPartidaActionPerformed
 
     private void btnReglasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReglasActionPerformed

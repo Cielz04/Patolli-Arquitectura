@@ -20,6 +20,12 @@ public class Jugador {
 
 	public Jugador() {
 	}
+
+    public Jugador(String nombre) {
+        this.nombre = nombre;
+    }
+        
+        
         
         
 

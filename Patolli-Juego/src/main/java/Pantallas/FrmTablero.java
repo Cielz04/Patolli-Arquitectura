@@ -1,19 +1,27 @@
 package Pantallas;
 
+import Control.Connection;
 import Control.ControlJugador;
 import Control.ControlPatolli;
+import Control.ServidorDelJuego;
 
-import entidades.Tablero;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
-
+import tablero.Casilla;
+import tablero.Tablero;
 
 /**
  *
@@ -22,17 +30,41 @@ import javax.swing.border.LineBorder;
 public class FrmTablero extends javax.swing.JFrame {
 
     private static FrmTablero tableroS;
-    private boolean numerarCasillas;
+    private boolean numerarCasillas=true;
     Tablero tablero = new Tablero();
     private int numeroCasilla;
     private final List<JLabel> casillas;
+    private ServidorDelJuego servidor;
+    private Connection jugador;
+    private List<Integer> casillasOrdenadas;
+    private int ultimoTiro = 0;
 
     /**
      * Creates new form Tablero
      */
     public FrmTablero() {
         casillas = new LinkedList<>();
-        initComponents();
+
+        try {
+            // Verificar si el puerto está ocupado
+            if (!ServidorDelJuego.isRunning() && !ServidorDelJuego.isPortInUse(1002)) {
+                // Si no está corriendo ni el puerto está ocupado, inicia el servidor
+                servidor = ServidorDelJuego.getInstance();
+                jugador = new Connection("localhost", 1002, "Jugador1");
+                System.out.println("Servidor iniciado. Jugador conectado como Jugador1.");
+            } else if (ServidorDelJuego.isPortInUse(1002)) {
+                // Si el puerto está ocupado, conecta un nuevo cliente
+                servidor = null; // No hay instancia local del servidor en este proceso
+                jugador = new Connection("localhost", 1002, "Jugador");
+                System.out.println("Conectado al servidor existente. Jugador conectado como Jugador.");
+            } else {
+                System.err.println("No se puede determinar el estado del servidor.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error al conectar con el servidor: " + e.getMessage());
+        }
+
+        initComponents(); // Inicializa los componentes de la interfaz gráfica
     }
 
     public static FrmTablero getInstance() {
@@ -52,8 +84,82 @@ public class FrmTablero extends javax.swing.JFrame {
         inicializarAspa(tableroAbajo, ControlPatolli.getInstance().getCasillasAspas(), 2, true);
         inicializarAspa(tableroDerecha, 2, ControlPatolli.getInstance().getCasillasAspas(), true);
         inicializarAspa(tableroIzq, 2, ControlPatolli.getInstance().getCasillasAspas(), false);
+
         inicializarAspa(tableroCentro, 2, 2, true);
 
+//        for (int i = 0; i < tablero.getCasillas().size(); i++) {
+//            tablero.getCasillas().get(i).addMouseListener(new MouseAdapter() {
+//                @Override
+//                public void mouseClicked(MouseEvent e) {
+//                    Casilla clickedLabel = (Casilla) e.getSource();
+//                    moverFicha(clickedLabel, 3);
+//                }
+//            });
+//        }
+        asignarNumeroCasillas();
+        // Ejemplo de uso
+        Casilla casilla = tablero.getCasillas().get(0); // Obtener la primera casilla (por ejemplo)
+        agregarFicha(casilla, "/Utilerias/ficha_roja.png");
+
+    }
+
+    private void moverFicha(Casilla casilla, int dado) {
+        // Validar que la casilla es parte del tablero
+        LinkedList<Casilla> listaCasillas = tablero.getCasillas();
+        if (!listaCasillas.contains(casilla)) {
+            System.out.println("La casilla no pertenece al tablero.");
+            return;
+        }
+
+        // Verificar si la casilla seleccionada está ocupada (tiene una ficha)
+        if (!casilla.isOcupada()) {  // Usamos el método de instancia isOcupada
+            System.out.println("No hay una ficha en la casilla seleccionada.");
+            return;  // Si no hay ficha, no se puede mover
+        }
+
+        // Encontrar la casilla inicial en la lista
+        int indiceActual = listaCasillas.indexOf(casilla);
+        if (indiceActual == -1) {
+            System.out.println("Error: No se encontró la casilla en la lista.");
+            return;
+        }
+
+        // Calcular la nueva posición
+        int nuevaPosicion = (indiceActual + dado) % listaCasillas.size();
+
+        // Obtener la casilla destino
+        Casilla nuevaCasilla = listaCasillas.get(nuevaPosicion);
+
+        // Validar si la nueva casilla está ocupada
+        if (nuevaCasilla.isOcupada()) {  // Verificamos si la casilla destino está ocupada
+            System.out.println("La casilla destino ya está ocupada.");
+            return;
+        }
+        
+        
+        
+        // Quitar la ficha de la casilla original (si tiene un icono)
+        casilla.setIcon(null);  // Establecer un ícono vacío
+        casilla.repaint();  // Forzar el repintado de la casilla original
+
+        // Agregar la ficha a la nueva casilla
+        agregarFicha(nuevaCasilla, "/Utilerias/ficha_roja.png");
+
+        // Asegurarse de que la casilla destino se repinte
+        nuevaCasilla.repaint();
+
+        System.out.println("Ficha movida de casilla " + indiceActual + " a casilla " + nuevaPosicion + ".");
+        ultimoTiro = 0;
+        lblCania1.setText("-");
+        lblCania2.setText("-");
+        lblCania3.setText("-");
+        lblCania4.setText("-");
+        lblCania5.setText("-");
+
+    }
+
+    private void asignarNumeroCasillas() {
+        tablero.ordenarCasillas(ControlPatolli.getInstance().getCasillasAspas(), tablero.getCasillas());
     }
 
     /**
@@ -66,10 +172,19 @@ public class FrmTablero extends javax.swing.JFrame {
         tablero.setMaximumSize(tablero.getSize());
 
         for (int i = 1; i <= filas * columnas; i++) {
-            JLabel label = new JLabel(""); // Crea un nuevo JLabel
+            Casilla label = new Casilla(""); // Crea un nuevo JLabel
             label.setBorder(new LineBorder(Color.BLACK, 1)); // Añadir borde negro
             label.setOpaque(true); // Hacer el fondo visible
             label.setBackground(Color.WHITE);
+
+            // Agregar evento MouseListener
+            label.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    moverFicha(label, 1); // Mueve ficha al hacer clic
+                }
+            });
+
             if (numerarCasillas) {
                 label.setText(String.valueOf(numeroCasilla));
                 numeroCasilla++;
@@ -149,7 +264,49 @@ public class FrmTablero extends javax.swing.JFrame {
 
             // Añadir el JLabel al tablero y a la lista de casillas
             tablero.add(label);
-            casillas.add(label);
+            this.tablero.agregarCasilla(label);
+        }
+    }
+
+    private void agregarFicha(Casilla casillaBase, String rutaImagen) {
+        int nuevoAncho = 50;
+        int nuevoAlto = 80;
+        try {
+
+            // Verificar si la casilla ya tiene un icono
+            if (casillaBase.isOcupada()) {
+                System.out.println("La casilla ya está ocupada.");
+                return; // Si ya está ocupada, no agregues la ficha
+            }
+
+            // Cargar la imagen
+            ImageIcon icono = new ImageIcon(getClass().getResource(rutaImagen));
+            Image imagenOriginal = icono.getImage();
+
+            System.out.println(casillaBase.getSize());
+
+            if (casillaBase.getSize() == new Dimension(30, 76)) {
+                nuevoAncho = 30;
+                nuevoAlto = 60;
+            }
+            if (casillaBase.getSize() == new Dimension(21, 76)) {
+                nuevoAncho = 5;
+                nuevoAlto = 5;
+            }
+
+            Image imagenEscalada = imagenOriginal.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+
+            // Establecer el nuevo icono
+            casillaBase.setIcon(new ImageIcon(imagenEscalada));
+
+            // Forzar repintado
+            casillaBase.repaint();
+
+            System.out.println("Ficha agregada a la casilla.");
+
+        } catch (NullPointerException e) {
+            System.err.println("No se pudo cargar la imagen: " + rutaImagen);
+            e.printStackTrace();
         }
     }
 
@@ -393,27 +550,18 @@ public class FrmTablero extends javax.swing.JFrame {
     private void btnLanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanzarActionPerformed
 
 //        if () {
+        int[] canias = new int[5];
+        int i = 0;
+        ultimoTiro = 0;
 
-            int[] canias = new int[5];
-            int i = 0;
-
-            while (i < 5) {
-                canias[i] = (int) (Math.random() * 2);
-                i++;
+        while (i < 5) {
+            canias[i] = (int) (Math.random() * 2);
+            if (canias[i] == 1) {
+                ultimoTiro++;
             }
-            escribirCanias(canias);
-            
-            if (i>0){
-                if (ControlJugador.getInstance().obtenerJugadorTurno().equals(ControlPatolli.getInstance().getJugadorTurno(ControlPatolli.getInstance().getTurno()))){
-                    JOptionPane.showMessageDialog(rootPane, "ALAVERGA");
-                    lblCania1.setText("-");
-                    lblCania2.setText("-");
-                    lblCania3.setText("-");
-                    lblCania4.setText("-");
-                    lblCania5.setText("-");
-                }
-            }
-
+            i++;
+        }
+        escribirCanias(canias);
 //        }
     }//GEN-LAST:event_btnLanzarActionPerformed
 
@@ -433,7 +581,7 @@ public class FrmTablero extends javax.swing.JFrame {
         if (canias[4] == 1) {
             lblCania5.setText("•");
         }
-        
+
     }
 
     private void btnRendirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
@@ -442,42 +590,6 @@ public class FrmTablero extends javax.swing.JFrame {
         on.setVisible(true);
     }//GEN-LAST:event_btnRendirseActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(FrmTablero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(FrmTablero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(FrmTablero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(FrmTablero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//        //</editor-fold>
-//        //</editor-fold>
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                new FrmTablero().setVisible(true);
-//            }
-//        });
-//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLanzar;
