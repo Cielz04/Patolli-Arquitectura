@@ -65,40 +65,41 @@ public class Juego implements Serializable {
 		this.numCasillasAspa = numCasillasAspa;
 	}
 	
-	public void addJugador(){
-//            if (jugadores!=null && (canJugadores>1)){
-//                jugadores = new LinkedList<>();
-//                jugadores.add(new Jugador("Jugador 1", Color.RED));
-//                
-//                if (canJugadores==2){
-//                    jugadores.add(new Jugador("Jugador 2", Color.GREEN));
-//                    
-//                }else if(canJugadores==3){
-//                    jugadores.add(new Jugador("Jugador 2", Color.GREEN));
-//                    jugadores.add(new Jugador("Jugador 3", Color.YELLOW));
-//                    
-//                }else if(canJugadores==4){
-//                    jugadores.add(new Jugador("Jugador 2", Color.GREEN));
-//                    jugadores.add(new Jugador("Jugador 3", Color.YELLOW));
-//                    jugadores.add(new Jugador("Jugador 4", Color.BLUE));
-//                    
-//                }         
-//            }
+	public void addJugador(Jugador nombre){
+            if (jugadores!=null && (canJugadores>1)){
+                jugadores = new LinkedList<>();
+                jugadores.add(new Jugador("Jugador 1", Color.RED));
+                
+                if (canJugadores==2){
+                    jugadores.add(new Jugador("Jugador 2", Color.GREEN));
+                    
+                }else if(canJugadores==3){
+                    jugadores.add(new Jugador("Jugador 2", Color.GREEN));
+                    jugadores.add(new Jugador("Jugador 3", Color.YELLOW));
+                    
+                }else if(canJugadores==4){
+                    jugadores.add(new Jugador("Jugador 2", Color.GREEN));
+                    jugadores.add(new Jugador("Jugador 3", Color.YELLOW));
+                    jugadores.add(new Jugador("Jugador 4", Color.BLUE));
+                    
+                }         
+            }
+            
         if (jugadores != null && (canJugadores > 1)) {
             jugadores = new LinkedList<>();
-            jugadores.add(new Jugador("Jugador 1"));
+            jugadores.add(new Jugador("Jugador 1", Color.RED));
 
             if (canJugadores == 2) {
-                jugadores.add(new Jugador("Jugador 2"));
+                jugadores.add(new Jugador("Jugador 2", Color.GREEN));
 
             } else if (canJugadores == 3) {
-                jugadores.add(new Jugador("Jugador 2"));
-                jugadores.add(new Jugador("Jugador 3"));
+                jugadores.add(new Jugador("Jugador 2", Color.GREEN));
+                jugadores.add(new Jugador("Jugador 3", Color.YELLOW));
 
             } else if (canJugadores == 4) {
-                jugadores.add(new Jugador("Jugador 2"));
-                jugadores.add(new Jugador("Jugador 3"));
-                jugadores.add(new Jugador("Jugador 4"));
+                jugadores.add(new Jugador("Jugador 2", Color.GREEN));
+                jugadores.add(new Jugador("Jugador 3", Color.YELLOW));
+                jugadores.add(new Jugador("Jugador 4", Color.BLUE));
 
             }
         }
@@ -168,6 +169,9 @@ public class Juego implements Serializable {
 
     public void setCanJugadores(int canJugadores) {
         this.canJugadores = canJugadores;
+    }
+
+    public void addJugador() {
     }
     
     

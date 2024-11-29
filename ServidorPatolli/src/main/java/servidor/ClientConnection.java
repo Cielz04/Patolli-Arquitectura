@@ -11,6 +11,7 @@ import com.chat.tcpcommons.TemplateConnection;
 import com.chat.tcpcommons.logging.IChatLogger;
 import com.chat.tcpcommons.logging.LoggerFactory;
 import entidades.Jugador;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
@@ -24,7 +25,7 @@ public class ClientConnection implements TemplateConnection, IObserver, IConnect
     
     private ClientThread cliente; 
     private final Jugador jugador;
-    private final int PORT=4444;
+    private final int PORT=50064;
     private final String HOST="localhost";
     private final FrmInicio frameInicio;
 

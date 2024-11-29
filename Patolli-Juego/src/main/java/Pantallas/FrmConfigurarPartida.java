@@ -17,6 +17,7 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
      * Creates new form FrmConfigurarPartida
      */
     DlgApuesta crearApuesta;
+    ControlPatolli controlPatolli = new ControlPatolli(); 
     Servidor servidor;
     
     public FrmConfigurarPartida() {
@@ -28,7 +29,7 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
         btnGroupFichas.add(fichas2);
         btnGroupFichas.add(fichas4);
         btnGroupFichas.add(fichas6);
-        servidor = Servidor.getInstance();
+//        servidor = Servidor.getInstance();
     }
 
     /**
@@ -302,17 +303,17 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
             }
             
             if (aspa8.isSelected()){
-                servidor.getGameState().getTablero().setCantidadCasillasAspa(8);
+                controlPatolli.getTablero().setCantidadCasillasAspa(8);
             }else if(aspa10.isSelected()){
-                servidor.getGameState().getTablero().setCantidadCasillasAspa(10);
+                controlPatolli.getTablero().setCantidadCasillasAspa(10);
             }else if(aspa14.isSelected()){
-                servidor.getGameState().getTablero().setCantidadCasillasAspa(14);
+                controlPatolli.getTablero().setCantidadCasillasAspa(14);
             }
         }
         else {
             JOptionPane.showMessageDialog(null, "Error al crear tablero");
         }
-        crearApuesta.setVisible(true);        
+        crearApuesta.setVisible(true);  
     }//GEN-LAST:event_btnApuestaActionPerformed
 
     private void aspa8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aspa8ActionPerformed

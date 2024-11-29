@@ -8,20 +8,16 @@ public class Jugador implements Serializable{
 
 	private String nombre;
 	private Color color;
-//
-//    public Jugador(String nombre, Color color) {
-//        this.nombre = nombre;
-//        this.color = color;
-//    }
 
-    
-    public Jugador() {
+         public Jugador() { 
     }
 
-    public Jugador(String nombre) {
+    public Jugador(String nombre, Color color) {
         this.nombre = nombre;
+        this.color = color;
     }
 
+   
     public String getNombre() {
         return nombre;
     }

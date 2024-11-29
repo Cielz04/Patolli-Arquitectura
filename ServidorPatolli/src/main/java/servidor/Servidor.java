@@ -37,9 +37,13 @@ public class Servidor extends Observable implements IConnection, IObserver, Temp
 
     private ControlMessage controlMensajes;
     ReentrantLock lock = new ReentrantLock();
-    
+
     private final IChatLogger logger = LoggerFactory.getLogger(Servidor.class);
 
+    public Servidor() {
+    }
+
+    
     @Override
     public void init() {
         try {
@@ -52,7 +56,7 @@ public class Servidor extends Observable implements IConnection, IObserver, Temp
             logger.error(String.format("Error al iniciar el servidor: ", ex.getMessage()));
         }
     }
-    
+
     @Override
     public void sendMessage(Message message) {
         controlMensajes.proccessMessage(message);
@@ -67,7 +71,7 @@ public class Servidor extends Observable implements IConnection, IObserver, Temp
             lock.unlock();
         }
     }
-    
+
     @Override
     public void onConectarse(Message mensaje) {
         controlMensajes.onConectarse(mensaje);
@@ -80,7 +84,7 @@ public class Servidor extends Observable implements IConnection, IObserver, Temp
 
     @Override
     public void onUnirseSala(Message mensaje) {
-       controlMensajes.onUnirseSala(mensaje);
+        controlMensajes.onUnirseSala(mensaje);
     }
 
     @Override
@@ -92,12 +96,12 @@ public class Servidor extends Observable implements IConnection, IObserver, Temp
     public void onPasarJugadores(Message mensaje) {
         controlMensajes.onPasarJugadores(mensaje);
     }
-    
+
     @Override
     public void onPasarCambios(Message mensaje) {
-       controlMensajes.onPasarCambios(mensaje);
+        controlMensajes.onPasarCambios(mensaje);
     }
-    
+
 //    private ServerSocket server;
 //    private List<ClientThread> clients;
 //    private EstadoDelJuego gameState;
@@ -445,5 +449,4 @@ public class Servidor extends Observable implements IConnection, IObserver, Temp
 //        jugadoresConectados--;  // Decrementa el contador de jugadores
 //        logger.info("Jugador desconectado.");
 //    }
-
 }

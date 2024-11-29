@@ -1,4 +1,7 @@
-servidor\PatolliServer.class
-servidor\IPatolliServer.class
-servidor\Servidor.class
-itson\mx\servidorpatolli\ServidorPatolli.class
+servidor/Servidor.class
+itson/mx/servidorpatolli/ServidorPatolli.class
+servidor/ClientConnection.class
+servidor/ControlMessage.class
+servidor/Cliente.class
+servidor/IPatolliServer.class
+servidor/PatolliServer.class

@@ -1,5 +1,8 @@
 package Pantallas;
 
+import com.chat.tcpcommons.Message;
+import com.chat.tcpcommons.MessageBody;
+import com.chat.tcpcommons.MessageType;
 import servidor.Servidor;
 import entidades.EstadoDelJuego;
 import entidades.Jugador;
@@ -12,15 +15,17 @@ import javax.swing.JOptionPane;
 public class FrmUnirse extends javax.swing.JFrame {
 
     EstadoDelJuego estado = new EstadoDelJuego();
-    private Servidor servidor = Servidor.getInstance();
+//    private Servidor servidor = Servidor.getInstance();
+    FrmInicio unirse;
+    FrmTablero tablero;
+
     /**
      * Creates new form FrmUnirse
      */
     public FrmUnirse() {
         initComponents();
+        tablero = new FrmTablero();
     }
-
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -79,32 +84,37 @@ public class FrmUnirse extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        unirse.isHost = false;
 
-        String codigoIngresado = txtCodigoPartida.getText().trim();
-       
-        if (codigoIngresado.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingresa un código de partida.", "Error", JOptionPane.ERROR_MESSAGE);
+        unirse.conectarse();
+
+        MessageBody content = new MessageBody();
+        content.setCodigoSala(this.txtCodigoPartida.getText().toUpperCase());
+
+        MessageType tipo = MessageType.UNIRSE_SALA;
+
+        Message mensaje = new Message.Builder()
+                .body(content)
+                .messageType(tipo)
+                .build();
+        unirse.enviarMensaje(mensaje);
+    }
+
+    public void existeSala(boolean resultado) {
+        if (unirse.isHost) {
             return;
         }
- 
-        Servidor servidor = Servidor.getInstance();
-        EstadoDelJuego estado = servidor.getGameState();
-
-        Jugador jugador = new Jugador("Jugador" + (estado.getJugadores().size() + 1));
-
-        if (servidor.unirsePartida(codigoIngresado, jugador)) {
-            JOptionPane.showMessageDialog(this, "Unido a la partida correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-            FrmTablero frmTablero = FrmTablero.getInstance();
-            frmTablero.inicializar();
-            frmTablero.setVisible(true);
-
-            this.dispose();
+        if (resultado) {
+            JOptionPane.showMessageDialog(null, "Uniéndose a la partida", "Partida encontrada", JOptionPane.INFORMATION_MESSAGE);
+            tablero.setVisible(true);
+            dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "El código ingresado es incorrecto o la partida ya está en curso.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No se encontró la partida", "Partida no encontrada", JOptionPane.INFORMATION_MESSAGE);
+
         }
     }//GEN-LAST:event_btnAceptarActionPerformed
 
+   
     /**
      * @param args the command line arguments
      */

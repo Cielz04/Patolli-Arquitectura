@@ -27,7 +27,7 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
     private ServerSocket server;
     private final Map<String,List<ClientThread>> rooms;
     private final String SALA_DE_ESPERA="sala de espera";
-    private final int PORT=4444;
+    private final int PORT=50064;
     private final Thread serverThread;
     private final ReentrantLock lock = new ReentrantLock();
     

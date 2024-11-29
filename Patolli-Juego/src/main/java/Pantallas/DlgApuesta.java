@@ -2,8 +2,10 @@ package Pantallas;
 
 import Control.ControlJugador;
 import Control.ControlPatolli;
+import entidades.Juego;
 import entidades.Jugador;
 import java.awt.Color;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -16,7 +18,8 @@ public class DlgApuesta extends javax.swing.JDialog {
      * Creates new form DlgApuesta
      */
     public DlgApuesta(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    super(parent, modal);
+      
         initComponents();
     }
 
@@ -220,61 +223,61 @@ public class DlgApuesta extends javax.swing.JDialog {
             ControlPatolli.getInstance().configurarJugadores(numJugadores);
             ControlPatolli.getInstance().setApuesta(Integer.parseInt(this.txtApuesta.getText()));
             
-            FrmTablero.getInstance().inicializar();
-            dispose();
-            FrmTablero.getInstance().setVisible(true);
+//            FrmTablero.getInstance().inicializar();
+//            dispose();
+//            FrmTablero.getInstance().setVisible(true);
 
             if (Integer.valueOf(CmBJugadores.getSelectedItem().toString()) == 2) {
-//                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 1", Color.RED));
-//                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 2", Color.GREEN));
-                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 1"));
-                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 2"));
+                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 1", Color.RED));
+                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 2", Color.GREEN));
+//                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 1"));
+//                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 2"));
 
             }
 
-            //FrmTablero.getInstance().pintarTablero();
+//            FrmTablero.getInstance().pintarTablero();
             
             
         }
 
-//        if (Juego.getInstance().ispCreada() == false) {
-//            this.setVisible(false);
-//            Juego.getInstance().setApuesta(Integer.parseInt(this.txtApuesta.getText()));
-//            Juego.getInstance().setpCreada(true);
-//            
-//            String jugadores = (String) CmBJugadores.getSelectedItem();
-//            int numJugadores = Integer.parseInt(jugadores);
-//            
-//            
-//                
-//                if (numJugadores==2){
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
-//                }
-//                if (numJugadores==3){
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 3", Color.YELLOW));
-//                }
-//                
-//                if (numJugadores==4){
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 3", Color.YELLOW));
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 4", Color.GREEN));
-//                }
-//                
-//                
-//            
-//                
-//            
-//            
+        if (Juego.getInstance().ispCreada() == false) {
+            this.setVisible(false);
+            Juego.getInstance().setApuesta(Integer.parseInt(this.txtApuesta.getText()));
+            Juego.getInstance().setpCreada(true);
+            
+            String jugadores = (String) CmBJugadores.getSelectedItem();
+            int numJugadores = Integer.parseInt(jugadores);
+            
+            
+                
+                if (numJugadores==2){
+                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
+                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
+                }
+                if (numJugadores==3){
+                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
+                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
+                    Juego.getInstance().addJugador(new Jugador("Jugador 3", Color.YELLOW));
+                }
+                
+                if (numJugadores==4){
+                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
+                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
+                    Juego.getInstance().addJugador(new Jugador("Jugador 3", Color.YELLOW));
+                    Juego.getInstance().addJugador(new Jugador("Jugador 4", Color.GREEN));
+                }
+                
+                
+            
+                
+            
+            
 //            FrmTablero.getInstance().inicializar();
 //            FrmTablero.getInstance().setVisible(true);
-//            FrmTablero.getInstance().pintarTablero();
-//        } else {
-//            JOptionPane.showMessageDialog(null, "Sexo");
-//        }
+//           
+        } else {
+            JOptionPane.showMessageDialog(null, "Sexo");
+        }
     }//GEN-LAST:event_btnCrearActionPerformed
 
     /**
