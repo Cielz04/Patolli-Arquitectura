@@ -25,7 +25,7 @@ public class FrmInicio extends javax.swing.JFrame {
     public FrmInicio() {
         initComponents();
         crearPartida = new FrmConfigurarPartida();
-        servidor = new Servidor();
+        servidor = Servidor.getInstance();
         // Conectar automáticamente al servidor cuando se inicia la interfaz
 //        iniciarServidor();
 
@@ -180,8 +180,10 @@ public class FrmInicio extends javax.swing.JFrame {
         try {
             new Thread(() -> {
                 try {
-
-                    servidor.crearPartida();
+                    // Verifica si el servidor ya está en ejecución antes de crear una nueva partida
+                    if (!servidor.isServerInitialized()) {
+                        servidor.crearPartida();
+                    }
 
                     SwingUtilities.invokeLater(() -> {
                         crearPartida.setVisible(true);
@@ -189,12 +191,10 @@ public class FrmInicio extends javax.swing.JFrame {
                         setVisible(false);
                     });
                 } catch (IllegalStateException e) {
-
                     SwingUtilities.invokeLater(() -> {
                         JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
                     });
                 } catch (Exception e) {
-
                     SwingUtilities.invokeLater(() -> {
                         JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
                     });

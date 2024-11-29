@@ -63,7 +63,6 @@ public class Servidor extends Observable implements Runnable {
 //            throw new RuntimeException("No se pudo inicializar el ServerSocket.", e);
 //        }
 //    }
-    
     public Servidor() {
         clientes = new ArrayList<>();
         this.gameState = new EstadoDelJuego();
@@ -71,25 +70,62 @@ public class Servidor extends Observable implements Runnable {
     }
 
     public void iniciarServidor() throws IOException {
+        if (isServerInitialized()) {
+            System.out.println("El servidor ya está en ejecución.");
+            return;  // Si ya está en funcionamiento, no lo volvemos a iniciar
+        }
+
+        // Verifica si el puerto ya está en uso
         if (isPortInUse(port)) {
             JOptionPane.showMessageDialog(null, "El puerto " + port + " ya está en uso.");
             return;  // No intentamos iniciar el servidor si el puerto ya está en uso
         }
 
-        if (server == null || server.isClosed()) {
-            server = new ServerSocket(port);
-            server.setReuseAddress(true);
-            System.out.println("Servidor escuchando en puerto " + port);
-        } else {
-            System.out.println("Servidor ya está en ejecución.");
-        }
+        // Si el servidor no está iniciado, entonces inicialízalo
+        server = new ServerSocket(port);
+        server.setReuseAddress(true);  // Permite reutilizar la dirección del puerto
+        System.out.println("Servidor escuchando en puerto " + port);
 
-        // Aquí puedes manejar la lógica de aceptación de clientes
-        while (true) {
-            Socket clienteSocket = server.accept();
-            System.out.println("Cliente conectado: " + clienteSocket.getInetAddress());
-            // Lógica para manejar la conexión con el cliente
-        }
+        // Lanza un hilo para manejar las conexiones de los clientes
+        new Thread(() -> {
+            try {
+                while (true) {
+                    // Espera a que un cliente se conecte
+                    Socket clienteSocket = server.accept();
+                    System.out.println("Cliente conectado: " + clienteSocket.getInetAddress());
+
+                    // Crea un hilo para manejar la comunicación con este cliente
+                    new Thread(() -> {
+                        try {
+                            // Crea un flujo de entrada y salida para la comunicación con el cliente
+                            BufferedReader input = new BufferedReader(new InputStreamReader(clienteSocket.getInputStream()));
+                            BufferedWriter output = new BufferedWriter(new OutputStreamWriter(clienteSocket.getOutputStream()));
+
+                            // Lógica para recibir y enviar mensajes
+                            String mensaje;
+                            while ((mensaje = input.readLine()) != null) {
+                                System.out.println("Mensaje recibido del cliente: " + mensaje);
+                                // Envia una respuesta al cliente
+                                output.write("Respuesta del servidor: " + mensaje);
+                                output.newLine();
+                                output.flush();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();  // Manejo de errores en la comunicación con el cliente
+                        } finally {
+                            try {
+                                clienteSocket.close();  // Cierra el socket cuando termine la comunicación
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();  // Lanza el hilo para manejar este cliente
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();  // Manejo de errores de conexión
+            }
+        }).start();
 //        try {
 //            if (server == null || server.isClosed()) {
 //                server = new ServerSocket(port);
@@ -155,6 +191,9 @@ public class Servidor extends Observable implements Runnable {
         }
     }
 
+    public boolean isServerInitialized() {
+        return partidaIniciada;
+    }
     public static Servidor getInstance() {
 //        if (instancia == null) {
 //            instancia = new Servidor(); // Solo se crea una vez
@@ -226,19 +265,15 @@ public class Servidor extends Observable implements Runnable {
         return instancia != null && !instancia.server.isClosed();
     }
 
-    public boolean isServerInitialized() {
-        return this.server != null && !this.server.isClosed();
-    }
-
     public void detener() {
-        running = false;
         try {
             if (server != null && !server.isClosed()) {
                 server.close();
-                logger.info("Servidor detenido correctamente.");
+                partidaIniciada = false;
+                System.out.println("Servidor cerrado.");
             }
         } catch (IOException e) {
-            logger.error("Error al detener el servidor: " + e.getMessage());
+            e.printStackTrace();
         }
         
     }
@@ -275,31 +310,27 @@ public class Servidor extends Observable implements Runnable {
     }
 
     public void crearPartida() {
-
         if (partidaIniciada) {
-            throw new IllegalStateException("Ya existe una partida activa.");
+            throw new IllegalStateException("El servidor ya está en ejecución.");
         }
-        // Verificar si el servidor no está inicializado o si está cerrado
-        if (server == null || server.isClosed()) {
-            try {
-                // Crear un nuevo ServerSocket en el puerto especificado
-                server = new ServerSocket(port);
-                System.out.println("Servidor iniciado en el puerto: " + port);
-            } catch (IOException e) {
-                throw new RuntimeException("Error al crear la partida.", e);
-            }
+        try {
+            server = new ServerSocket(50065);  // Puerto del servidor
+            partidaIniciada = true;
+            System.out.println("Servidor iniciado. Esperando jugadores...");
+        } catch (IOException e) {
+            throw new RuntimeException("Error al iniciar el servidor.", e);
         }
+    
+    partidaIniciada = true;
+    gameState.setPartidaIniciada(true);
 
-        // Marcar la partida como iniciada
-        partidaIniciada = true;
-        gameState.setPartidaIniciada(true);
+   
+    Tablero tablero = new Tablero();
+    gameState.setTablero(tablero);
 
-        // Crear el tablero y asociarlo al estado del juego
-        Tablero tablero = new Tablero();
-        gameState.setTablero(tablero);
-
-        // Mostrar mensaje de éxito
-        System.out.println("Partida creada exitosamente.");
+  
+    System.out.println("Partida creada exitosamente.");
+    
     }
 
     private void validarEstadoDelJuego() {
@@ -358,7 +389,7 @@ public class Servidor extends Observable implements Runnable {
 
         try {
             if (server == null) {
-                this.server = new ServerSocket(port);
+               this.server = new ServerSocket(port);
                 logger.info("Servidor en espera de conexiones...");
             }
         } catch (IOException e) {
