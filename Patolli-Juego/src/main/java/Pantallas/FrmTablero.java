@@ -1,23 +1,31 @@
 package Pantallas;
 
-import Cliente.Servidor;
+import servidor.Servidor;
 import Control.ControlJugador;
 import Control.ControlPatolli;
 
-
-import entidades.Tablero;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
+import tablero.Casilla;
+import tablero.Tablero;
 
 /**
  *
@@ -27,10 +35,14 @@ public class FrmTablero extends javax.swing.JFrame {
 
     private static FrmTablero tableroS;
     private boolean numerarCasillas;
-    Tablero tablero = new Tablero();
+    private Tablero tablero = new Tablero();
     private int numeroCasilla;
     private final List<JLabel> casillas;
     private Servidor servidor;
+    private int ultimoTiro;
+    private Socket socket;
+    private BufferedReader reader;
+    private PrintWriter writer;
 
     /**
      * Creates new form Tablero
@@ -39,44 +51,157 @@ public class FrmTablero extends javax.swing.JFrame {
         casillas = new LinkedList<>();
 
         try {
-           
+            servidor = Servidor.getInstance();
             if (!Servidor.isRunning()) {
-               
-                servidor = Servidor.getInstance(); 
+                
+                
+                socket = new Socket("localhost", 50065); // Asegúrate de que el servidor esté corriendo en este puerto
+                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                writer = new PrintWriter(socket.getOutputStream(), true);
+                System.out.println("Conectado al servidor.");
+
+                servidor = Servidor.getInstance();
                 System.out.println("Servidor iniciado.");
             } else {
-              
+
                 System.out.println("Conectado al servidor existente.");
             }
         } catch (Exception e) {
             System.err.println("Error al conectar con el servidor: " + e.getMessage());
         }
-
-        initComponents(); 
+        servidor = Servidor.getInstance();
+        initComponents();
+        new Thread(new ActualizadorDeInterfaz()).start();
     }
-    
+
     public static FrmTablero getInstance() {
         if (tableroS == null) {
             tableroS = new FrmTablero();
         }
         return tableroS;
     }
-    
+
+    private class ActualizadorDeInterfaz implements Runnable {
+
+        @Override
+        public void run() {
+            try {
+                String mensaje;
+                while ((mensaje = reader.readLine()) != null) {
+                    // Actualizar la interfaz si el servidor envía un mensaje de cambio
+                    SwingUtilities.invokeLater(() -> {
+                        // Lógica para actualizar la UI aquí
+                        actualizarCasillas();
+                    });
+                }
+            } catch (IOException e) {
+                System.err.println("Error al recibir datos del servidor: " + e.getMessage());
+            }
+        }
+    }
+
+    // Método para actualizar las casillas en la UI
+    public void actualizarCasillas() {
+        // Obtén las casillas del servidor y actualiza los componentes en la interfaz
+        LinkedList<Casilla> casillasDelServidor = servidor.getGameState().getTablero().getCasillas();
+
+        for (int i = 0; i < casillasDelServidor.size(); i++) {
+            Casilla casilla = casillasDelServidor.get(i);
+            JLabel casillaLabel = casillas.get(i);
+
+            // Actualiza el estado de la casilla en el JLabel
+            casillaLabel.setIcon(casilla.getIcon());
+
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            revalidate();
+            repaint();
+        });
+    }
 
     /**
      * Metodo que inicializa el tablero estableciando medidas y generando las
      * casillas
      */
     public void inicializar() {
-        inicializarAspa(tableroArriba, ControlPatolli.getInstance().getCasillasAspas(), 2, false);
-        inicializarAspa(tableroAbajo, ControlPatolli.getInstance().getCasillasAspas(), 2, true);
-        inicializarAspa(tableroDerecha, 2, ControlPatolli.getInstance().getCasillasAspas(), true);
-        inicializarAspa(tableroIzq, 2, ControlPatolli.getInstance().getCasillasAspas(), false);
+        inicializarAspa(tableroArriba, servidor.getGameState().getTablero().getCantidadCasillasAspa(), 2, false);
+        inicializarAspa(tableroAbajo, servidor.getGameState().getTablero().getCantidadCasillasAspa(), 2, true);
+        inicializarAspa(tableroDerecha, 2, servidor.getGameState().getTablero().getCantidadCasillasAspa(), true);
+        inicializarAspa(tableroIzq, 2, servidor.getGameState().getTablero().getCantidadCasillasAspa(), false);
 
         inicializarAspa(tableroCentro, 2, 2, true);
+
+//        for (int i = 0; i < tablero.getCasillas().size(); i++) {
+//            tablero.getCasillas().get(i).addMouseListener(new MouseAdapter() {
+//                @Override
+//                public void mouseClicked(MouseEvent e) {
+//                    Casilla clickedLabel = (Casilla) e.getSource();
+//                    moverFicha(clickedLabel, 3);
+//                }
+//            });
+//        }
+        asignarNumeroCasillas();
         // Ejemplo de uso
-        JLabel casilla = casillas.get(0); // Obtener la primera casilla (por ejemplo)
+        Casilla casilla = servidor.getGameState().getTablero().getCasillas().get(0); // Obtener la primera casilla (por ejemplo)
         agregarFicha(casilla, "/Utilerias/ficha_roja.png");
+
+    }
+
+    private void asignarNumeroCasillas() {
+        servidor.getGameState().getTablero().ordenarCasillas(servidor.getGameState().getTablero().getCasillas());
+    }
+
+    private void moverFicha(Casilla casilla, int dado) {
+        // Validar que la casilla es parte del tablero
+        LinkedList<Casilla> listaCasillas = servidor.getGameState().getTablero().getCasillas();
+        if (!listaCasillas.contains(casilla)) {
+            System.out.println("La casilla no pertenece al tablero.");
+            return;
+        }
+
+        // Verificar si la casilla seleccionada está ocupada (tiene una ficha)
+        if (!casilla.isOcupada()) {  // Usamos el método de instancia isOcupada
+            System.out.println("No hay una ficha en la casilla seleccionada.");
+            return;  // Si no hay ficha, no se puede mover
+        }
+
+        // Encontrar la casilla inicial en la lista
+        int indiceActual = listaCasillas.indexOf(casilla);
+        if (indiceActual == -1) {
+            System.out.println("Error: No se encontró la casilla en la lista.");
+            return;
+        }
+
+        // Calcular la nueva posición
+        int nuevaPosicion = (indiceActual + dado) % listaCasillas.size();
+
+        // Obtener la casilla destino
+        Casilla nuevaCasilla = listaCasillas.get(nuevaPosicion);
+
+        // Validar si la nueva casilla está ocupada
+        if (nuevaCasilla.isOcupada()) {  // Verificamos si la casilla destino está ocupada
+            System.out.println("La casilla destino ya está ocupada.");
+            return;
+        }
+
+        // Quitar la ficha de la casilla original (si tiene un icono)
+        casilla.setIcon(null);  // Establecer un ícono vacío
+        casilla.repaint();  // Forzar el repintado de la casilla original
+
+        // Agregar la ficha a la nueva casilla
+        agregarFicha(nuevaCasilla, "/Utilerias/ficha_roja.png");
+
+        // Asegurarse de que la casilla destino se repinte
+        nuevaCasilla.repaint();
+
+        System.out.println("Ficha movida de casilla " + indiceActual + " a casilla " + nuevaPosicion + ".");
+        ultimoTiro = 0;
+        lblCania1.setText("-");
+        lblCania2.setText("-");
+        lblCania3.setText("-");
+        lblCania4.setText("-");
+        lblCania5.setText("-");
 
     }
 
@@ -90,10 +215,19 @@ public class FrmTablero extends javax.swing.JFrame {
         tablero.setMaximumSize(tablero.getSize());
 
         for (int i = 1; i <= filas * columnas; i++) {
-            JLabel label = new JLabel(""); // Crea un nuevo JLabel
+            Casilla label = new Casilla(""); // Crea un nuevo JLabel
             label.setBorder(new LineBorder(Color.BLACK, 1)); // Añadir borde negro
             label.setOpaque(true); // Hacer el fondo visible
             label.setBackground(Color.WHITE);
+
+            // Agregar evento MouseListener
+            label.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    moverFicha(label, ultimoTiro); // Mueve ficha al hacer clic
+                }
+            });
+
             if (numerarCasillas) {
                 label.setText(String.valueOf(numeroCasilla));
                 numeroCasilla++;
@@ -171,8 +305,9 @@ public class FrmTablero extends javax.swing.JFrame {
                 }
             }
 
+            // Añadir el JLabel al tablero y a la lista de casillas
             tablero.add(label);
-            casillas.add(label);
+            this.servidor.getGameState().getTablero().agregarCasilla(label);
         }
     }
 

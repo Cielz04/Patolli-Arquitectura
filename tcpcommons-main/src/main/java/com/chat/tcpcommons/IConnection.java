@@ -4,7 +4,6 @@
  */
 package com.chat.tcpcommons;
 
-import com.chat.tcpcommons.Message;
 
 /**
  *
@@ -12,9 +11,9 @@ import com.chat.tcpcommons.Message;
  */
 public interface IConnection {
     
-//    void sendMessage(Message message);
+    void sendMessage(Message message);
 //    void closeInbox(InboxChat inbox);
 //    void openInbox(User friend);
-//    void init();
-//    default void disconnect() {};
+    void init();
+    default void disconnect() {};
 }

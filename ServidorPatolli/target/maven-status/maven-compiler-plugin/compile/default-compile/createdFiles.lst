@@ -1,4 +1,4 @@
-itson/mx/servidorpatolli/ServidorPatolli.class
-Cliente/Cliente.class
-Cliente/Servidor.class
-Cliente/Servidor$ClienteHandler.class
+servidor\PatolliServer.class
+servidor\IPatolliServer.class
+servidor\Servidor.class
+itson\mx\servidorpatolli\ServidorPatolli.class

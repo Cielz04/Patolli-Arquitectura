@@ -1,9 +1,8 @@
 package Pantallas;
 
-import Cliente.Servidor;
+import servidor.Servidor;
 import entidades.EstadoDelJuego;
 import entidades.Jugador;
-import entidades.Tablero;
 import javax.swing.JOptionPane;
 
 /**

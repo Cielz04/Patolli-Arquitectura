@@ -2,8 +2,8 @@ package Control;
 
 import entidades.Juego;
 import entidades.Jugador;
-import entidades.Tablero;
 import java.awt.Color;
+import tablero.Tablero;
 
 /**
  *

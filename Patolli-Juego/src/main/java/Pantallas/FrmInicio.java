@@ -1,7 +1,7 @@
 package Pantallas;
 
-import Cliente.Cliente;
-import Cliente.Servidor;
+import servidor.Cliente;
+import servidor.Servidor;
 import entidades.EstadoDelJuego;
 import entidades.Jugador;
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class FrmInicio extends javax.swing.JFrame {
     public FrmInicio() {
         initComponents();
         crearPartida = new FrmConfigurarPartida();
-        servidor = Servidor.getInstance();
+        servidor = new Servidor();
         // Conectar automáticamente al servidor cuando se inicia la interfaz
 //        iniciarServidor();
 
@@ -180,25 +180,16 @@ public class FrmInicio extends javax.swing.JFrame {
         try {
             new Thread(() -> {
                 try {
-                    // Verifica si el servidor ya está en ejecución antes de crear una nueva partida
-                    if (!servidor.isServerInitialized()) {
-                        servidor.crearPartida();
-                    }
 
-                    SwingUtilities.invokeLater(() -> {
-                        crearPartida.setVisible(true);
-                        JOptionPane.showMessageDialog(this, "Partida creada con éxito. Esperando jugadores...");
-                        setVisible(false);
-                    });
-                } catch (IllegalStateException e) {
-                    SwingUtilities.invokeLater(() -> {
-                        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
-                    });
-                } catch (Exception e) {
-                    SwingUtilities.invokeLater(() -> {
-                        JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
-                    });
-                    e.printStackTrace();
+                    Socket socket = new Socket("localhost", 50065);
+                    JOptionPane.showMessageDialog(this, "Conexión exitosa a la partida.");
+
+                    FrmConfigurarPartida configurarPartida = new FrmConfigurarPartida();
+                    configurarPartida.setVisible(true);
+                    this.dispose();
+                } catch (IOException e) {
+
+                    JOptionPane.showMessageDialog(this, "Error al conectarse a la partida: " + e.getMessage());
                 }
             }).start();
         } catch (Exception e) {

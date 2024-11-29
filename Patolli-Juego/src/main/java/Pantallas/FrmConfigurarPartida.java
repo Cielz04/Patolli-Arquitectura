@@ -2,6 +2,7 @@ package Pantallas;
 
 
 
+import servidor.Servidor;
 import Control.ControlPatolli;
 import entidades.Juego;
 import javax.swing.JOptionPane;
@@ -16,6 +17,7 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
      * Creates new form FrmConfigurarPartida
      */
     DlgApuesta crearApuesta;
+    Servidor servidor;
     
     public FrmConfigurarPartida() {
         initComponents();
@@ -26,6 +28,7 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
         btnGroupFichas.add(fichas2);
         btnGroupFichas.add(fichas4);
         btnGroupFichas.add(fichas6);
+        servidor = Servidor.getInstance();
     }
 
     /**
@@ -299,11 +302,11 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
             }
             
             if (aspa8.isSelected()){
-                ControlPatolli.getInstance().setCantidadCasillas(8);
+                servidor.getGameState().getTablero().setCantidadCasillasAspa(8);
             }else if(aspa10.isSelected()){
-                ControlPatolli.getInstance().setCantidadCasillas(10);
+                servidor.getGameState().getTablero().setCantidadCasillasAspa(10);
             }else if(aspa14.isSelected()){
-                ControlPatolli.getInstance().setCantidadCasillas(14);
+                servidor.getGameState().getTablero().setCantidadCasillasAspa(14);
             }
         }
         else {

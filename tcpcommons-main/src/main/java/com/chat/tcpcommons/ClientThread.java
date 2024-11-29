@@ -15,24 +15,23 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.logging.*;
 
-
 /**
  *
  * @author felix
  */
-public class ClientThread extends Observable implements Runnable {
+public class ClientThread extends Observable implements Runnable, Serializable {
+
     private final Socket clientSocket;
-    private final EstadoDelJuego gameState;
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private final IChatLogger logger = LoggerFactory.getLogger(getClass());
     private Jugador jugador;
     private boolean connected;
 
-    public ClientThread(Socket clientSocket, EstadoDelJuego gameState) {
+    public ClientThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
-        this.gameState = gameState;
         this.connected = true;
+        this.jugador = new Jugador();
         initializeStreams();
     }
 
@@ -57,99 +56,85 @@ public class ClientThread extends Observable implements Runnable {
     @Override
     public void run() {
         try {
-            logger.info("Cliente conectado: " + clientSocket.getInetAddress());
-
-            
-            jugador = (Jugador) in.readObject(); 
-            synchronized (gameState) {
-                gameState.getJugadores().add(jugador); 
-                logger.info("Jugador registrado: " + jugador.getNombre());
-            }
-
-            while (connected) {
-                Message message = (Message) in.readObject(); 
-                processMessage(message);
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            logger.error("Error en la comunicación con el cliente: " + e.getMessage());
-        } finally {
-            disconnect();
+            processMessage();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            logger.error(ex.getMessage());
         }
     }
 
-    private void processMessage(Message message) {
-        switch (message.getMessageType()) {
-            case TIRAR_DADO:
-                tirarDado();
-                break;
-            case MOVER_FICHA:
-                handleMovePiece(message);
-                break;
-            case DISCONNECT:
+    private void processMessage() throws Exception{
+        while (connected) {
+            Message mensaje = (Message) in.readObject();
+            //if (mensaje.getMessageType() == TipoMensaje.CONECTARSE) {
+            //    usuario = mensaje.getSender();
+            //    mensaje.setMessageType(TipoMensaje.ACTUALIZAR_USUARIO);
+            //}
+            if (mensaje.getMessageType() == MessageType.DESCONECTARSE) {
+                connected = false;
                 disconnect();
-                break;
-            default:
-                logger.warning("Mensaje desconocido recibido: " + message);
+            }
+            notifyObservers(mensaje);
         }
     }
 
-    private void tirarDado() {
-        if (gameState.getJugadorEnTurno().equals(jugador)) {
-        int diceResult = (int) (Math.random() * 6) + 1;
-        logger.info("Jugador " + jugador.getNombre() + " tiró el dado: " + diceResult);
-
-        
-        notifyObservers(new Message(
-            MessageType.RESULTADO_DADO,
-            "Resultado: " + diceResult,
-            jugador
-        ));
-
-        gameState.siguienteTurno(); 
-        notifyObservers(new Message(
-            MessageType.CAMBIO_TURNO,
-            "Es el turno de: " + gameState.getJugadorEnTurno().getNombre(),
-            null
-        ));
-    } else {
-        sendMessage(new Message(
-            MessageType.ERROR,
-            "No es tu turno.",
-            null
-        ));
-    }
-    }
-
-    private void handleMovePiece(Message message) {
-        if (gameState.getJugadorEnTurno().equals(jugador)) {
-            // Procesar movimiento de ficha aquí
-            logger.info("Movimiento procesado para " + jugador.getNombre());
-        } else {
-            sendMessage(new Message(MessageType.ERROR, "No es tu turno.", null));
-        }
-    }
+//    private void tirarDado() {
+//        if (gameState.getJugadorEnTurno().equals(jugador)) {
+//            int diceResult = (int) (Math.random() * 6) + 1;
+//            logger.info("Jugador " + jugador.getNombre() + " tiró el dado: " + diceResult);
+//
+//            notifyObservers(new Message(
+//                    MessageType.RESULTADO_DADO,
+//                    "Resultado: " + diceResult,
+//                    jugador
+//            ));
+//
+//            gameState.siguienteTurno();
+//            notifyObservers(new Message(
+//                    MessageType.CAMBIO_TURNO,
+//                    "Es el turno de: " + gameState.getJugadorEnTurno().getNombre(),
+//                    null
+//            ));
+//        } else {
+//            sendMessage(new Message(
+//                    MessageType.ERROR,
+//                    "No es tu turno.",
+//                    null
+//            ));
+//        }
+//    }
+//
+//    private void handleMovePiece(Message message) {
+//        if (gameState.getJugadorEnTurno().equals(jugador)) {
+//            // Procesar movimiento de ficha aquí
+//            logger.info("Movimiento procesado para " + jugador.getNombre());
+//        } else {
+//            sendMessage(new Message(MessageType.ERROR, "No es tu turno.", null));
+//        }
+//    }
 
     public void sendMessage(Message message) {
+        if (message != null) {
+            System.out.println("Mensaje enviado: " + message.getMessageType());
+        }
         try {
             out.writeObject(message);
             out.flush();
-        } catch (IOException e) {
-            logger.error("Error al enviar mensaje: " + e.getMessage());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            logger.error(ex.getMessage());
         }
     }
 
     public void disconnect() {
-        connected = false;
         try {
-            synchronized (gameState) {
-                gameState.getJugadores().remove(jugador);
-                logger.info("Jugador desconectado: " + jugador.getNombre());
-            }
+            sendMessage(new Message.Builder().sender(jugador).messageType(MessageType.DESCONECTARSE).build());
+            connected = false;
             in.close();
             out.close();
             clientSocket.close();
         } catch (IOException e) {
-            logger.error("Error al cerrar la conexión: " + e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 
