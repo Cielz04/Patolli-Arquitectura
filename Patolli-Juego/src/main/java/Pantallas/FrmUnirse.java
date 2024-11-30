@@ -22,10 +22,10 @@ public class FrmUnirse extends javax.swing.JFrame {
     /**
      * Creates new form FrmUnirse
      */
-    public FrmUnirse() {
-        initComponents();
-        tablero = new FrmTablero();
-    }
+//    public FrmUnirse() {
+//        initComponents();
+//        tablero = new FrmTablero();
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.

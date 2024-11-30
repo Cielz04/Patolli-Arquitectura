@@ -19,10 +19,10 @@ public class MessageBody implements Serializable{
     private int fichas;
     private int jugadores;
     private boolean existeSala;
-    private List<Integer> fichasGatoPosicion= new ArrayList<>();
-    private List<Integer> fichasConchaPosicion= new ArrayList<>();
-    private List<Integer> fichasPiramidePosicion= new ArrayList<>();
-    private List<Integer> fichasMazorcaPosicion= new ArrayList<>();
+    private List<Integer> fichasJugador2Posicion= new ArrayList<>();
+    private List<Integer> fichasJugador1Posicion= new ArrayList<>();
+    private List<Integer> fichasJugador3Posicion= new ArrayList<>();
+    private List<Integer> fichasJugador4Posicion= new ArrayList<>();
 
 
     public String getCodigoSala() {
@@ -81,36 +81,36 @@ public class MessageBody implements Serializable{
         this.jugadores = jugadores;
     }
 
-    public List<Integer> getFichasGatoPosicion() {
-        return fichasGatoPosicion;
+    public List<Integer> getFichasJugador2Posicion() {
+        return fichasJugador2Posicion;
     }
 
-    public void setFichasGatoPosicion(List<Integer> fichasGatoPosicion) {
-        this.fichasGatoPosicion = fichasGatoPosicion;
+    public void setFichasJugador2Posicion(List<Integer> fichasJugador2Posicion) {
+        this.fichasJugador2Posicion = fichasJugador2Posicion;
     }
 
-    public List<Integer> getFichasConchaPosicion() {
-        return fichasConchaPosicion;
+    public List<Integer> getFichasJugador1Posicion() {
+        return fichasJugador1Posicion;
     }
 
-    public void setFichasConchaPosicion(List<Integer> fichasConchaPosicion) {
-        this.fichasConchaPosicion = fichasConchaPosicion;
+    public void setFichasJugador1Posicion(List<Integer> fichasJugador1Posicion) {
+        this.fichasJugador1Posicion = fichasJugador1Posicion;
     }
 
-    public List<Integer> getFichasPiramidePosicion() {
-        return fichasPiramidePosicion;
+    public List<Integer> getFichasJugador3Posicion() {
+        return fichasJugador3Posicion;
     }
 
-    public void setFichasPiramidePosicion(List<Integer> fichasPiramidePosicion) {
-        this.fichasPiramidePosicion = fichasPiramidePosicion;
+    public void setFichasJugador3Posicion(List<Integer> fichasJugador3Posicion) {
+        this.fichasJugador3Posicion = fichasJugador3Posicion;
     }
 
-    public List<Integer> getFichasMazorcaPosicion() {
-        return fichasMazorcaPosicion;
+    public List<Integer> getFichasJugador4Posicion() {
+        return fichasJugador4Posicion;
     }
 
-    public void setFichasMazorcaPosicion(List<Integer> fichasMazorcaPosicion) {
-        this.fichasMazorcaPosicion = fichasMazorcaPosicion;
+    public void setFichasJugador4Posicion(List<Integer> fichasJugador4Posicion) {
+        this.fichasJugador4Posicion = fichasJugador4Posicion;
     }
 
     public boolean isExisteSala() {

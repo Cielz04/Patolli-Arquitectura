@@ -1,5 +1,5 @@
-Control/Partida.class
-Control/IControlPatolli.class
-Control/ControlPantalla.class
-Control/ControlJugador.class
-Control/ControlPatolli.class
+Control\Partida.class
+Control\ControlPantalla.class
+Control\ControlPatolli.class
+Control\ControlJugador.class
+Control\IControlPatolli.class

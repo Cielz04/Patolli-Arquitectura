@@ -16,6 +16,7 @@ public class ControlPatolli implements IControlPatolli {
     static ControlPatolli controlSingleTon;
     Partida juego;
     FrmInicio frameInicio;
+    private int jugadores;
 
     public ControlPatolli(FrmInicio frameInicio) {
         this.frameInicio = frameInicio;
@@ -23,6 +24,7 @@ public class ControlPatolli implements IControlPatolli {
     }
 
     public ControlPatolli() {
+        juego = new Partida();
     }
 
     
@@ -99,5 +101,15 @@ public class ControlPatolli implements IControlPatolli {
     public void desconectar(String codigoSala, int miJugador) {
         juego.desconectar(codigoSala, miJugador);
     }
+
+    public int getJugadores() {
+        return jugadores;
+    }
+
+    public void setJugadores(int jugadores) {
+        this.jugadores = jugadores;
+    }
+    
+    
 
 }

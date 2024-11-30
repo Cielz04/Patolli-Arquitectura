@@ -1,8 +1,11 @@
 package Pantallas;
 
-import servidor.Servidor;
+
 import Control.ControlJugador;
 import Control.ControlPatolli;
+import com.chat.tcpcommons.Message;
+import com.chat.tcpcommons.MessageBody;
+import com.chat.tcpcommons.MessageType;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -32,22 +35,113 @@ import tablero.Tablero;
  * @author Enrique Rodriguez
  */
 public class FrmTablero extends javax.swing.JFrame {
+    
+    private final ControlPatolli controlPatolli;
 
+    
+    private final String codigoSala;
+    private final int canCasillasAspa;
+    private final int monto;
+    private final int jugadores;
+    
+    private List<Casilla> fichaJugador1;
+    private List<Casilla> fichaJugador2;
+    private List<Casilla> fichaJugador3;
+    private List<Casilla> fichaJugador4;
+    
+    private int ultimoTiro;
+    
+    private List<Casilla> casillasTablero;
 //    private static FrmTablero tableroS;
-//    private boolean numerarCasillas;
+    private boolean numerarCasillas;
 //    private Tablero tablero = new Tablero();
-//    private int numeroCasilla;
+    private int numeroCasilla;
+//    
+    private List<Integer> fichasJugador1Posicion;
+    private List<Integer> fichasJugador2Posicion;
+    private List<Integer> fichasJugador3Posicion;
+    private List<Integer> fichasJugador4Posicion;
+    private List <Integer> montoJugadores;
+    
+    private int jugadorTurno=0;
 //    private final List<JLabel> casillas;
 //    private Servidor servidor;
 //    private int ultimoTiro;
 //    private Socket socket;
 //    private BufferedReader reader;
 //    private PrintWriter writer;
-
+    private boolean juegoTermino;
+    
+    
     /**
      * Creates new form Tablero
      */
-    public FrmTablero() {}
+    public FrmTablero(ControlPatolli controlPatolli, String codigoSala) {
+        this.controlPatolli = controlPatolli;
+        this.codigoSala = codigoSala;
+        this.canCasillasAspa = controlPatolli.getTablero().getCantidadCasillasAspa();
+        this.jugadores = controlPatolli.getJugadores();
+        this.monto = 33;//TODO
+        initComponents();
+    }
+    
+    
+    private void subirCambios (){
+        
+        if (!this.juegoTermino){
+            //observarJugadorSale();
+            //observarFinJuego();
+        }
+        //actualizarSiguienteJugador();
+        
+        MessageBody content = new MessageBody();
+        content.setCodigoSala(this.codigoSala);
+        content.setFichasJugador1Posicion(fichasJugador1Posicion);
+        content.setFichasJugador2Posicion(fichasJugador2Posicion);
+        content.setFichasJugador3Posicion(fichasJugador3Posicion);
+        content.setFichasJugador4Posicion(fichasJugador4Posicion);
+        content.setMontoJugadores(montoJugadores);
+        content.setJugador(jugadorTurno);
+        
+        MessageType tipoMensaje = MessageType.PASAR_CAMBIOS;
+        
+        Message mensajeServidor = new Message.Builder()
+                .body(content)
+                .messageType(tipoMensaje)
+                .build();
+        controlPatolli.enviarMensaje(mensajeServidor);
+        
+        
+    }
+    
+    
+////////////////////////////////////////////////    public boolean recibirCambios(List<Integer> montoJugadores, int siguienteJugador, List<Integer> fichasGatoPosicion,
+////////////////////////////////////////////////            List<Integer> fichasConchaPosicion, List<Integer> fichasPiramidePosicion, List<Integer> fichasMazorcaPosicion) {
+////////////////////////////////////////////////
+////////////////////////////////////////////////        this.montoJugadores = montoJugadores;
+////////////////////////////////////////////////        this.jugador = siguienteJugador;
+////////////////////////////////////////////////        
+////////////////////////////////////////////////        this.fichasGatoPosicion = fichasGatoPosicion;
+////////////////////////////////////////////////        this.fichasConchaPosicion = fichasConchaPosicion;
+////////////////////////////////////////////////        this.fichasPiramidePosicion = fichasPiramidePosicion;
+////////////////////////////////////////////////        this.fichasMazorcaPosicion = fichasMazorcaPosicion;
+////////////////////////////////////////////////        
+////////////////////////////////////////////////        this.actualizarApuestas(); //Coloca el monto de apuestas correspondiente
+////////////////////////////////////////////////        this.actualizarCasillas(); //Actualiza el valor de la lista de casillas y la lista de fichas de label
+////////////////////////////////////////////////        this.actualizarTablero(); //Actualiza el tablero con la lista de casillas
+////////////////////////////////////////////////        this.actualizarSiguienteJugador(); //Actualiza la vista para el siguiente jugador 
+////////////////////////////////////////////////
+////////////////////////////////////////////////        //Si es mi turno, habilita el lanzar cañas
+////////////////////////////////////////////////        if (jugadoresActivos.get(miJugador)) {
+////////////////////////////////////////////////            if (jugador == miJugador) {
+////////////////////////////////////////////////                this.btnLanzarCañas.setEnabled(true);
+////////////////////////////////////////////////            }
+////////////////////////////////////////////////        }
+////////////////////////////////////////////////
+////////////////////////////////////////////////        return true;
+////////////////////////////////////////////////    }
+
+    
 //        casillas = new LinkedList<>();
 //
 //        try {
@@ -120,220 +214,220 @@ public class FrmTablero extends javax.swing.JFrame {
 //        });
 //    }
 //
-//    /**
-//     * Metodo que inicializa el tablero estableciando medidas y generando las
-//     * casillas
-//     */
-//    public void inicializar() {
-//        inicializarAspa(tableroArriba, servidor.getGameState().getTablero().getCantidadCasillasAspa(), 2, false);
-//        inicializarAspa(tableroAbajo, servidor.getGameState().getTablero().getCantidadCasillasAspa(), 2, true);
-//        inicializarAspa(tableroDerecha, 2, servidor.getGameState().getTablero().getCantidadCasillasAspa(), true);
-//        inicializarAspa(tableroIzq, 2, servidor.getGameState().getTablero().getCantidadCasillasAspa(), false);
-//
-//        inicializarAspa(tableroCentro, 2, 2, true);
-//
-////        for (int i = 0; i < tablero.getCasillas().size(); i++) {
-////            tablero.getCasillas().get(i).addMouseListener(new MouseAdapter() {
-////                @Override
-////                public void mouseClicked(MouseEvent e) {
-////                    Casilla clickedLabel = (Casilla) e.getSource();
-////                    moverFicha(clickedLabel, 3);
-////                }
-////            });
-////        }
-//        asignarNumeroCasillas();
-//        // Ejemplo de uso
-//        Casilla casilla = servidor.getGameState().getTablero().getCasillas().get(0); // Obtener la primera casilla (por ejemplo)
-//        agregarFicha(casilla, "/Utilerias/ficha_roja.png");
-//
-//    }
-//
-//    private void asignarNumeroCasillas() {
-//        servidor.getGameState().getTablero().ordenarCasillas(servidor.getGameState().getTablero().getCasillas());
-//    }
-//
-//    private void moverFicha(Casilla casilla, int dado) {
-//        // Validar que la casilla es parte del tablero
-//        LinkedList<Casilla> listaCasillas = servidor.getGameState().getTablero().getCasillas();
-//        if (!listaCasillas.contains(casilla)) {
-//            System.out.println("La casilla no pertenece al tablero.");
-//            return;
-//        }
+    /**
+     * Metodo que inicializa el tablero estableciando medidas y generando las
+     * casillas
+     */
+    public void inicializar() {
+        inicializarAspa(tableroArriba, canCasillasAspa, 2, false);
+        inicializarAspa(tableroAbajo, canCasillasAspa, 2, true);
+        inicializarAspa(tableroDerecha, 2, canCasillasAspa, true);
+        inicializarAspa(tableroIzq, 2, canCasillasAspa, false);
 
-        // Verificar si la casilla seleccionada está ocupada (tiene una ficha)
-//        if (!casilla.isOcupada()) {  // Usamos el método de instancia isOcupada
-//            System.out.println("No hay una ficha en la casilla seleccionada.");
-//            return;  // Si no hay ficha, no se puede mover
-//        }
-//
-//        // Encontrar la casilla inicial en la lista
-//        int indiceActual = listaCasillas.indexOf(casilla);
-//        if (indiceActual == -1) {
-//            System.out.println("Error: No se encontró la casilla en la lista.");
-//            return;
-//        }
-//
-//        // Calcular la nueva posición
-//        int nuevaPosicion = (indiceActual + dado) % listaCasillas.size();
-//
-//        // Obtener la casilla destino
-//        Casilla nuevaCasilla = listaCasillas.get(nuevaPosicion);
-//
-//        // Validar si la nueva casilla está ocupada
-//        if (nuevaCasilla.isOcupada()) {  // Verificamos si la casilla destino está ocupada
-//            System.out.println("La casilla destino ya está ocupada.");
-//            return;
-//        }
-//
-//        // Quitar la ficha de la casilla original (si tiene un icono)
-//        casilla.setIcon(null);  // Establecer un ícono vacío
-//        casilla.repaint();  // Forzar el repintado de la casilla original
-//
-//        // Agregar la ficha a la nueva casilla
-//        agregarFicha(nuevaCasilla, "/Utilerias/ficha_roja.png");
-//
-//        // Asegurarse de que la casilla destino se repinte
-//        nuevaCasilla.repaint();
-//
-//        System.out.println("Ficha movida de casilla " + indiceActual + " a casilla " + nuevaPosicion + ".");
-//        ultimoTiro = 0;
-//        lblCania1.setText("-");
-//        lblCania2.setText("-");
-//        lblCania3.setText("-");
-//        lblCania4.setText("-");
-//        lblCania5.setText("-");
-//
-//    }
-//
-//    /**
-//     * Metodo que dibuja el tablero
-//     */
-//    private void inicializarAspa(JPanel tablero, int filas, int columnas, boolean invertir) {
-//        tablero.setLayout(new GridLayout(filas, columnas));
-//        tablero.setPreferredSize(tablero.getSize());
-//        tablero.setMinimumSize(tablero.getSize());
-//        tablero.setMaximumSize(tablero.getSize());
-//
-//        for (int i = 1; i <= filas * columnas; i++) {
-//            Casilla label = new Casilla(""); // Crea un nuevo JLabel
-//            label.setBorder(new LineBorder(Color.BLACK, 1)); // Añadir borde negro
-//            label.setOpaque(true); // Hacer el fondo visible
-//            label.setBackground(Color.WHITE);
-//
-//            // Agregar evento MouseListener
-//            label.addMouseListener(new MouseAdapter() {
+        inicializarAspa(tableroCentro, 2, 2, true);
+
+//        for (int i = 0; i < tablero.getCasillas().size(); i++) {
+//            tablero.getCasillas().get(i).addMouseListener(new MouseAdapter() {
 //                @Override
 //                public void mouseClicked(MouseEvent e) {
-//                    moverFicha(label, ultimoTiro); // Mueve ficha al hacer clic
+//                    Casilla clickedLabel = (Casilla) e.getSource();
+//                    moverFicha(clickedLabel, 3);
 //                }
 //            });
-//
-//            if (numerarCasillas) {
-//                label.setText(String.valueOf(numeroCasilla));
-//                numeroCasilla++;
-//            }
-//
-//            // Lógica para asignar colores a las casillas del tablero
-//            if (filas * columnas > 6) {
-//                // Colocar casilla inicial (Amarilla)
-//                if (invertir) {
-//                    if (columnas > filas) {
-//                        if (i == columnas + 1) {
-//                            label.setBackground(Color.RED); // DERECHA
-//                        }
-//                    } else {
-//                        if (i == 1) {
-//                            label.setBackground(Color.RED); // ABAJO
-//                        }
-//                    }
-//                } else {
-//                    if (columnas > filas) {
-//                        if (i == columnas) {
-//                            label.setBackground(Color.RED); // IZQUIERDA
-//                        }
-//                    } else {
-//                        if (i == filas * columnas) {
-//                            label.setBackground(Color.RED); // ARRIBA
-//                        }
-//                    }
-//                }
-//
-//                // Colocar casilla doble turno (Azul)
-//                if (invertir) {
-//                    if (columnas > filas) {
-//                        if (i == columnas || i == columnas * filas) {
-//                            label.setBackground(Color.getHSBColor(0.33f, 0.3f, 0.8f));// DERECHA
-//                        }
-//                    } else {
-//                        if (i == filas * columnas || i == filas * columnas - 1) {
-//                            label.setBackground(Color.getHSBColor(0.33f, 0.3f, 0.8f)); // ABAJO 104, 28, 76
-//                        }
-//                    }
-//                } else {
-//                    if (columnas > filas) {
-//                        if (i == 1 || i == columnas + 1) {
-//                            label.setBackground(Color.getHSBColor(0.33f, 0.3f, 0.8f)); // IZQUIERDA
-//                        }
-//                    } else {
-//                        if (i == 1 || i == 2) {
-//                            label.setBackground(Color.getHSBColor(0.33f, 0.3f, 0.8f)); // ARRIBA
-//                        }
-//                    }
-//                }
-//
-//                // Colocar casilla pagar apuesta (ROJA)
-//                if (invertir) {
-//                    if (columnas > filas) {
-//                        if (i == columnas - 3 || i == columnas * filas - 3) {
-//                            label.setBackground(Color.getHSBColor(0.08f, 0.7f, 0.5f)); // DERECHA
-//                        }
-//                    } else {
-//                        if (i == filas * columnas - 7 || i == filas * columnas - 6) {
-//                            label.setBackground(Color.getHSBColor(0.08f, 0.7f, 0.5f)); // ABAJO
-//                        }
-//                    }
-//                } else {
-//                    if (columnas > filas) {
-//                        if (i == 4 || i == columnas + 4) {
-//                            label.setBackground(Color.getHSBColor(0.08f, 0.7f, 0.5f));  // IZQUIERDA
-//                        }
-//                    } else {
-//                        if (i == 7 || i == 8) {
-//                            label.setBackground(Color.getHSBColor(0.08f, 0.7f, 0.5f));  // ARRIBA
-//                        }
-//                    }
-//                }
-//            }
-//
-//            // Añadir el JLabel al tablero y a la lista de casillas
-//            tablero.add(label);
-//            this.servidor.getGameState().getTablero().agregarCasilla(label);
 //        }
-//    }
+        asignarNumeroCasillas();
+        // Ejemplo de uso
+        Casilla casilla = controlPatolli.getTablero().getCasillas().get(0); // Obtener la primera casilla (por ejemplo)
+        agregarFicha(casilla, "/Utilerias/ficha_roja.png");
 
-//    private void agregarFicha(JLabel casillaBase, String rutaImagen) {
-//        try {
-//            ImageIcon icono = new ImageIcon(getClass().getResource(rutaImagen));
-//            Image imagenOriginal = icono.getImage();
-//
-//            int nuevoAncho = 70;
-//            int nuevoAlto = 100;
-//            Image imagenEscalada = imagenOriginal.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
-//
-//            JLabel ficha = new JLabel(new ImageIcon(imagenEscalada));
-//            ficha.setHorizontalAlignment(JLabel.CENTER);
-//            ficha.setVerticalAlignment(JLabel.CENTER);
-//
-//            casillaBase.setLayout(new BorderLayout());
-//            casillaBase.add(ficha, BorderLayout.CENTER);
-//
-//            casillaBase.revalidate();
-//            casillaBase.repaint();
-//        } catch (NullPointerException e) {
-//            System.err.println("No se pudo cargar la imagen: " + rutaImagen);
-//            e.printStackTrace();
-//        }
-//    }
+    }
+
+    private void asignarNumeroCasillas() {
+        controlPatolli.getTablero().ordenarCasillas(casillasTablero);
+    }
+
+    private void moverFicha(Casilla casilla, int dado) {
+        // Validar que la casilla es parte del tablero
+        LinkedList<Casilla> listaCasillas = controlPatolli.getTablero().getCasillas();
+        if (!listaCasillas.contains(casilla)) {
+            System.out.println("La casilla no pertenece al tablero.");
+            return;
+        }
+
+         //Verificar si la casilla seleccionada está ocupada (tiene una ficha)
+        if (!casilla.isOcupada()) {  // Usamos el método de instancia isOcupada
+            System.out.println("No hay una ficha en la casilla seleccionada.");
+            return;  // Si no hay ficha, no se puede mover
+        }
+
+        // Encontrar la casilla inicial en la lista
+        int indiceActual = listaCasillas.indexOf(casilla);
+        if (indiceActual == -1) {
+            System.out.println("Error: No se encontró la casilla en la lista.");
+            return;
+        }
+
+        // Calcular la nueva posición
+        int nuevaPosicion = (indiceActual + dado) % listaCasillas.size();
+
+        // Obtener la casilla destino
+        Casilla nuevaCasilla = listaCasillas.get(nuevaPosicion);
+
+        // Validar si la nueva casilla está ocupada
+        if (nuevaCasilla.isOcupada()) {  // Verificamos si la casilla destino está ocupada
+            System.out.println("La casilla destino ya está ocupada.");
+            return;
+        }
+
+        // Quitar la ficha de la casilla original (si tiene un icono)
+        casilla.setIcon(null);  // Establecer un ícono vacío
+        casilla.repaint();  // Forzar el repintado de la casilla original
+
+        // Agregar la ficha a la nueva casilla
+        agregarFicha(nuevaCasilla, "/Utilerias/ficha_roja.png");
+
+        // Asegurarse de que la casilla destino se repinte
+        nuevaCasilla.repaint();
+
+        System.out.println("Ficha movida de casilla " + indiceActual + " a casilla " + nuevaPosicion + ".");
+        ultimoTiro = 0;
+        lblCania1.setText("-");
+        lblCania2.setText("-");
+        lblCania3.setText("-");
+        lblCania4.setText("-");
+        lblCania5.setText("-");
+
+    }
+
+    /**
+     * Metodo que dibuja el tablero
+     */
+    private void inicializarAspa(JPanel tablero, int filas, int columnas, boolean invertir) {
+        tablero.setLayout(new GridLayout(filas, columnas));
+        tablero.setPreferredSize(tablero.getSize());
+        tablero.setMinimumSize(tablero.getSize());
+        tablero.setMaximumSize(tablero.getSize());
+
+        for (int i = 1; i <= filas * columnas; i++) {
+            Casilla label = new Casilla(""); // Crea un nuevo JLabel
+            label.setBorder(new LineBorder(Color.BLACK, 1)); // Añadir borde negro
+            label.setOpaque(true); // Hacer el fondo visible
+            label.setBackground(Color.WHITE);
+
+            // Agregar evento MouseListener
+            label.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    moverFicha(label, ultimoTiro); // Mueve ficha al hacer clic
+                }
+            });
+
+            if (numerarCasillas) {
+                label.setText(String.valueOf(numeroCasilla));
+                numeroCasilla++;
+            }
+
+            // Lógica para asignar colores a las casillas del tablero
+            if (filas * columnas > 6) {
+                // Colocar casilla inicial (Amarilla)
+                if (invertir) {
+                    if (columnas > filas) {
+                        if (i == columnas + 1) {
+                            label.setBackground(Color.RED); // DERECHA
+                        }
+                    } else {
+                        if (i == 1) {
+                            label.setBackground(Color.RED); // ABAJO
+                        }
+                    }
+                } else {
+                    if (columnas > filas) {
+                        if (i == columnas) {
+                            label.setBackground(Color.RED); // IZQUIERDA
+                        }
+                    } else {
+                        if (i == filas * columnas) {
+                            label.setBackground(Color.RED); // ARRIBA
+                        }
+                    }
+                }
+
+                // Colocar casilla doble turno (Azul)
+                if (invertir) {
+                    if (columnas > filas) {
+                        if (i == columnas || i == columnas * filas) {
+                            label.setBackground(Color.getHSBColor(0.33f, 0.3f, 0.8f));// DERECHA
+                        }
+                    } else {
+                        if (i == filas * columnas || i == filas * columnas - 1) {
+                            label.setBackground(Color.getHSBColor(0.33f, 0.3f, 0.8f)); // ABAJO 104, 28, 76
+                        }
+                    }
+                } else {
+                    if (columnas > filas) {
+                        if (i == 1 || i == columnas + 1) {
+                            label.setBackground(Color.getHSBColor(0.33f, 0.3f, 0.8f)); // IZQUIERDA
+                        }
+                    } else {
+                        if (i == 1 || i == 2) {
+                            label.setBackground(Color.getHSBColor(0.33f, 0.3f, 0.8f)); // ARRIBA
+                        }
+                    }
+                }
+
+                // Colocar casilla pagar apuesta (ROJA)
+                if (invertir) {
+                    if (columnas > filas) {
+                        if (i == columnas - 3 || i == columnas * filas - 3) {
+                            label.setBackground(Color.getHSBColor(0.08f, 0.7f, 0.5f)); // DERECHA
+                        }
+                    } else {
+                        if (i == filas * columnas - 7 || i == filas * columnas - 6) {
+                            label.setBackground(Color.getHSBColor(0.08f, 0.7f, 0.5f)); // ABAJO
+                        }
+                    }
+                } else {
+                    if (columnas > filas) {
+                        if (i == 4 || i == columnas + 4) {
+                            label.setBackground(Color.getHSBColor(0.08f, 0.7f, 0.5f));  // IZQUIERDA
+                        }
+                    } else {
+                        if (i == 7 || i == 8) {
+                            label.setBackground(Color.getHSBColor(0.08f, 0.7f, 0.5f));  // ARRIBA
+                        }
+                    }
+                }
+            }
+
+            // Añadir el JLabel al tablero y a la lista de casillas
+            tablero.add(label);
+            controlPatolli.getTablero().agregarCasilla(label);
+        }
+    }
+
+    private void agregarFicha(JLabel casillaBase, String rutaImagen) {
+        try {
+            ImageIcon icono = new ImageIcon(getClass().getResource(rutaImagen));
+            Image imagenOriginal = icono.getImage();
+
+            int nuevoAncho = 70;
+            int nuevoAlto = 100;
+            Image imagenEscalada = imagenOriginal.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+
+            JLabel ficha = new JLabel(new ImageIcon(imagenEscalada));
+            ficha.setHorizontalAlignment(JLabel.CENTER);
+            ficha.setVerticalAlignment(JLabel.CENTER);
+
+            casillaBase.setLayout(new BorderLayout());
+            casillaBase.add(ficha, BorderLayout.CENTER);
+
+            casillaBase.revalidate();
+            casillaBase.repaint();
+        } catch (NullPointerException e) {
+            System.err.println("No se pudo cargar la imagen: " + rutaImagen);
+            e.printStackTrace();
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

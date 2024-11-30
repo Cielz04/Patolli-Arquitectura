@@ -2,14 +2,11 @@ package Pantallas;
 
 import Control.ControlPatolli;
 import com.chat.tcpcommons.Message;
-import servidor.Cliente;
 import servidor.Servidor;
-import entidades.EstadoDelJuego;
-import entidades.Jugador;
 import java.io.IOException;
 import java.net.Socket;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+
 
 /**
  *
@@ -31,7 +28,7 @@ public class FrmInicio extends javax.swing.JFrame {
     public FrmInicio() {
         initComponents();
         crearPartida = new FrmConfigurarPartida();
-        tablero= new FrmTablero();
+        tablero= new FrmTablero(controlPatolli, "0");
         servidor = new Servidor();
         
         // Conectar automáticamente al servidor cuando se inicia la interfaz
