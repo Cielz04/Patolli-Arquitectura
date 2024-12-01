@@ -81,6 +81,7 @@ public class FrmTablero extends javax.swing.JFrame {
         this.codigoSala = codigoSala;
         this.canCasillasAspa = controlPatolli.getTablero().getCantidadCasillasAspa();
         this.jugadores = controlPatolli.getJugadores();
+        this.casillasTablero = controlPatolli.getTablero().getCasillas();
         this.monto = 33;//TODO
         initComponents();
     }
@@ -405,7 +406,7 @@ public class FrmTablero extends javax.swing.JFrame {
         }
     }
 
-    private void agregarFicha(JLabel casillaBase, String rutaImagen) {
+    private void agregarFicha(Casilla casillaBase, String rutaImagen) {
         try {
             ImageIcon icono = new ImageIcon(getClass().getResource(rutaImagen));
             Image imagenOriginal = icono.getImage();
@@ -414,7 +415,7 @@ public class FrmTablero extends javax.swing.JFrame {
             int nuevoAlto = 100;
             Image imagenEscalada = imagenOriginal.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
 
-            JLabel ficha = new JLabel(new ImageIcon(imagenEscalada));
+            Casilla ficha = new Casilla(new ImageIcon(imagenEscalada));
             ficha.setHorizontalAlignment(JLabel.CENTER);
             ficha.setVerticalAlignment(JLabel.CENTER);
 
@@ -423,6 +424,8 @@ public class FrmTablero extends javax.swing.JFrame {
 
             casillaBase.revalidate();
             casillaBase.repaint();
+            casillaBase.setIcon(icono);
+            controlPatolli.getTablero().getCasillas().set(controlPatolli.getTablero().getCasillas().indexOf(casillaBase), casillaBase);
         } catch (NullPointerException e) {
             System.err.println("No se pudo cargar la imagen: " + rutaImagen);
             e.printStackTrace();
@@ -696,21 +699,13 @@ public class FrmTablero extends javax.swing.JFrame {
 
         while (i < 5) {
             canias[i] = (int) (Math.random() * 2);
+            if (canias[i] == 1) {
+                ultimoTiro++;
+            }
             i++;
+            
         }
         escribirCanias(canias);
-
-        if (i > 0) {
-            if (ControlJugador.getInstance().obtenerJugadorTurno().equals(ControlPatolli.getInstance().getJugadorTurno(ControlPatolli.getInstance().getTurno()))) {
-                JOptionPane.showMessageDialog(rootPane, "ALAVERGA");
-                lblCania1.setText("-");
-                lblCania2.setText("-");
-                lblCania3.setText("-");
-                lblCania4.setText("-");
-                lblCania5.setText("-");
-            }
-        }
-
 //        }
     }//GEN-LAST:event_btnLanzarActionPerformed
 

@@ -231,6 +231,8 @@ public class DlgApuesta extends javax.swing.JDialog {
             if (Integer.valueOf(CmBJugadores.getSelectedItem().toString()) == 2) {
                 ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 1", Color.RED));
                 ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 2", Color.GREEN));
+                Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
+                Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
 //                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 1"));
 //                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 2"));
 
