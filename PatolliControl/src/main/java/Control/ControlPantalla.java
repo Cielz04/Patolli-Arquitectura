@@ -1,6 +1,8 @@
 package Control;
 
 import Pantallas.DlgApuesta;
+import Pantallas.FrmInicio;
+import Pantallas.FrmTablero;
 import Pantallas.FrmUnirse;
 import java.util.List;
 import javax.swing.JDialog;
@@ -20,8 +22,10 @@ public class ControlPantalla {
      * @param children
      */
 
-    public void PasarPantallaUnirseCrear() {
-        
+    public void PasarPantallaUnirseCrear(FrmInicio inicio) {
+        FrmUnirse unirse = new FrmUnirse();
+        unirse.setVisible(true);
+        inicio.dispose();
     }
 
     /**
@@ -92,7 +96,8 @@ public class ControlPantalla {
      * @param miJugador
      * @param codigoSala
      */
-    public void PasarPantallaTablero() {
-       
+    public void PasarPantallaTablero(ControlPatolli controlPatolli) {
+        FrmTablero tablero = new FrmTablero(controlPatolli, "000");
+        tablero.setVisible(true);
     }
 }

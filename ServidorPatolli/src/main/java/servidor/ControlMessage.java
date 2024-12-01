@@ -25,7 +25,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ControlMessage extends Observable implements TemplateConnection, Runnable, IObserver{
     
     private ServerSocket server;
-    private final Map<String,List<ClientThread>> rooms;
+    public final Map<String,List<ClientThread>> rooms;
     private final String SALA_DE_ESPERA="sala de espera";
     private final int PORT=50064;
     private final Thread serverThread;
@@ -127,7 +127,7 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
     public void onCrearSala(Message message) {
         lock.lock();
         try {
-            String codigoSala = message.getContent().getCodigoSala();
+            String codigoSala = "000";
 
             if (codigoSala == null || codigoSala.isEmpty()) {
                 System.out.println("El código de la sala no puede estar vacío.");

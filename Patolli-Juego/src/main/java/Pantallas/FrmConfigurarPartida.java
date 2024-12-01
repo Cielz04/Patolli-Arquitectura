@@ -6,6 +6,7 @@ import servidor.Servidor;
 import Control.ControlPatolli;
 import entidades.Juego;
 import javax.swing.JOptionPane;
+import tablero.Tablero;
 
 /**
  *
@@ -17,7 +18,6 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
      * Creates new form FrmConfigurarPartida
      */
     DlgApuesta crearApuesta;
-    ControlPatolli controlPatolli = new ControlPatolli(); 
     Servidor servidor;
     
     public FrmConfigurarPartida() {
@@ -29,6 +29,7 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
         btnGroupFichas.add(fichas2);
         btnGroupFichas.add(fichas4);
         btnGroupFichas.add(fichas6);
+        ControlPatolli.getInstance().setTablero(new Tablero());
 //        servidor = Servidor.getInstance();
     }
 
@@ -303,11 +304,11 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
             }
             
             if (aspa8.isSelected()){
-                controlPatolli.getTablero().setCantidadCasillasAspa(8);
+                ControlPatolli.getInstance().getTablero().setCantidadCasillasAspa(8);
             }else if(aspa10.isSelected()){
-                controlPatolli.getTablero().setCantidadCasillasAspa(10);
+                ControlPatolli.getInstance().getTablero().setCantidadCasillasAspa(10);
             }else if(aspa14.isSelected()){
-                controlPatolli.getTablero().setCantidadCasillasAspa(14);
+                ControlPatolli.getInstance().getTablero().setCantidadCasillasAspa(14);
             }
         }
         else {

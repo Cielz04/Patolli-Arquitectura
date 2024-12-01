@@ -1,5 +1,6 @@
 package Pantallas;
 
+import Control.ControlPantalla;
 import Control.ControlPatolli;
 import com.chat.tcpcommons.Message;
 import servidor.Servidor;
@@ -288,31 +289,8 @@ public class FrmInicio extends javax.swing.JFrame {
 
     private void btnUnirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnirseActionPerformed
         // Crear un nuevo hilo para la conexión al servidor
-        new Thread(() -> {
-            try {
-
-                Socket socket = new Socket("localhost", 50064);
-                JOptionPane.showMessageDialog(this, "Conexión exitosa a la partida.");
-
-                FrmUnirse frmUnirsePartida = new FrmUnirse();
-                frmUnirsePartida.setVisible(true);
-                this.dispose();
-            } catch (IOException e) {
-
-                JOptionPane.showMessageDialog(this, "Error al conectarse a la partida: " + e.getMessage());
-            }
-        }).start();
-
-//        btnUnirse.addActionListener(e ->{
-//                    int variable = JOptionPane.showOptionDialog(null, "Ingrese el codigo", "Ingresar", JOptionPane.DEFAULT_OPTION, JOptionPane.DEFAULT_OPTION, null, boton, );
-//            String codigo = txtCodigo.getText();
-//            Jugador jugador = new Jugador("Jugador: " );
-//            if(servidor.unirsePartida(codigo, jugador)){
-//                JOptionPane.showMessageDialog(null, " Te uniste");
-//            }else{
-//                JOptionPane.showMessageDialog(null, "Codigo incorrecto");
-//            }
-//        });
+        ControlPantalla controlPantalla = new ControlPantalla();
+        controlPantalla.PasarPantallaUnirseCrear(this);
     }//GEN-LAST:event_btnUnirseActionPerformed
 
     /**

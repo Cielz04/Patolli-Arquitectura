@@ -6,6 +6,7 @@ import entidades.Juego;
 import entidades.Jugador;
 import java.awt.Color;
 import javax.swing.JOptionPane;
+import servidor.ControlMessage;
 
 
 /**
@@ -222,7 +223,9 @@ public class DlgApuesta extends javax.swing.JDialog {
             int numJugadores = Integer.parseInt(jugadores);
             ControlPatolli.getInstance().configurarJugadores(numJugadores);
             ControlPatolli.getInstance().setApuesta(Integer.parseInt(this.txtApuesta.getText()));
-            
+            ControlPatolli.getInstance().conectarse();
+            ControlMessage cm = new ControlMessage();
+            ControlPatolli.getInstance().crearSala();
             FrmTablero tablero = new FrmTablero(ControlPatolli.getInstance(), "000");
             tablero.inicializar();
             dispose();

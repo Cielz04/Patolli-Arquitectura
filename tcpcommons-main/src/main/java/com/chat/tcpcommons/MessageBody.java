@@ -3,6 +3,7 @@ package com.chat.tcpcommons;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import tablero.Tablero;
 
 /**
  *
@@ -14,17 +15,17 @@ public class MessageBody implements Serializable{
     private String codigoSala;
     private List<Integer> montoJugadores= new ArrayList<>();
     private int jugador;
-    private int tamaño;
+    private int tamanio;
+    private int jugadores;
     private int monto; 
     private int fichas;
-    private int jugadores;
     private boolean existeSala;
     private List<Integer> fichasJugador2Posicion= new ArrayList<>();
     private List<Integer> fichasJugador1Posicion= new ArrayList<>();
     private List<Integer> fichasJugador3Posicion= new ArrayList<>();
     private List<Integer> fichasJugador4Posicion= new ArrayList<>();
 
-
+  
     public String getCodigoSala() {
         return codigoSala;
     }
@@ -50,11 +51,11 @@ public class MessageBody implements Serializable{
     }
 
     public int getTamaño() {
-        return tamaño;
+        return tamanio;
     }
 
-    public void setTamaño(int tamaño) {
-        this.tamaño = tamaño;
+    public void setTamaño(int tamanio) {
+        this.tamanio = tamanio;
     }
 
     public int getMonto() {

@@ -1,5 +1,6 @@
 package tablero;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import java.util.List;
  *
  * @author Hector Espinoza
  */
-public class Tablero {
+public class Tablero implements Serializable{
 
     private LinkedList<Casilla> casillas; // Lista enlazada de casillas
     private int canJugadores=0;
@@ -30,6 +31,14 @@ public class Tablero {
             nuevaCasilla.setSiguiente(casillas.getFirst()); // Nueva casilla apunta a la primera
             casillas.add(nuevaCasilla); // Agregar a la lista
         }
+    }
+
+    public int getCanJugadores() {
+        return canJugadores;
+    }
+
+    public void setCanJugadores(int canJugadores) {
+        this.canJugadores = canJugadores;
     }
 
     public int getTamanio() {

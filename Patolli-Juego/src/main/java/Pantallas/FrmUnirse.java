@@ -1,5 +1,7 @@
 package Pantallas;
 
+import Control.ControlPantalla;
+import Control.ControlPatolli;
 import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
@@ -7,6 +9,7 @@ import servidor.Servidor;
 import entidades.EstadoDelJuego;
 import entidades.Jugador;
 import javax.swing.JOptionPane;
+import servidor.ControlMessage;
 
 /**
  *
@@ -22,10 +25,10 @@ public class FrmUnirse extends javax.swing.JFrame {
     /**
      * Creates new form FrmUnirse
      */
-//    public FrmUnirse() {
-//        initComponents();
+    public FrmUnirse() {
+        initComponents();
 //        tablero = new FrmTablero();
-//    }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -84,29 +87,17 @@ public class FrmUnirse extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-        unirse.isHost = false;
-
-        unirse.conectarse();
-
-        MessageBody content = new MessageBody();
-        content.setCodigoSala(this.txtCodigoPartida.getText().toUpperCase());
-
-        MessageType tipo = MessageType.UNIRSE_SALA;
-
-        Message mensaje = new Message.Builder()
-                .body(content)
-                .messageType(tipo)
-                .build();
-        unirse.enviarMensaje(mensaje);
+        ControlPatolli.getInstance().unirseSala(txtCodigoPartida.getText().toUpperCase());
     }
 
     public void existeSala(boolean resultado) {
-        if (unirse.isHost) {
+        if (ControlPatolli.getInstance().host) {
             return;
         }
         if (resultado) {
             JOptionPane.showMessageDialog(null, "Uniéndose a la partida", "Partida encontrada", JOptionPane.INFORMATION_MESSAGE);
-            tablero.setVisible(true);
+            ControlPantalla controlPantalla = new ControlPantalla();
+            controlPantalla.PasarPantallaTablero(ControlPatolli.getInstance());
             dispose();
         } else {
             JOptionPane.showMessageDialog(null, "No se encontró la partida", "Partida no encontrada", JOptionPane.INFORMATION_MESSAGE);
