@@ -35,22 +35,21 @@ import tablero.Tablero;
  * @author Enrique Rodriguez
  */
 public class FrmTablero extends javax.swing.JFrame {
-    
+
     private final ControlPatolli controlPatolli;
 
-    
     private final String codigoSala;
     private final int canCasillasAspa;
     private final int monto;
     private final int jugadores;
-    
+
     private List<Casilla> fichaJugador1;
     private List<Casilla> fichaJugador2;
     private List<Casilla> fichaJugador3;
     private List<Casilla> fichaJugador4;
-    
+
     private int ultimoTiro;
-    
+
     private List<Casilla> casillasTablero;
 //    private static FrmTablero tableroS;
     private boolean numerarCasillas;
@@ -61,9 +60,9 @@ public class FrmTablero extends javax.swing.JFrame {
     private List<Integer> fichasJugador2Posicion;
     private List<Integer> fichasJugador3Posicion;
     private List<Integer> fichasJugador4Posicion;
-    private List <Integer> montoJugadores;
-    
-    private int jugadorTurno=0;
+    private List<Integer> montoJugadores;
+
+    private int jugadorTurno = 0;
 //    private final List<JLabel> casillas;
 //    private Servidor servidor;
 //    private int ultimoTiro;
@@ -71,8 +70,7 @@ public class FrmTablero extends javax.swing.JFrame {
 //    private BufferedReader reader;
 //    private PrintWriter writer;
     private boolean juegoTermino;
-    
-    
+
     /**
      * Creates new form Tablero
      */
@@ -85,16 +83,15 @@ public class FrmTablero extends javax.swing.JFrame {
         this.monto = 33;//TODO
         initComponents();
     }
-    
-    
-    private void subirCambios (){
-        
-        if (!this.juegoTermino){
+
+    private void subirCambios() {
+
+        if (!this.juegoTermino) {
             //observarJugadorSale();
             //observarFinJuego();
         }
         //actualizarSiguienteJugador();
-        
+
         MessageBody content = new MessageBody();
         content.setCodigoSala(this.codigoSala);
         content.setFichasJugador1Posicion(fichasJugador1Posicion);
@@ -103,19 +100,17 @@ public class FrmTablero extends javax.swing.JFrame {
         content.setFichasJugador4Posicion(fichasJugador4Posicion);
         content.setMontoJugadores(montoJugadores);
         content.setJugador(jugadorTurno);
-        
+
         MessageType tipoMensaje = MessageType.PASAR_CAMBIOS;
-        
+
         Message mensajeServidor = new Message.Builder()
                 .body(content)
                 .messageType(tipoMensaje)
                 .build();
         controlPatolli.enviarMensaje(mensajeServidor);
-        
-        
+
     }
-    
-    
+
 ////////////////////////////////////////////////    public boolean recibirCambios(List<Integer> montoJugadores, int siguienteJugador, List<Integer> fichasGatoPosicion,
 ////////////////////////////////////////////////            List<Integer> fichasConchaPosicion, List<Integer> fichasPiramidePosicion, List<Integer> fichasMazorcaPosicion) {
 ////////////////////////////////////////////////
@@ -141,8 +136,6 @@ public class FrmTablero extends javax.swing.JFrame {
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////        return true;
 ////////////////////////////////////////////////    }
-
-    
 //        casillas = new LinkedList<>();
 //
 //        try {
@@ -255,7 +248,7 @@ public class FrmTablero extends javax.swing.JFrame {
             return;
         }
 
-         //Verificar si la casilla seleccionada está ocupada (tiene una ficha)
+        //Verificar si la casilla seleccionada está ocupada (tiene una ficha)
         if (!casilla.isOcupada()) {  // Usamos el método de instancia isOcupada
             System.out.println("No hay una ficha en la casilla seleccionada.");
             return;  // Si no hay ficha, no se puede mover
@@ -281,8 +274,8 @@ public class FrmTablero extends javax.swing.JFrame {
         }
 
         // Quitar la ficha de la casilla original (si tiene un icono)
-        casilla.setIcon(null);  // Establecer un ícono vacío
-        casilla.repaint();  // Forzar el repintado de la casilla original
+        casilla.setIcon(null);
+        System.out.println("");
 
         // Agregar la ficha a la nueva casilla
         agregarFicha(nuevaCasilla, "/Utilerias/ficha_roja.png");
@@ -703,7 +696,7 @@ public class FrmTablero extends javax.swing.JFrame {
                 ultimoTiro++;
             }
             i++;
-            
+
         }
         escribirCanias(canias);
 //        }

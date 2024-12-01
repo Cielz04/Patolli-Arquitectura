@@ -18,6 +18,11 @@ public class Casilla extends JLabel {
     public Casilla(Icon image) {
         super(image);
     }
+    
+    public void quitarFondo(){
+        this.setIcon(null);
+        repaint();
+    }
 
     public boolean isOcupada() {
         return this.getIcon() != null;  // Verifica si el icono no es null, lo que significa que hay una ficha
