@@ -5,3 +5,4 @@ itson\mx\servidorpatolli\ServidorPatolli.class
 servidor\ControlMessage.class
 servidor\ClientConnection.class
 servidor\Servidor.class
+utileria\Utileria.class

@@ -80,7 +80,7 @@ public class ControlPatolli implements IControlPatolli, ConnectionTemplate {
         
     }
 
-    public void unirseSala(String codigoPartida) {
+    public MessageBody unirseSala(String codigoPartida) {
         // Crear el mensaje base para unirse a la sala
         MessageBody mb = new MessageBody();
         mb.setCodigoSala(codigoPartida);
@@ -108,6 +108,8 @@ public class ControlPatolli implements IControlPatolli, ConnectionTemplate {
 //            cliente.sendMessage(mensajeConectarse);
             hiloCliente.sendMessage(mensajeConectarse);
             hiloCliente.sendMessage(mensajeUnirse);
+            
+            return mb;
         
     }
     

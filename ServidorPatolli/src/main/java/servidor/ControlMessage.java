@@ -186,6 +186,17 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
             rooms.get(codigoSala).add(user);
             System.out.println("El cliente " + message.getSender().getNombre() + " se unió a la sala " + codigoSala);
             
+            
+            if (rooms.get(codigoSala).size()==0){
+                System.out.println("No sala");
+            }else{
+                System.out.println("Si sala");
+            }
+            
+            for (int i = 0; i<rooms.get(codigoSala).size(); i++) {
+                System.out.println(rooms.get(codigoSala).get(i).getJugador().getNombre());
+            }
+           
             //Message para los jugador que ya estaban en la sala
             MessageBody cuerpoOtrosJugadores = new MessageBody();
             MessageType tipoOtrosJugadores = MessageType.UNIRSE_SALA;
@@ -215,6 +226,7 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
             
         } finally {
             lock.unlock();
+                    
         }
     }
     

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
 import java.util.concurrent.locks.ReentrantLock;
+import utileria.Utileria;
 
 /**
  *
@@ -36,7 +37,7 @@ public class ClientConnection implements TemplateConnection, IObserver, IConnect
     public ClientConnection(FrmInicio frameInicio) {
         this.frameInicio=frameInicio;
         jugador = new Jugador();
-        jugador.setNombre("");//HACER
+        jugador.setNombre("Jugador 1");
     }
 
     @Override

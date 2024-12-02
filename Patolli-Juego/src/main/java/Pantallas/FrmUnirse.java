@@ -87,7 +87,9 @@ public class FrmUnirse extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-        ControlPatolli.getInstance().unirseSala(txtCodigoPartida.getText().toUpperCase());
+        if (ControlPatolli.getInstance().unirseSala(txtCodigoPartida.getText().toUpperCase()).getTamaño()!=0){
+            
+        }
         
         
         
