@@ -26,4 +26,5 @@ public interface ConnectionTemplate {
 //    void onGeneralMessage(Message message);
 //    
 //    default void onDisconnect(Message message){}
+    
 }

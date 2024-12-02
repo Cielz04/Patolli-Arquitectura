@@ -15,22 +15,23 @@ import javax.swing.JOptionPane;
  */
 public class FrmInicio extends javax.swing.JFrame {
 
-    FrmConfigurarPartida crearPartida;
+    FrmConfigurarPartida crearPartida = new FrmConfigurarPartida() ;
     FrmTablero tablero;
     private static FrmInicio menuS;
     private Servidor servidor;
     public boolean volverInicio;
     public boolean isHost;
-    ControlPatolli controlPatolli = new ControlPatolli();
+    ControlPatolli controlPatolli;
 
     /**
      * Creates new form PantallaInicio
      */
     public FrmInicio() {
         initComponents();
-        crearPartida = new FrmConfigurarPartida();
-        tablero= new FrmTablero(controlPatolli, "0");
+        controlPatolli = new ControlPatolli();
+        tablero= new FrmTablero(controlPatolli, "000");
         servidor = new Servidor();
+        
         
         // Conectar automáticamente al servidor cuando se inicia la interfaz
 //        iniciarServidor();

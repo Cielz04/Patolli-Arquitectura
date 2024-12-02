@@ -5,6 +5,7 @@ package Pantallas;
 import servidor.Servidor;
 import Control.ControlPatolli;
 import entidades.Juego;
+import java.io.IOException;
 import javax.swing.JOptionPane;
 import tablero.Tablero;
 
@@ -20,7 +21,7 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
     DlgApuesta crearApuesta;
     Servidor servidor;
     
-    public FrmConfigurarPartida() {
+    public FrmConfigurarPartida(){
         initComponents();
         crearApuesta= new DlgApuesta(this, rootPaneCheckingEnabled);
         btnGroupAspas.add(aspa8);

@@ -31,6 +31,7 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
     private final Thread serverThread;
     private final ReentrantLock lock = new ReentrantLock();
     
+    
     private final IChatLogger logger = LoggerFactory.getLogger(ControlMessage.class);
     
     
@@ -139,6 +140,7 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
             } else {
                 rooms.put(codigoSala, new ArrayList<>());
                 System.out.println("Sala " + codigoSala + " creada exitosamente.");
+                onConectarse(message);
                 onUnirseSala(message); // Unir al cliente a la nueva sala
             }
         } finally {

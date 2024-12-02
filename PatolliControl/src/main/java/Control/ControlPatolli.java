@@ -2,6 +2,7 @@ package Control;
 
 import Pantallas.FrmInicio;
 import com.chat.tcpcommons.ClientThread;
+import com.chat.tcpcommons.ConnectionTemplate;
 import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
@@ -10,6 +11,8 @@ import entidades.Jugador;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import servidor.ControlMessage;
 import tablero.Tablero;
 
@@ -17,7 +20,7 @@ import tablero.Tablero;
  *
  * @author Hector Espinoza
  */
-public class ControlPatolli implements IControlPatolli {
+public class ControlPatolli implements IControlPatolli, ConnectionTemplate {
 
     static ControlPatolli controlSingleTon;
     Partida partida;
@@ -25,14 +28,24 @@ public class ControlPatolli implements IControlPatolli {
     public boolean host;
     FrmInicio frameInicio;
     private int jugadores;
+    private ClientThread hiloCliente;
 
-    public ControlPatolli(FrmInicio frameInicio) {
+    public ControlPatolli(FrmInicio frameInicio) throws IOException {
         this.frameInicio = frameInicio;
         partida = new Partida();
+        hiloCliente = new ClientThread(new Socket("localhost", 50064));
     }
 
+//    public void setJugadorClient (String nombre){
+//        hiloCliente.setJugador(new Jugador("nombre", Color.RED));
+//    }
     public ControlPatolli() {
         partida = new Partida();
+        try {
+            hiloCliente = new ClientThread(new Socket("localhost", 50064));
+        } catch (IOException ex) {
+            Logger.getLogger(ControlPatolli.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void crearSala() {
@@ -49,65 +62,56 @@ public class ControlPatolli implements IControlPatolli {
 
         // Inicializar el servidor
         ControlMessage cm = new ControlMessage();
-        try {
+        
             // Simular la conexión de un cliente
-            Socket socket = new Socket("localhost", 50064); // Simulación de conexión cliente
-            ClientThread cliente = new ClientThread(socket);
-            cliente.setJugador(nJugador);
+            hiloCliente.setJugador(nJugador);
 
             // Agregar el cliente a la sala de espera
-            cm.rooms.get("sala de espera").add(cliente);
-            cliente.subscribe(cm); // Suscribir el cliente al observable
-            
-            
+            cm.rooms.get("sala de espera").add(hiloCliente);
+            hiloCliente.subscribe(cm); // Suscribir el cliente al observable
 
             // Simular los mensajes
-            cm.onCrearSala(mensaje);
-            cm.onConectarse(mensajeConectarse);
-            cliente.sendMessage(mensaje);
-            cliente.sendMessage(mensajeConectarse);
-            
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//            cm.onCrearSala(mensaje);
+//            cm.onConectarse(mensajeConectarse);
+            hiloCliente.sendMessage(mensaje);
+           
+//            cliente.sendMessage(mensajeConectarse);
+
         
+    }
+
     public void unirseSala(String codigoPartida) {
         // Crear el mensaje base para unirse a la sala
         MessageBody mb = new MessageBody();
         mb.setCodigoSala(codigoPartida);
-        mb.setJugador(2);
+        mb.setJugador(4);
 
         // Crear el jugador que se va a unir
-        Jugador nJugador = new Jugador("Jugador 2", Color.BLUE); // Cambia el nombre y el color según corresponda
+        Jugador nJugador = new Jugador("Jugador 3", Color.BLUE); // Cambia el nombre y el color según corresponda
 
 //        Message mensajeConectarse = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.CONECTARSE);
         // Crear el mensaje de unirse a sala
         Message mensajeUnirse = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.UNIRSE_SALA);
-
+        Message mensajeConectarse = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.CONECTARSE);
         // Inicializar la lógica de mensajes
         ControlMessage cm = new ControlMessage();
-        try {
+       
             // Simular la conexión de un cliente
-            Socket socket = new Socket("localhost", 50064); // Simulación de conexión cliente
-            ClientThread cliente = new ClientThread(socket);
-            cliente.setJugador(nJugador);
+            hiloCliente.setJugador(nJugador);
 
             // Agregar el cliente a la sala de espera
-            cm.rooms.get("sala de espera").add(cliente);
-            cliente.subscribe(cm); // Suscribir el cliente al observable
-            
+            cm.rooms.get("sala de espera").add(hiloCliente);
+            hiloCliente.subscribe(cm); // Suscribir el cliente al observable
 
             // Procesar el mensaje de unirse a sala
 //            cm.onConectarse(mensajeConectarse);
-            cm.onUnirseSala(mensajeUnirse);
 //            cliente.sendMessage(mensajeConectarse);
-            cliente.sendMessage(mensajeUnirse);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            hiloCliente.sendMessage(mensajeConectarse);
+            hiloCliente.sendMessage(mensajeUnirse);
+        
     }
+    
+    
 
     public void configurarJugadores(int canJugadores) {
         juego.setCanJugadores(canJugadores);
