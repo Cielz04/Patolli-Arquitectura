@@ -58,10 +58,16 @@ public class ControlPatolli implements IControlPatolli {
             // Agregar el cliente a la sala de espera
             cm.rooms.get("sala de espera").add(cliente);
             cliente.subscribe(cm); // Suscribir el cliente al observable
+            
+            
 
             // Simular los mensajes
-            cm.onConectarse(mensajeConectarse);
             cm.onCrearSala(mensaje);
+            cm.onConectarse(mensajeConectarse);
+            cliente.sendMessage(mensaje);
+            cliente.sendMessage(mensajeConectarse);
+            
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,6 +82,7 @@ public class ControlPatolli implements IControlPatolli {
         // Crear el jugador que se va a unir
         Jugador nJugador = new Jugador("Jugador 2", Color.BLUE); // Cambia el nombre y el color según corresponda
 
+//        Message mensajeConectarse = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.CONECTARSE);
         // Crear el mensaje de unirse a sala
         Message mensajeUnirse = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.UNIRSE_SALA);
 
@@ -90,9 +97,13 @@ public class ControlPatolli implements IControlPatolli {
             // Agregar el cliente a la sala de espera
             cm.rooms.get("sala de espera").add(cliente);
             cliente.subscribe(cm); // Suscribir el cliente al observable
+            
 
             // Procesar el mensaje de unirse a sala
+//            cm.onConectarse(mensajeConectarse);
             cm.onUnirseSala(mensajeUnirse);
+//            cliente.sendMessage(mensajeConectarse);
+            cliente.sendMessage(mensajeUnirse);
         } catch (IOException e) {
             e.printStackTrace();
         }
