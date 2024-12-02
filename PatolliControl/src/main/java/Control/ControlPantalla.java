@@ -11,91 +11,47 @@ import javax.swing.JDialog;
  *
  * @author esmeraldamolinaestrada
  */
-public class ControlPantalla {
+public class ControlPantalla implements IControlPantalla{
 
     FrmUnirse unirse;
 
-    /**
-     * Pasa a la siguiente pantalla, que es FrameUnirseCrear. Crea una nueva
-     * instancia de FrameUnirseCrear y esconde la ventana actual
-     *
-     * @param children
-     */
+   
 
+    @Override
     public void PasarPantallaUnirseCrear(FrmInicio inicio) {
         FrmUnirse unirse = new FrmUnirse();
         unirse.setVisible(true);
         inicio.dispose();
     }
 
-    /**
-     * Pasa a la siguiente pantalla, que es DialogFinal. Crea una nueva
-     * instancia de DialogFinal y esconde la ventana actual
-     *
-     * @param children
-     * @param podio
-     */
+    @Override
     public void PasarPantallaFinal() {
         
     }
 
-    /**
-     * Pasa a la siguiente pantalla, que es DialogComoJugar Crea una nueva
-     * instancia de DialogComoJugar y esconde la ventana actual
-     *
-     * @param children
-     */
+    @Override
     public void PasarPantallaComoJugar(JDialog children) {
         
     }
 
-    /**
-     * Pasa a la siguiente pantalla, que es FrameSala. Crea una nueva instancia
-     * de FrameSala y esconde la ventana actual
-     *
-     * @param children
-     * @param tamaño
-     * @param monto
-     * @param fichas
-     * @param codigo
-     */
+    @Override
     public void PasarPantallaSala() {
         
     }
 
-    /**
-     * Pasa a la siguiente pantalla, que es FrameOpciones. Crea una nueva
-     * instancia de FrameOpciones y esconde la ventana actual
-     *
-     * @param children
-     */
+    @Override
     public void PasarPantallaOpciones() {
 //        DlgApuesta pantallaApuesta = new DlgApuesta();
 //        pantallaApuesta.setVisible(true);
         
     }
 
-    /**
-     * Pasa a la siguiente pantalla, que es FrameInicio
-     *
-     * @param children
-     */
+    @Override
     public void PasarPantallaInicio() {
        
     }
 
-    /**
-     * Pasa a la siguiente pantalla, que es FrameTablero. Crea una nueva
-     * instancia de FrameTablero y esconde la ventana actual
-     *
-     * @param children
-     * @param tamaño
-     * @param fichas
-     * @param monto
-     * @param jugadores
-     * @param miJugador
-     * @param codigoSala
-     */
+    @Override
     public void PasarPantallaTablero(ControlPatolli controlPatolli) {
         FrmTablero tablero = new FrmTablero(controlPatolli, "000");
         tablero.setVisible(true);

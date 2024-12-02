@@ -25,22 +25,20 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ControlMessage extends Observable implements TemplateConnection, Runnable, IObserver{
     
     private ServerSocket server;
-    public final Map<String,List<ClientThread>> rooms;
-    private final String SALA_DE_ESPERA="sala de espera";
-    private final int PORT=50064;
+    public final Map<String, List<ClientThread>> rooms;
+    private final String SALA_DE_ESPERA = "sala de espera";
+    private final int PORT = 50064;
     private final Thread serverThread;
     private final ReentrantLock lock = new ReentrantLock();
-    
-    
+
     private final IChatLogger logger = LoggerFactory.getLogger(ControlMessage.class);
-    
-    
+
     public ControlMessage() {
         serverThread = new Thread(this);
-        rooms = new HashMap<>(); 
+        rooms = new HashMap<>();
         rooms.put(SALA_DE_ESPERA, new ArrayList<>()); // Inicializa la lista para la sala de espera
     }
-    
+
     public void init() {
         try {
             server = new ServerSocket(PORT);
@@ -49,11 +47,11 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
             logger.error(String.format("Error al iniciar el servidor: %s", ex.getMessage()));
         }
     }
-    
+
     @Override
     public void run() {
         try {
-            while (true) {                
+            while (true) {
                 Socket clientSocket = server.accept();
 
                 // Crear y configurar el cliente
@@ -70,9 +68,9 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
             }
         } catch (IOException ex) {
             logger.error(String.format("Error al iniciar la conexion al servidor: %s", ex.getMessage()));
-        } 
+        }
     }
-    
+
     @Override
     public void onConectarse(Message message) {
         lock.lock();
@@ -96,7 +94,7 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
             lock.unlock();
         }
     }
-    
+
     @Override
     public void onDisconnect(Message message) {
         lock.lock();
@@ -112,18 +110,17 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
             lock.unlock();
         }
     }
-    
+
     @Override
     public void onUpdate(Object obj) {
         proccessMessage((Message) obj);
     }
-    
+
     @Override
     public void notifyObservers(Object obj) {
         observers.forEach(o -> o.onUpdate(obj));
     }
-    
-    
+
     @Override
     public void onCrearSala(Message message) {
         lock.lock();
@@ -147,14 +144,13 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
             lock.unlock();
         }
     }
-    
-    
+
     @Override
     public void onUnirseSala(Message message) {
         lock.lock();
         try {
             String codigoSala = message.getContent().getCodigoSala();
-            
+
             var user = rooms.get(SALA_DE_ESPERA).stream()
                     .filter(c -> c.getJugador().equals(message.getSender()))
                     .findFirst()
@@ -185,18 +181,18 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
             rooms.get(SALA_DE_ESPERA).remove(user);
             rooms.get(codigoSala).add(user);
             System.out.println("El cliente " + message.getSender().getNombre() + " se unió a la sala " + codigoSala);
-            
-            
-            if (rooms.get(codigoSala).size()==0){
+//            message.setContent(rooms.get(codigoSala).get(0));
+
+            if (rooms.get(codigoSala).size() == 0) {
                 System.out.println("No sala");
-            }else{
+            } else {
                 System.out.println("Si sala");
             }
-            
-            for (int i = 0; i<rooms.get(codigoSala).size(); i++) {
+
+            for (int i = 0; i < rooms.get(codigoSala).size(); i++) {
                 System.out.println(rooms.get(codigoSala).get(i).getJugador().getNombre());
             }
-           
+
             //Message para los jugador que ya estaban en la sala
             MessageBody cuerpoOtrosJugadores = new MessageBody();
             MessageType tipoOtrosJugadores = MessageType.UNIRSE_SALA;
@@ -204,7 +200,7 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
                     .body(cuerpoOtrosJugadores)
                     .messageType(tipoOtrosJugadores)
                     .build();
-            
+
             //Message para el jugador que se unio
             MessageBody cuerpoRespuesta = new MessageBody();
             cuerpoRespuesta.setJugadores(rooms.get(codigoSala).size());
@@ -214,19 +210,21 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
                     .body(cuerpoRespuesta)
                     .messageType(tipoRespuesta)
                     .build();
-            
-            //Notificar a los jugadores en la sala
+
             rooms.get(codigoSala).forEach(cliente -> {
-                if (cliente.equals(user)) {
-                    cliente.sendMessage(MessageRespuesta);
-                }else{
+                if (!cliente.equals(user)) {
                     cliente.sendMessage(MessageOtrosJugadores);
                 }
-            });  
-            
+            });
+
+            for (int i = 0; i < rooms.get(codigoSala).size(); i++) {
+                rooms.get(codigoSala).get(i).sendMessage(MessageOtrosJugadores);
+            }
+
+
         } finally {
             lock.unlock();
-                    
+
         }
     }
     

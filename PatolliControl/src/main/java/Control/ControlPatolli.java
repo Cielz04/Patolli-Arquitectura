@@ -2,7 +2,7 @@ package Control;
 
 import Pantallas.FrmInicio;
 import com.chat.tcpcommons.ClientThread;
-import com.chat.tcpcommons.ConnectionTemplate;
+
 import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
@@ -20,7 +20,7 @@ import tablero.Tablero;
  *
  * @author Hector Espinoza
  */
-public class ControlPatolli implements IControlPatolli, ConnectionTemplate {
+public class ControlPatolli implements IControlPatolli{
 
     static ControlPatolli controlSingleTon;
     Partida partida;
@@ -108,7 +108,7 @@ public class ControlPatolli implements IControlPatolli, ConnectionTemplate {
 //            cliente.sendMessage(mensajeConectarse);
             hiloCliente.sendMessage(mensajeConectarse);
             hiloCliente.sendMessage(mensajeUnirse);
-            
+        
             return mb;
         
     }

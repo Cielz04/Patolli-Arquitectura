@@ -8,7 +8,7 @@ import java.util.List;
  *
  * @author Hector Espinoza
  */
-public class ControlJugador {
+public class ControlJugador implements IControlJugador{
     
     private List <Jugador> jugadores; //Lista de jugadores en juego
     private static ControlJugador jugadoresControl;
@@ -28,10 +28,12 @@ public class ControlJugador {
     }
     
     
+    @Override
     public void anadirJugador (Jugador jugador){
         jugadores.add(jugador);
     }
     
+    @Override
     public Jugador obtenerJugadorTurno(){
         if (jugadorTurno == null){
             jugadorTurno = jugadores.get(0);
@@ -39,6 +41,7 @@ public class ControlJugador {
         return jugadorTurno;
     }
     
+    @Override
     public void cambiarSiguienteTurno(){
         
         if (turno < jugadores.size()){
@@ -49,6 +52,7 @@ public class ControlJugador {
         
     }
     
+    @Override
     public void cambiarJugadorTurno(){
         
         if (jugadorTurno==null){
