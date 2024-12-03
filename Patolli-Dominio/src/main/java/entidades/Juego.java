@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import tablero.Tablero;
 
 public class Juego implements Serializable {
 
@@ -64,7 +65,7 @@ public class Juego implements Serializable {
 		this.numCasillasAspa = numCasillasAspa;
 	}
 	
-	public void addJugador(){
+	public void addJugador(Jugador nombre){
             if (jugadores!=null && (canJugadores>1)){
                 jugadores = new LinkedList<>();
                 jugadores.add(new Jugador("Jugador 1", Color.RED));
@@ -83,9 +84,28 @@ public class Juego implements Serializable {
                     
                 }         
             }
-		
-	}
-	
+            
+        if (jugadores != null && (canJugadores > 1)) {
+            jugadores = new LinkedList<>();
+            jugadores.add(new Jugador("Jugador 1", Color.RED));
+
+            if (canJugadores == 2) {
+                jugadores.add(new Jugador("Jugador 2", Color.GREEN));
+
+            } else if (canJugadores == 3) {
+                jugadores.add(new Jugador("Jugador 2", Color.GREEN));
+                jugadores.add(new Jugador("Jugador 3", Color.YELLOW));
+
+            } else if (canJugadores == 4) {
+                jugadores.add(new Jugador("Jugador 2", Color.GREEN));
+                jugadores.add(new Jugador("Jugador 3", Color.YELLOW));
+                jugadores.add(new Jugador("Jugador 4", Color.BLUE));
+
+            }
+        }
+
+    }
+
 	public List<Jugador> getListaJugador(){
 		return this.jugadores;
 	}
@@ -149,6 +169,9 @@ public class Juego implements Serializable {
 
     public void setCanJugadores(int canJugadores) {
         this.canJugadores = canJugadores;
+    }
+
+    public void addJugador() {
     }
     
     

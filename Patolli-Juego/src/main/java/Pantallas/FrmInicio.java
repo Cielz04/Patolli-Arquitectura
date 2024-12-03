@@ -1,7 +1,13 @@
 package Pantallas;
 
-import Control.ServidorDelJuego;
+import Control.ControlPantalla;
+import Control.ControlPatolli;
+import com.chat.tcpcommons.Message;
+import servidor.Servidor;
+import java.io.IOException;
+import java.net.Socket;
 import javax.swing.JOptionPane;
+
 
 /**
  *
@@ -9,15 +15,27 @@ import javax.swing.JOptionPane;
  */
 public class FrmInicio extends javax.swing.JFrame {
 
-    FrmConfigurarPartida crearPartida;
+    FrmConfigurarPartida crearPartida = new FrmConfigurarPartida() ;
+    FrmTablero tablero;
     private static FrmInicio menuS;
+    private Servidor servidor;
+    public boolean volverInicio;
+    public boolean isHost;
+    ControlPatolli controlPatolli;
 
     /**
      * Creates new form PantallaInicio
      */
     public FrmInicio() {
         initComponents();
-        crearPartida = new FrmConfigurarPartida();
+        controlPatolli = ControlPatolli.getInstance();
+        tablero= new FrmTablero(controlPatolli, "000");
+        servidor = new Servidor();
+        
+        
+        // Conectar automáticamente al servidor cuando se inicia la interfaz
+//        iniciarServidor();
+
     }
 
     public static FrmInicio getInstance() {
@@ -26,6 +44,109 @@ public class FrmInicio extends javax.swing.JFrame {
         }
         return menuS;
     }
+    
+    public void conectarse(){
+        volverInicio=false;
+        controlPatolli.conectarse(this);
+    }
+    /**
+     * El jugador se desconecta del servidor
+     * @param codigoSala
+     * @param miJugador
+     */
+    public void desconectar(String codigoSala, int miJugador){
+        controlPatolli.desconectar(codigoSala,miJugador);
+    }
+    /**
+     * El jugador envia un mensaje a los demas jugadores
+     * @param mensaje
+     */
+    public void enviarMensaje(Message mensaje){
+        controlPatolli.enviarMensaje(mensaje);
+    }
+    public void onConectarse(Message mensaje) {
+
+    }
+//    public void onUnirseSala(Message mensaje) {
+//        if (sala != null) {
+//            sala.añadirJugador(1);
+//        }
+//    }
+//    public void onCrearSala(Message mensaje) {
+//
+//    }
+//    public void onPasarOpciones(Message mensaje) { 
+//        if(sala!=null){
+//            sala.recibirOpciones(mensaje.getBody().getTamaño(), mensaje.getBody().getMonto(), mensaje.getBody().getFichas(), mensaje.getBody().getJugadores(), mensaje.getBody().getCodigoSala());
+//        }
+//    }
+//    public void onPasarCambios(Message mensaje) {
+//        if(tablero!=null){
+//            tablero.recibirCambios(mensaje.getBody().getMontoJugadores(), mensaje.getBody().getJugador(), mensaje.getBody().getFichasGatoPosicion(), mensaje.getBody().getFichasConchaPosicion(), mensaje.getBody().getFichasPiramidePosicion(), mensaje.getBody().getFichasMazorcaPosicion());
+//        }     
+//    } 
+//    public void onDesconectarse(Message mensaje){
+//        JOptionPane.showMessageDialog(null, mensaje.getBody().getRazonDesconexion(), "Se desconecto del servidor", JOptionPane.INFORMATION_MESSAGE);
+//        if(tablero!=null){
+//            this.PasarPantallaInicio(tablero);
+//        }else if(sala!=null){
+//            this.PasarPantallaInicio(sala);
+//        }    
+//    }
+//    
+//    public void onPasarJugadores(Message mensaje) {
+//        if (unirseCrear != null) {
+//            unirseCrear.existeSala(mensaje.getBody().isExisteSala());
+//        }else{
+//            System.out.println("unirseCrear es null");
+//        }
+//        
+//        int jugadores = mensaje.getBody().getJugadores();
+//
+//        if (sala != null) {
+//            sala.setMiJugador(jugadores-1);
+//        }else{
+//            System.out.println("Sala es null");
+//        }
+//    }
+//    public void onJugadorSale(Message mensaje){
+//        if (sala != null) {
+//            sala.recibirJugadorSale(mensaje.getBody().getJugador());
+//        }else{
+//            System.out.println("Sala es null");
+//        }
+//        if(tablero!=null){
+//           tablero.recibirJugadorSale(mensaje.getBody().getJugador());
+//        }else{
+//            System.out.println("Tablero es null");
+//        }          
+//    }
+
+//    public void conectarJugador() {
+//
+//        if (Servidor.getInstance().isServerInitialized()) {
+//
+//            String codigoPartida = "HolaMundo2307";
+//            if (codigoPartida.isEmpty()) {
+//                JOptionPane.showMessageDialog(this, "Por favor ingresa un código de partida.");
+//                return;
+//            }
+//
+//            Jugador jugador = new Jugador("Jugador");
+//
+//            boolean exito = Servidor.getInstance().unirsePartida(codigoPartida, jugador);
+//
+//            if (exito) {
+//                JOptionPane.showMessageDialog(this, "Jugador unido a la partida con éxito.");
+//                new FrmTablero().setVisible(true);
+//                this.setVisible(false);
+//            } else {
+//                JOptionPane.showMessageDialog(this, "No se pudo unir a la partida. Verifica el código.");
+//            }
+//        } else {
+//            JOptionPane.showMessageDialog(this, "El servidor no está en ejecución.");
+//        }
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -109,7 +230,7 @@ public class FrmInicio extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("STXinwei", 1, 100)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Patolli");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 150, 310, 90));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 150, 360, 90));
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/pajaro.png"))); // NOI18N
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 360, 210, 160));
@@ -140,15 +261,10 @@ public class FrmInicio extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIniciarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarPartidaActionPerformed
-        if (ServidorDelJuego.isRunning()) {
-        // Si el servidor está corriendo, cerramos la ventana actual y mostramos el tablero
-        dispose();
-        FrmTablero.getInstance().setVisible(true);
-    } else {
-        // Si el servidor no está corriendo, mostramos la ventana de creación de partida
+        isHost = true;
         crearPartida.setVisible(true);
-        this.dispose();
-    }
+        dispose();
+        
     }//GEN-LAST:event_btnIniciarPartidaActionPerformed
 
     private void btnReglasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReglasActionPerformed
@@ -173,7 +289,9 @@ public class FrmInicio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSalir1ActionPerformed
 
     private void btnUnirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnirseActionPerformed
-        // TODO add your handling code here:
+        // Crear un nuevo hilo para la conexión al servidor
+        ControlPantalla controlPantalla = new ControlPantalla();
+        controlPantalla.PasarPantallaUnirseCrear(this);
     }//GEN-LAST:event_btnUnirseActionPerformed
 
     /**

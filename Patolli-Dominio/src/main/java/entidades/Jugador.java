@@ -1,66 +1,37 @@
 package entidades;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Jugador {
+public class Jugador implements Serializable{
 
 	private String nombre;
-	private int fondo;
 	private Color color;
-        private List<Ficha> fichas = new ArrayList<>();
-	
-        
-        public Jugador(String nombre, Color color) {
-		this.nombre = nombre;
-		this.color = color;
-	}
 
-	public Jugador() {
-	}
+         public Jugador() { 
+    }
 
-    public Jugador(String nombre) {
+    public Jugador(String nombre, Color color) {
+        this.nombre = nombre;
+        this.color = color;
+    }
+
+   
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-        
-        
-        
-        
 
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public int getFondo() {
-		return fondo;
-	}
-
-	public void setFondo(int fondo) {
-		this.fondo = fondo;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
-	}
-
-    public List<Ficha> getFichas() {
-        return fichas;
+    public Color getColor() {
+        return color;
     }
 
-    public void setFichas() {
-        for (int i = 0; i < 6; i++) {
-            this.fichas.add(new Ficha(false,null,null));
-        }
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     @Override
@@ -84,8 +55,13 @@ public class Jugador {
         final Jugador other = (Jugador) obj;
         return Objects.equals(this.color, other.color);
     }
+
+    @Override
+    public String toString() {
+        return "Jugador{" + "nombre=" + nombre + '}';
+    }
     
     
-        
-        
+    
+
 }

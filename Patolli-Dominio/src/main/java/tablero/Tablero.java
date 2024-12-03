@@ -1,5 +1,6 @@
 package tablero;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,11 +8,11 @@ import java.util.List;
  *
  * @author Hector Espinoza
  */
-public class Tablero {
+public class Tablero implements Serializable{
 
     private LinkedList<Casilla> casillas; // Lista enlazada de casillas
     private int canJugadores=0;
-    private int canFichas;
+    private int cantidadFichasAspa;
 
 
     public Tablero() {
@@ -32,6 +33,14 @@ public class Tablero {
         }
     }
 
+    public int getCanJugadores() {
+        return canJugadores;
+    }
+
+    public void setCanJugadores(int canJugadores) {
+        this.canJugadores = canJugadores;
+    }
+
     public int getTamanio() {
         return casillas.size();
     }
@@ -40,8 +49,8 @@ public class Tablero {
         return casilla.isOcupada();  // Cambié la llamada a instancias de Casilla
     }
 
-    public void ordenarCasillas(int casillasAspa, List<Casilla> listaCasillas) {
-        switch (casillasAspa) {
+    public void ordenarCasillas(List<Casilla> listaCasillas) {
+        switch (getCantidadCasillasAspa()) {
             case 8: {
                 int[] orden = {15, 13, 11, 9, 7, 5, 3, 1, 0, 2, 4, 6, 8, 10, 12, 14, 64,
                     55, 54, 53, 52, 51, 50, 49, 48, 56, 57, 58, 59, 60, 61, 62, 63, 66,
@@ -76,13 +85,22 @@ public class Tablero {
                 break;
             }
             default:
-                throw new IllegalArgumentException("Número de casillas de aspa no soportado: " + casillasAspa);
+                throw new IllegalArgumentException("Número de casillas de aspa no soportado: " + getCantidadCasillasAspa());
         }
     }
 
     public LinkedList<Casilla> getCasillas() {
         return casillas;
     }
+
+    public int getCantidadCasillasAspa() {
+        return cantidadFichasAspa;
+    }
+
+    public void setCantidadCasillasAspa(int cantidadFichasAspa) {
+        this.cantidadFichasAspa = cantidadFichasAspa;
+    }
+    
     
     
 }

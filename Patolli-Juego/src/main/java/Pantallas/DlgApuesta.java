@@ -2,8 +2,14 @@ package Pantallas;
 
 import Control.ControlJugador;
 import Control.ControlPatolli;
+import com.chat.tcpcommons.Message;
+import com.chat.tcpcommons.MessageBody;
+import com.chat.tcpcommons.MessageType;
+import entidades.Juego;
 import entidades.Jugador;
 import java.awt.Color;
+import javax.swing.JOptionPane;
+import servidor.ControlMessage;
 
 
 /**
@@ -12,11 +18,14 @@ import java.awt.Color;
  */
 public class DlgApuesta extends javax.swing.JDialog {
 
+    private FrmInicio frmInicio;
     /**
      * Creates new form DlgApuesta
      */
-    public DlgApuesta(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public DlgApuesta(java.awt.Frame parent, boolean modal, FrmInicio frmInicio) {
+    super(parent, modal);
+    this.frmInicio = frmInicio;
+      
         initComponents();
     }
 
@@ -214,27 +223,62 @@ public class DlgApuesta extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
-        if (ControlPatolli.getInstance()!=null){
-            String jugadores = (String) CmBJugadores.getSelectedItem();
-            int numJugadores = Integer.parseInt(jugadores);
-            ControlPatolli.getInstance().configurarJugadores(numJugadores);
-            ControlPatolli.getInstance().setApuesta(Integer.parseInt(this.txtApuesta.getText()));
-            
-            FrmTablero.getInstance().inicializar();
-            dispose();
-            FrmTablero.getInstance().setVisible(true);
-            
-            if (Integer.valueOf(CmBJugadores.getSelectedItem().toString())==2) {
-                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 1", Color.RED));
-                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 2", Color.GREEN));
+        try {
+        // Inicializar conexión al servidor
+        ControlPatolli.getInstance().conectarse(frmInicio);
 
-                
-            }            
+        // Configurar partida con apuesta y jugadores
+        int apuesta = Integer.parseInt(txtApuesta.getText());
+        int jugadores = Integer.parseInt(CmBJugadores.getSelectedItem().toString());
+        
+        // Crear mensaje con los datos de la apuesta
+        MessageBody body = new MessageBody();
+        body.setApuesta(apuesta);
+        body.setJugadores(jugadores);
+        Message mensaje = new Message.Builder()
+                .messageType(MessageType.CREAR_SALA)
+                .body(body)
+                .build();
+
+        // Enviar mensaje al servidor
+        ControlPatolli.getInstance().enviarMensaje(mensaje);
+
+        JOptionPane.showMessageDialog(this, "Partida creada correctamente");
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error al crear la partida: " + e.getMessage());
+    }
+
+
+
+
+//        if (ControlPatolli.getInstance()!=null){
+//            String jugadores = (String) CmBJugadores.getSelectedItem();
+//            int numJugadores = Integer.parseInt(jugadores);
+//            ControlPatolli.getInstance().configurarJugadores(numJugadores);
+//            ControlPatolli.getInstance().setApuesta(Integer.parseInt(this.txtApuesta.getText()));
+//            ControlPatolli.getInstance().conectarse();
+//            ControlMessage cm = new ControlMessage();
+//            ControlPatolli.getInstance().crearSala();
+//            FrmTablero tablero = new FrmTablero(ControlPatolli.getInstance(), "000");
+//            tablero.inicializar();
+//            dispose();
+//            tablero.setVisible(true);
+//
+//            if (Integer.valueOf(CmBJugadores.getSelectedItem().toString()) == 2) {
+//                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 1", Color.RED));
+//                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 2", Color.GREEN));
+//                Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
+//                Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
+////                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 1"));
+////                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 2"));
+
             
-            //FrmTablero.getInstance().pintarTablero();
+
+//            FrmTablero.getInstance().pintarTablero();
             
             
-        }
+        
 
 //        if (Juego.getInstance().ispCreada() == false) {
 //            this.setVisible(false);
@@ -268,9 +312,9 @@ public class DlgApuesta extends javax.swing.JDialog {
 //                
 //            
 //            
-//            FrmTablero.getInstance().inicializar();
-//            FrmTablero.getInstance().setVisible(true);
-//            FrmTablero.getInstance().pintarTablero();
+////            FrmTablero.getInstance().inicializar();
+////            FrmTablero.getInstance().setVisible(true);
+////           
 //        } else {
 //            JOptionPane.showMessageDialog(null, "Sexo");
 //        }

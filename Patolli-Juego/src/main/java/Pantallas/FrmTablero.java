@@ -1,9 +1,11 @@
 package Pantallas;
 
-import Control.Connection;
+
 import Control.ControlJugador;
 import Control.ControlPatolli;
-import Control.ServidorDelJuego;
+import com.chat.tcpcommons.Message;
+import com.chat.tcpcommons.MessageBody;
+import com.chat.tcpcommons.MessageType;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,13 +14,18 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import tablero.Casilla;
 import tablero.Tablero;
@@ -29,61 +36,187 @@ import tablero.Tablero;
  */
 public class FrmTablero extends javax.swing.JFrame {
 
-    private static FrmTablero tableroS;
-    private boolean numerarCasillas=true;
-    Tablero tablero = new Tablero();
+    private final ControlPatolli controlPatolli;
+
+    private final String codigoSala;
+    private final int canCasillasAspa;
+    private final int monto;
+    private final int jugadores;
+
+    private List<Casilla> fichaJugador1;
+    private List<Casilla> fichaJugador2;
+    private List<Casilla> fichaJugador3;
+    private List<Casilla> fichaJugador4;
+
+    private int ultimoTiro;
+
+    private List<Casilla> casillasTablero;
+//    private static FrmTablero tableroS;
+    private boolean numerarCasillas;
+//    private Tablero tablero = new Tablero();
     private int numeroCasilla;
-    private final List<JLabel> casillas;
-    private ServidorDelJuego servidor;
-    private Connection jugador;
-    private List<Integer> casillasOrdenadas;
-    private int ultimoTiro = 0;
+//    
+    private List<Integer> fichasJugador1Posicion;
+    private List<Integer> fichasJugador2Posicion;
+    private List<Integer> fichasJugador3Posicion;
+    private List<Integer> fichasJugador4Posicion;
+    private List<Integer> montoJugadores;
+
+    private int jugadorTurno = 0;
+//    private final List<JLabel> casillas;
+//    private Servidor servidor;
+//    private int ultimoTiro;
+//    private Socket socket;
+//    private BufferedReader reader;
+//    private PrintWriter writer;
+    private boolean juegoTermino;
 
     /**
      * Creates new form Tablero
      */
-    public FrmTablero() {
-        casillas = new LinkedList<>();
-
-        try {
-            // Verificar si el puerto está ocupado
-            if (!ServidorDelJuego.isRunning() && !ServidorDelJuego.isPortInUse(1002)) {
-                // Si no está corriendo ni el puerto está ocupado, inicia el servidor
-                servidor = ServidorDelJuego.getInstance();
-                jugador = new Connection("localhost", 1002, "Jugador1");
-                System.out.println("Servidor iniciado. Jugador conectado como Jugador1.");
-            } else if (ServidorDelJuego.isPortInUse(1002)) {
-                // Si el puerto está ocupado, conecta un nuevo cliente
-                servidor = null; // No hay instancia local del servidor en este proceso
-                jugador = new Connection("localhost", 1002, "Jugador");
-                System.out.println("Conectado al servidor existente. Jugador conectado como Jugador.");
-            } else {
-                System.err.println("No se puede determinar el estado del servidor.");
-            }
-        } catch (Exception e) {
-            System.err.println("Error al conectar con el servidor: " + e.getMessage());
-        }
-
-        initComponents(); // Inicializa los componentes de la interfaz gráfica
+    public FrmTablero(ControlPatolli controlPatolli, String codigoSala) {
+        this.controlPatolli = controlPatolli;
+        this.codigoSala = codigoSala;
+//        this.canCasillasAspa = controlPatolli.getTablero().getCantidadCasillasAspa();
+//        this.jugadores = controlPatolli.getJugadores();
+//        this.casillasTablero = controlPatolli.getTablero().getCasillas();
+        this.monto = 33;//TODO
+        initComponents();
     }
 
-    public static FrmTablero getInstance() {
-        if (tableroS == null) {
-            tableroS = new FrmTablero();
-        }
+    private void subirCambios() {
 
-        return tableroS;
+        if (!this.juegoTermino) {
+            //observarJugadorSale();
+            //observarFinJuego();
+        }
+        //actualizarSiguienteJugador();
+
+        MessageBody content = new MessageBody();
+        content.setCodigoSala(this.codigoSala);
+        content.setFichasJugador1Posicion(fichasJugador1Posicion);
+        content.setFichasJugador2Posicion(fichasJugador2Posicion);
+        content.setFichasJugador3Posicion(fichasJugador3Posicion);
+        content.setFichasJugador4Posicion(fichasJugador4Posicion);
+        content.setMontoJugadores(montoJugadores);
+        content.setJugador(jugadorTurno);
+
+        MessageType tipoMensaje = MessageType.PASAR_CAMBIOS;
+
+        Message mensajeServidor = new Message.Builder()
+                .body(content)
+                .messageType(tipoMensaje)
+                .build();
+        controlPatolli.enviarMensaje(mensajeServidor);
+
     }
 
+////////////////////////////////////////////////    public boolean recibirCambios(List<Integer> montoJugadores, int siguienteJugador, List<Integer> fichasGatoPosicion,
+////////////////////////////////////////////////            List<Integer> fichasConchaPosicion, List<Integer> fichasPiramidePosicion, List<Integer> fichasMazorcaPosicion) {
+////////////////////////////////////////////////
+////////////////////////////////////////////////        this.montoJugadores = montoJugadores;
+////////////////////////////////////////////////        this.jugador = siguienteJugador;
+////////////////////////////////////////////////        
+////////////////////////////////////////////////        this.fichasGatoPosicion = fichasGatoPosicion;
+////////////////////////////////////////////////        this.fichasConchaPosicion = fichasConchaPosicion;
+////////////////////////////////////////////////        this.fichasPiramidePosicion = fichasPiramidePosicion;
+////////////////////////////////////////////////        this.fichasMazorcaPosicion = fichasMazorcaPosicion;
+////////////////////////////////////////////////        
+////////////////////////////////////////////////        this.actualizarApuestas(); //Coloca el monto de apuestas correspondiente
+////////////////////////////////////////////////        this.actualizarCasillas(); //Actualiza el valor de la lista de casillas y la lista de fichas de label
+////////////////////////////////////////////////        this.actualizarTablero(); //Actualiza el tablero con la lista de casillas
+////////////////////////////////////////////////        this.actualizarSiguienteJugador(); //Actualiza la vista para el siguiente jugador 
+////////////////////////////////////////////////
+////////////////////////////////////////////////        //Si es mi turno, habilita el lanzar cañas
+////////////////////////////////////////////////        if (jugadoresActivos.get(miJugador)) {
+////////////////////////////////////////////////            if (jugador == miJugador) {
+////////////////////////////////////////////////                this.btnLanzarCañas.setEnabled(true);
+////////////////////////////////////////////////            }
+////////////////////////////////////////////////        }
+////////////////////////////////////////////////
+////////////////////////////////////////////////        return true;
+////////////////////////////////////////////////    }
+//        casillas = new LinkedList<>();
+//
+//        try {
+//            servidor = Servidor.getInstance();
+//            if (!Servidor.isRunning()) {
+//                
+//                
+//                socket = new Socket("localhost", 50065); // Asegúrate de que el servidor esté corriendo en este puerto
+//                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//                writer = new PrintWriter(socket.getOutputStream(), true);
+//                System.out.println("Conectado al servidor.");
+//
+//                servidor = Servidor.getInstance();
+//                System.out.println("Servidor iniciado.");
+//            } else {
+//
+//                System.out.println("Conectado al servidor existente.");
+//            }
+//        } catch (Exception e) {
+//            System.err.println("Error al conectar con el servidor: " + e.getMessage());
+//        }
+//        servidor = Servidor.getInstance();
+//        initComponents();
+//        new Thread(new ActualizadorDeInterfaz()).start();
+//    }
+//
+//    public static FrmTablero getInstance() {
+//        if (tableroS == null) {
+//            tableroS = new FrmTablero();
+//        }
+//        return tableroS;
+//    }
+//
+//    private class ActualizadorDeInterfaz implements Runnable {
+//
+//        @Override
+//        public void run() {
+//            try {
+//                String mensaje;
+//                while ((mensaje = reader.readLine()) != null) {
+//                    // Actualizar la interfaz si el servidor envía un mensaje de cambio
+//                    SwingUtilities.invokeLater(() -> {
+//                        // Lógica para actualizar la UI aquí
+//                        actualizarCasillas();
+//                    });
+//                }
+//            } catch (IOException e) {
+//                System.err.println("Error al recibir datos del servidor: " + e.getMessage());
+//            }
+//        }
+//    }
+//
+//    // Método para actualizar las casillas en la UI
+//    public void actualizarCasillas() {
+//        // Obtén las casillas del servidor y actualiza los componentes en la interfaz
+//        LinkedList<Casilla> casillasDelServidor = servidor.getGameState().getTablero().getCasillas();
+//
+//        for (int i = 0; i < casillasDelServidor.size(); i++) {
+//            Casilla casilla = casillasDelServidor.get(i);
+//            JLabel casillaLabel = casillas.get(i);
+//
+//            // Actualiza el estado de la casilla en el JLabel
+//            casillaLabel.setIcon(casilla.getIcon());
+//
+//        }
+//
+//        SwingUtilities.invokeLater(() -> {
+//            revalidate();
+//            repaint();
+//        });
+//    }
+//
     /**
      * Metodo que inicializa el tablero estableciando medidas y generando las
      * casillas
      */
     public void inicializar() {
-        inicializarAspa(tableroArriba, ControlPatolli.getInstance().getCasillasAspas(), 2, false);
-        inicializarAspa(tableroAbajo, ControlPatolli.getInstance().getCasillasAspas(), 2, true);
-        inicializarAspa(tableroDerecha, 2, ControlPatolli.getInstance().getCasillasAspas(), true);
-        inicializarAspa(tableroIzq, 2, ControlPatolli.getInstance().getCasillasAspas(), false);
+        inicializarAspa(tableroArriba, canCasillasAspa, 2, false);
+        inicializarAspa(tableroAbajo, canCasillasAspa, 2, true);
+        inicializarAspa(tableroDerecha, 2, canCasillasAspa, true);
+        inicializarAspa(tableroIzq, 2, canCasillasAspa, false);
 
         inicializarAspa(tableroCentro, 2, 2, true);
 
@@ -98,20 +231,24 @@ public class FrmTablero extends javax.swing.JFrame {
 //        }
         asignarNumeroCasillas();
         // Ejemplo de uso
-        Casilla casilla = tablero.getCasillas().get(0); // Obtener la primera casilla (por ejemplo)
+       Casilla casilla = this.casillasTablero.get(0);
         agregarFicha(casilla, "/Utilerias/ficha_roja.png");
 
     }
 
+    private void asignarNumeroCasillas() {
+        controlPatolli.getTablero().ordenarCasillas(casillasTablero);
+    }
+
     private void moverFicha(Casilla casilla, int dado) {
         // Validar que la casilla es parte del tablero
-        LinkedList<Casilla> listaCasillas = tablero.getCasillas();
+        LinkedList<Casilla> listaCasillas = controlPatolli.getTablero().getCasillas();
         if (!listaCasillas.contains(casilla)) {
             System.out.println("La casilla no pertenece al tablero.");
             return;
         }
 
-        // Verificar si la casilla seleccionada está ocupada (tiene una ficha)
+        //Verificar si la casilla seleccionada está ocupada (tiene una ficha)
         if (!casilla.isOcupada()) {  // Usamos el método de instancia isOcupada
             System.out.println("No hay una ficha en la casilla seleccionada.");
             return;  // Si no hay ficha, no se puede mover
@@ -135,12 +272,10 @@ public class FrmTablero extends javax.swing.JFrame {
             System.out.println("La casilla destino ya está ocupada.");
             return;
         }
-        
-        
-        
+
         // Quitar la ficha de la casilla original (si tiene un icono)
-        casilla.setIcon(null);  // Establecer un ícono vacío
-        casilla.repaint();  // Forzar el repintado de la casilla original
+        casilla.setIcon(null);
+        System.out.println("");
 
         // Agregar la ficha a la nueva casilla
         agregarFicha(nuevaCasilla, "/Utilerias/ficha_roja.png");
@@ -156,10 +291,6 @@ public class FrmTablero extends javax.swing.JFrame {
         lblCania4.setText("-");
         lblCania5.setText("-");
 
-    }
-
-    private void asignarNumeroCasillas() {
-        tablero.ordenarCasillas(ControlPatolli.getInstance().getCasillasAspas(), tablero.getCasillas());
     }
 
     /**
@@ -181,7 +312,7 @@ public class FrmTablero extends javax.swing.JFrame {
             label.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    moverFicha(label, 1); // Mueve ficha al hacer clic
+                    moverFicha(label, ultimoTiro); // Mueve ficha al hacer clic
                 }
             });
 
@@ -264,46 +395,30 @@ public class FrmTablero extends javax.swing.JFrame {
 
             // Añadir el JLabel al tablero y a la lista de casillas
             tablero.add(label);
-            this.tablero.agregarCasilla(label);
+            controlPatolli.getTablero().agregarCasilla(label);
         }
     }
 
     private void agregarFicha(Casilla casillaBase, String rutaImagen) {
-        int nuevoAncho = 50;
-        int nuevoAlto = 80;
         try {
-
-            // Verificar si la casilla ya tiene un icono
-            if (casillaBase.isOcupada()) {
-                System.out.println("La casilla ya está ocupada.");
-                return; // Si ya está ocupada, no agregues la ficha
-            }
-
-            // Cargar la imagen
             ImageIcon icono = new ImageIcon(getClass().getResource(rutaImagen));
             Image imagenOriginal = icono.getImage();
 
-            System.out.println(casillaBase.getSize());
-
-            if (casillaBase.getSize() == new Dimension(30, 76)) {
-                nuevoAncho = 30;
-                nuevoAlto = 60;
-            }
-            if (casillaBase.getSize() == new Dimension(21, 76)) {
-                nuevoAncho = 5;
-                nuevoAlto = 5;
-            }
-
+            int nuevoAncho = 70;
+            int nuevoAlto = 100;
             Image imagenEscalada = imagenOriginal.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
 
-            // Establecer el nuevo icono
-            casillaBase.setIcon(new ImageIcon(imagenEscalada));
+            Casilla ficha = new Casilla(new ImageIcon(imagenEscalada));
+            ficha.setHorizontalAlignment(JLabel.CENTER);
+            ficha.setVerticalAlignment(JLabel.CENTER);
 
-            // Forzar repintado
+            casillaBase.setLayout(new BorderLayout());
+            casillaBase.add(ficha, BorderLayout.CENTER);
+
+            casillaBase.revalidate();
             casillaBase.repaint();
-
-            System.out.println("Ficha agregada a la casilla.");
-
+            casillaBase.setIcon(icono);
+            controlPatolli.getTablero().getCasillas().set(controlPatolli.getTablero().getCasillas().indexOf(casillaBase), casillaBase);
         } catch (NullPointerException e) {
             System.err.println("No se pudo cargar la imagen: " + rutaImagen);
             e.printStackTrace();
@@ -333,6 +448,8 @@ public class FrmTablero extends javax.swing.JFrame {
         tableroAbajo = new javax.swing.JPanel();
         tableroDerecha = new javax.swing.JPanel();
         tableroCentro = new javax.swing.JPanel();
+        txtCodigo = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tablero");
@@ -459,6 +576,14 @@ public class FrmTablero extends javax.swing.JFrame {
             .addGap(0, 153, Short.MAX_VALUE)
         );
 
+        txtCodigo.setFont(new java.awt.Font("STIX Two Text", 1, 14)); // NOI18N
+        txtCodigo.setForeground(new java.awt.Color(255, 255, 255));
+        txtCodigo.setText("HolaMundo2307");
+
+        jLabel1.setFont(new java.awt.Font("STIX Two Text", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Codigo de la partida:");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -466,30 +591,26 @@ public class FrmTablero extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addContainerGap(370, Short.MAX_VALUE)
-                        .addComponent(tableroIzq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                        .addContainerGap(294, Short.MAX_VALUE)
+                        .addComponent(tableroIzq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(22, 22, 22)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(22, 22, 22)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addComponent(lblCania1)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(lblCania2)
-                                        .addGap(15, 15, 15)
-                                        .addComponent(lblCania3)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(lblCania4)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(lblCania5)
-                                        .addGap(16, 16, 16))
-                                    .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(lblCania1)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblCania2)
+                                .addGap(15, 15, 15)
+                                .addComponent(lblCania3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lblCania4)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblCania5)
+                                .addGap(16, 16, 16))
+                            .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
@@ -497,9 +618,21 @@ public class FrmTablero extends javax.swing.JFrame {
                             .addComponent(tableroArriba, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(tableroCentro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(tableroAbajo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tableroDerecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(113, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(tableroDerecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(195, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(27, 27, 27))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(105, 105, 105))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -510,13 +643,17 @@ public class FrmTablero extends javax.swing.JFrame {
                         .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(232, 232, 232))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(tableroArriba, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(tableroArriba, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(lblCania5)
                                     .addComponent(lblCania4)
@@ -552,7 +689,6 @@ public class FrmTablero extends javax.swing.JFrame {
 //        if () {
         int[] canias = new int[5];
         int i = 0;
-        ultimoTiro = 0;
 
         while (i < 5) {
             canias[i] = (int) (Math.random() * 2);
@@ -560,6 +696,7 @@ public class FrmTablero extends javax.swing.JFrame {
                 ultimoTiro++;
             }
             i++;
+
         }
         escribirCanias(canias);
 //        }
@@ -594,6 +731,7 @@ public class FrmTablero extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLanzar;
     private javax.swing.JButton btnRendirse;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel lblCania1;
@@ -606,5 +744,6 @@ public class FrmTablero extends javax.swing.JFrame {
     private javax.swing.JPanel tableroCentro;
     private javax.swing.JPanel tableroDerecha;
     private javax.swing.JPanel tableroIzq;
+    private javax.swing.JLabel txtCodigo;
     // End of variables declaration//GEN-END:variables
 }

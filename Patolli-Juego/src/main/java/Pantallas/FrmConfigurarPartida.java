@@ -1,10 +1,14 @@
 package Pantallas;
 
-
-
+import servidor.Servidor;
 import Control.ControlPatolli;
+import com.chat.tcpcommons.Message;
+import com.chat.tcpcommons.MessageBody;
+import com.chat.tcpcommons.MessageType;
 import entidades.Juego;
+import java.io.IOException;
 import javax.swing.JOptionPane;
+import tablero.Tablero;
 
 /**
  *
@@ -16,16 +20,17 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
      * Creates new form FrmConfigurarPartida
      */
     DlgApuesta crearApuesta;
+    Servidor servidor;
     
     public FrmConfigurarPartida() {
         initComponents();
-        crearApuesta= new DlgApuesta(this, rootPaneCheckingEnabled);
         btnGroupAspas.add(aspa8);
         btnGroupAspas.add(aspa10);
         btnGroupAspas.add(aspa14);
         btnGroupFichas.add(fichas2);
         btnGroupFichas.add(fichas4);
         btnGroupFichas.add(fichas6);
+//        servidor = Servidor.getInstance();
     }
 
     /**
@@ -288,28 +293,69 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
     }//GEN-LAST:event_fichas6ActionPerformed
 
     private void btnApuestaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApuestaActionPerformed
-        dispose();
-        if (ControlPatolli.getInstance()!=null){
-            if (fichas2.isSelected()){
-                ControlPatolli.getInstance().setCantidadFichas(2);
-            }else if (fichas4.isSelected()){
-                ControlPatolli.getInstance().setCantidadFichas(4);
-            }else if (fichas6.isSelected()){
-                ControlPatolli.getInstance().setCantidadFichas(6);
+        try {
+            // Configurar tamaño del tablero y cantidad de fichas
+            int tamanio=0;
+            int fichas=0;
+            if (aspa8.isSelected()) {
+                tamanio = 8;
+            }
+            if (aspa10.isSelected()) {
+                tamanio = 10;
+            }
+            if (aspa14.isSelected()) {
+                tamanio = 14;
             }
             
-            if (aspa8.isSelected()){
-                ControlPatolli.getInstance().setCantidadCasillas(8);
-            }else if(aspa10.isSelected()){
-                ControlPatolli.getInstance().setCantidadCasillas(10);
-            }else if(aspa14.isSelected()){
-                ControlPatolli.getInstance().setCantidadCasillas(14);
+            if (fichas2.isSelected()) {
+                fichas = 2;
             }
+            if (fichas4.isSelected()) {
+                fichas = 4;
+            }
+            if (fichas6.isSelected()) {
+                fichas = 6;
+            }
+
+            // Crear mensaje para configurar partida
+            MessageBody body = new MessageBody();
+            body.setTamaño(tamanio);
+            body.setFichas(fichas);
+            Message mensaje = new Message.Builder()
+                    .messageType(MessageType.PASAR_CAMBIOS)
+                    .body(body)
+                    .build();
+
+            // Enviar mensaje al servidor
+            ControlPatolli.getInstance().enviarMensaje(mensaje);
+            
+            JOptionPane.showMessageDialog(this, "Partida configurada correctamente");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al configurar la partida: " + e.getMessage());
         }
-        else {
-            JOptionPane.showMessageDialog(null, "Error al crear tablero");
-        }
-        crearApuesta.setVisible(true);        
+
+//        dispose();
+//        if (ControlPatolli.getInstance()!=null){
+//            if (fichas2.isSelected()){
+//                ControlPatolli.getInstance().setCantidadFichas(2);
+//            }else if (fichas4.isSelected()){
+//                ControlPatolli.getInstance().setCantidadFichas(4);
+//            }else if (fichas6.isSelected()){
+//                ControlPatolli.getInstance().setCantidadFichas(6);
+//            }
+//            
+//            if (aspa8.isSelected()){
+//                ControlPatolli.getInstance().getTablero().setCantidadCasillasAspa(8);
+//            }else if(aspa10.isSelected()){
+//                ControlPatolli.getInstance().getTablero().setCantidadCasillasAspa(10);
+//            }else if(aspa14.isSelected()){
+//                ControlPatolli.getInstance().getTablero().setCantidadCasillasAspa(14);
+//            }
+//        }
+//        else {
+//            JOptionPane.showMessageDialog(null, "Error al crear tablero");
+//        }
+//        crearApuesta.setVisible(true);  
     }//GEN-LAST:event_btnApuestaActionPerformed
 
     private void aspa8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aspa8ActionPerformed

@@ -1,11 +1,13 @@
-C:\Users\Hector Espinoza\Documents\NetBeansProjects\arq software\proyecto\Patolli-Arquitectura-prueba\tcpcommons-main\src\main\java\com\chat\tcpcommons\Observable.java
-C:\Users\Hector Espinoza\Documents\NetBeansProjects\arq software\proyecto\Patolli-Arquitectura-prueba\tcpcommons-main\src\main\java\com\chat\tcpcommons\logging\ChatLoggerImpl.java
-C:\Users\Hector Espinoza\Documents\NetBeansProjects\arq software\proyecto\Patolli-Arquitectura-prueba\tcpcommons-main\src\main\java\com\chat\tcpcommons\logging\IChatLogger.java
-C:\Users\Hector Espinoza\Documents\NetBeansProjects\arq software\proyecto\Patolli-Arquitectura-prueba\tcpcommons-main\src\main\java\com\chat\tcpcommons\IConnection.java
-C:\Users\Hector Espinoza\Documents\NetBeansProjects\arq software\proyecto\Patolli-Arquitectura-prueba\tcpcommons-main\src\main\java\com\chat\tcpcommons\logging\LoggerFactory.java
-C:\Users\Hector Espinoza\Documents\NetBeansProjects\arq software\proyecto\Patolli-Arquitectura-prueba\tcpcommons-main\src\main\java\com\chat\tcpcommons\ClientThread.java
-C:\Users\Hector Espinoza\Documents\NetBeansProjects\arq software\proyecto\Patolli-Arquitectura-prueba\tcpcommons-main\src\main\java\com\chat\tcpcommons\logging\ChatLoggerProxy.java
-C:\Users\Hector Espinoza\Documents\NetBeansProjects\arq software\proyecto\Patolli-Arquitectura-prueba\tcpcommons-main\src\main\java\com\chat\tcpcommons\MessageType.java
-C:\Users\Hector Espinoza\Documents\NetBeansProjects\arq software\proyecto\Patolli-Arquitectura-prueba\tcpcommons-main\src\main\java\com\chat\tcpcommons\IObserver.java
-C:\Users\Hector Espinoza\Documents\NetBeansProjects\arq software\proyecto\Patolli-Arquitectura-prueba\tcpcommons-main\src\main\java\com\chat\tcpcommons\Message.java
-C:\Users\Hector Espinoza\Documents\NetBeansProjects\arq software\proyecto\Patolli-Arquitectura-prueba\tcpcommons-main\src\main\java\com\chat\tcpcommons\ConnectionTemplate.java
+/Users/esmeraldamolinaestrada/Documents/Patolli-MAIN/Patolli-Arquitectura/tcpcommons-main/src/main/java/com/chat/tcpcommons/ClientThread.java
+/Users/esmeraldamolinaestrada/Documents/Patolli-MAIN/Patolli-Arquitectura/tcpcommons-main/src/main/java/com/chat/tcpcommons/ConnectionTemplate.java
+/Users/esmeraldamolinaestrada/Documents/Patolli-MAIN/Patolli-Arquitectura/tcpcommons-main/src/main/java/com/chat/tcpcommons/IConnection.java
+/Users/esmeraldamolinaestrada/Documents/Patolli-MAIN/Patolli-Arquitectura/tcpcommons-main/src/main/java/com/chat/tcpcommons/IObserver.java
+/Users/esmeraldamolinaestrada/Documents/Patolli-MAIN/Patolli-Arquitectura/tcpcommons-main/src/main/java/com/chat/tcpcommons/Message.java
+/Users/esmeraldamolinaestrada/Documents/Patolli-MAIN/Patolli-Arquitectura/tcpcommons-main/src/main/java/com/chat/tcpcommons/MessageBody.java
+/Users/esmeraldamolinaestrada/Documents/Patolli-MAIN/Patolli-Arquitectura/tcpcommons-main/src/main/java/com/chat/tcpcommons/MessageType.java
+/Users/esmeraldamolinaestrada/Documents/Patolli-MAIN/Patolli-Arquitectura/tcpcommons-main/src/main/java/com/chat/tcpcommons/Observable.java
+/Users/esmeraldamolinaestrada/Documents/Patolli-MAIN/Patolli-Arquitectura/tcpcommons-main/src/main/java/com/chat/tcpcommons/TemplateConnection.java
+/Users/esmeraldamolinaestrada/Documents/Patolli-MAIN/Patolli-Arquitectura/tcpcommons-main/src/main/java/com/chat/tcpcommons/logging/ChatLoggerImpl.java
+/Users/esmeraldamolinaestrada/Documents/Patolli-MAIN/Patolli-Arquitectura/tcpcommons-main/src/main/java/com/chat/tcpcommons/logging/ChatLoggerProxy.java
+/Users/esmeraldamolinaestrada/Documents/Patolli-MAIN/Patolli-Arquitectura/tcpcommons-main/src/main/java/com/chat/tcpcommons/logging/IChatLogger.java
+/Users/esmeraldamolinaestrada/Documents/Patolli-MAIN/Patolli-Arquitectura/tcpcommons-main/src/main/java/com/chat/tcpcommons/logging/LoggerFactory.java

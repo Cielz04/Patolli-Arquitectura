@@ -1,7 +1,9 @@
 package entidades;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import tablero.Tablero;
 
 /**
  *
@@ -9,9 +11,6 @@ import java.util.List;
  */
 public class EstadoDelJuego implements Serializable {
 
-    /**
-     * Clase que contiene el estado del juego
-     */
     private List<Jugador> jugadores;
     private Tablero tablero;
     private int turno;
@@ -20,9 +19,18 @@ public class EstadoDelJuego implements Serializable {
     private Jugador jugadorTurno;
     private int numCasillasAspa;
 
+    // Constructor por defecto inicializa la lista de jugadores.
     public EstadoDelJuego() {
+        this.jugadores = new ArrayList<>();
+        this.tablero = new Tablero(); // Suponiendo que el tablero también debería inicializarse.
+        this.turno = 0;
+        this.partidaIniciada = false;
+        this.valorUltTiro = 0;
+        this.jugadorTurno = null;
+        this.numCasillasAspa = 0;
     }
 
+    // Constructor con parámetros
     public EstadoDelJuego(List<Jugador> jugadores, Tablero tablero, int turno, boolean partidaIniciada, int valorUltTiro) {
         this.jugadores = jugadores;
         this.tablero = tablero;
@@ -31,6 +39,7 @@ public class EstadoDelJuego implements Serializable {
         this.valorUltTiro = valorUltTiro;
     }
 
+    // Getters y setters
     public List<Jugador> getJugadores() {
         return jugadores;
     }
@@ -75,20 +84,24 @@ public class EstadoDelJuego implements Serializable {
         return jugadorTurno;
     }
 
-    public void setJugadorEnTurno(Jugador jugadorEnTurno) {
-        this.jugadorTurno = jugadorEnTurno;
+    public void setJugadorEnTurno(Jugador jugadorTurno) {
+        this.jugadorTurno = jugadorTurno;
     }
 
+    // Inicia los turnos del juego asignando el primer jugador como jugador en turno.
     public void iniciarTurnos() {
         if (!jugadores.isEmpty()) {
             jugadorTurno = jugadores.get(0);
         }
     }
 
+    // Avanza al siguiente turno, asignando el siguiente jugador.
     public void siguienteTurno() {
-        int indexActual = jugadores.indexOf(jugadorTurno);
-        int siguienteIndex = (indexActual + 1) % jugadores.size();
-        jugadorTurno = jugadores.get(siguienteIndex);
+        if (!jugadores.isEmpty()) {
+            int indexActual = jugadores.indexOf(jugadorTurno);
+            int siguienteIndex = (indexActual + 1) % jugadores.size();
+            jugadorTurno = jugadores.get(siguienteIndex);
+        }
     }
 
     public int getNumCasillasAspa() {
@@ -98,6 +111,15 @@ public class EstadoDelJuego implements Serializable {
     public void setNumCasillasAspa(int numCasillasAspa) {
         this.numCasillasAspa = numCasillasAspa;
     }
-    
-    
+
+    // Reinicia el estado del juego a sus valores iniciales.
+    public void reiniciarPartida() {
+        this.jugadores.clear();
+        this.tablero = new Tablero();
+        this.turno = 0;
+        this.partidaIniciada = false;
+        this.valorUltTiro = 0;
+        this.jugadorTurno = null;
+        this.numCasillasAspa = 0;
+    }
 }
