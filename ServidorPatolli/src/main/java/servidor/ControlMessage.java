@@ -125,7 +125,7 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
     public void onCrearSala(Message message) {
         lock.lock();
         try {
-            String codigoSala = "000";
+            String codigoSala = message.getContent().getCodigoSala();
 
             if (codigoSala == null || codigoSala.isEmpty()) {
                 System.out.println("El código de la sala no puede estar vacío.");

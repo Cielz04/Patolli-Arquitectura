@@ -22,7 +22,7 @@ public class DlgApuesta extends javax.swing.JDialog {
     /**
      * Creates new form DlgApuesta
      */
-    public DlgApuesta(java.awt.Frame parent, boolean modal, FrmInicio frmInicio) {
+    public DlgApuesta(java.awt.Frame parent, boolean modal) {
     super(parent, modal);
     this.frmInicio = frmInicio;
       
@@ -235,6 +235,7 @@ public class DlgApuesta extends javax.swing.JDialog {
         MessageBody body = new MessageBody();
         body.setApuesta(apuesta);
         body.setJugadores(jugadores);
+        body.setCodigoSala("000");
         Message mensaje = new Message.Builder()
                 .messageType(MessageType.CREAR_SALA)
                 .body(body)
@@ -243,7 +244,10 @@ public class DlgApuesta extends javax.swing.JDialog {
         // Enviar mensaje al servidor
         ControlPatolli.getInstance().enviarMensaje(mensaje);
 
-        JOptionPane.showMessageDialog(this, "Partida creada correctamente");
+        FrmTablero tablero = new FrmTablero (ControlPatolli.getInstance(), "000");
+        tablero.inicializar();
+        dispose();
+        tablero.setVisible(true);
 
     } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "Error al crear la partida: " + e.getMessage());

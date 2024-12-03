@@ -21,8 +21,9 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
      */
     DlgApuesta crearApuesta;
     Servidor servidor;
+    FrmInicio frmInicio;
     
-    public FrmConfigurarPartida() {
+    public FrmConfigurarPartida(FrmInicio inicio) {
         initComponents();
         btnGroupAspas.add(aspa8);
         btnGroupAspas.add(aspa10);
@@ -30,6 +31,7 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
         btnGroupFichas.add(fichas2);
         btnGroupFichas.add(fichas4);
         btnGroupFichas.add(fichas6);
+        this.frmInicio = inicio;
 //        servidor = Servidor.getInstance();
     }
 
@@ -325,11 +327,15 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
                     .messageType(MessageType.PASAR_CAMBIOS)
                     .body(body)
                     .build();
-
+            
+            ControlPatolli.getInstance().getTablero().setCantidadCasillasAspa(tamanio);
             // Enviar mensaje al servidor
             ControlPatolli.getInstance().enviarMensaje(mensaje);
             
-            JOptionPane.showMessageDialog(this, "Partida configurada correctamente");
+            DlgApuesta dlgApuesta = new DlgApuesta(frmInicio, true);
+            dispose();
+            dlgApuesta.setVisible(true);
+            
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al configurar la partida: " + e.getMessage());
         }

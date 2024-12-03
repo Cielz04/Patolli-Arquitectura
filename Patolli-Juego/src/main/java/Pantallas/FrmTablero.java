@@ -1,6 +1,5 @@
 package Pantallas;
 
-
 import Control.ControlJugador;
 import Control.ControlPatolli;
 import com.chat.tcpcommons.Message;
@@ -41,14 +40,14 @@ public class FrmTablero extends javax.swing.JFrame {
     private final String codigoSala;
     private final int canCasillasAspa;
     private final int monto;
-    private final int jugadores;
+    private final int jugadores = 0;
 
     private List<Casilla> fichaJugador1;
     private List<Casilla> fichaJugador2;
     private List<Casilla> fichaJugador3;
     private List<Casilla> fichaJugador4;
 
-    private int ultimoTiro;
+    private int ultimoTiro = 0;
 
     private List<Casilla> casillasTablero;
 //    private static FrmTablero tableroS;
@@ -80,6 +79,7 @@ public class FrmTablero extends javax.swing.JFrame {
 //        this.canCasillasAspa = controlPatolli.getTablero().getCantidadCasillasAspa();
 //        this.jugadores = controlPatolli.getJugadores();
 //        this.casillasTablero = controlPatolli.getTablero().getCasillas();
+        this.canCasillasAspa = controlPatolli.getTablero().getCantidadCasillasAspa();
         this.monto = 33;//TODO
         initComponents();
     }
@@ -231,7 +231,7 @@ public class FrmTablero extends javax.swing.JFrame {
 //        }
         asignarNumeroCasillas();
         // Ejemplo de uso
-       Casilla casilla = this.casillasTablero.get(0);
+        Casilla casilla = controlPatolli.getTablero().getCasillas().get(0);
         agregarFicha(casilla, "/Utilerias/ficha_roja.png");
 
     }
@@ -400,29 +400,59 @@ public class FrmTablero extends javax.swing.JFrame {
     }
 
     private void agregarFicha(Casilla casillaBase, String rutaImagen) {
+
         try {
+            // Cargar y escalar la imagen
             ImageIcon icono = new ImageIcon(getClass().getResource(rutaImagen));
             Image imagenOriginal = icono.getImage();
-
             int nuevoAncho = 70;
             int nuevoAlto = 100;
             Image imagenEscalada = imagenOriginal.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
 
+            // Crear la casilla con la ficha
             Casilla ficha = new Casilla(new ImageIcon(imagenEscalada));
             ficha.setHorizontalAlignment(JLabel.CENTER);
             ficha.setVerticalAlignment(JLabel.CENTER);
 
+            // Configurar la casilla base para contener la ficha
             casillaBase.setLayout(new BorderLayout());
             casillaBase.add(ficha, BorderLayout.CENTER);
-
             casillaBase.revalidate();
             casillaBase.repaint();
             casillaBase.setIcon(icono);
-            controlPatolli.getTablero().getCasillas().set(controlPatolli.getTablero().getCasillas().indexOf(casillaBase), casillaBase);
+
+            // Actualizar el tablero
+            Tablero tablero = ControlPatolli.getInstance().getTablero();
+            int index = tablero.getCasillas().indexOf(casillaBase);
+            tablero.getCasillas().set(index, casillaBase);
+
         } catch (NullPointerException e) {
             System.err.println("No se pudo cargar la imagen: " + rutaImagen);
             e.printStackTrace();
         }
+//        try {
+//            ImageIcon icono = new ImageIcon(getClass().getResource(rutaImagen));
+//            Image imagenOriginal = icono.getImage();
+//
+//            int nuevoAncho = 70;
+//            int nuevoAlto = 100;
+//            Image imagenEscalada = imagenOriginal.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+//
+//            Casilla ficha = new Casilla(new ImageIcon(imagenEscalada));
+//            ficha.setHorizontalAlignment(JLabel.CENTER);
+//            ficha.setVerticalAlignment(JLabel.CENTER);
+//
+//            casillaBase.setLayout(new BorderLayout());
+//            casillaBase.add(ficha, BorderLayout.CENTER);
+//
+//            casillaBase.revalidate();
+//            casillaBase.repaint();
+//            casillaBase.setIcon(icono);
+//            controlPatolli.getTablero().getCasillas().set(controlPatolli.getTablero().getCasillas().indexOf(casillaBase), casillaBase);
+//        } catch (NullPointerException e) {
+//            System.err.println("No se pudo cargar la imagen: " + rutaImagen);
+//            e.printStackTrace();
+//        }
     }
 
     /**

@@ -15,7 +15,7 @@ import javax.swing.JOptionPane;
  */
 public class FrmInicio extends javax.swing.JFrame {
 
-    FrmConfigurarPartida crearPartida = new FrmConfigurarPartida() ;
+    FrmConfigurarPartida crearPartida;
     FrmTablero tablero;
     private static FrmInicio menuS;
     private Servidor servidor;
@@ -31,7 +31,7 @@ public class FrmInicio extends javax.swing.JFrame {
         controlPatolli = ControlPatolli.getInstance();
         tablero= new FrmTablero(controlPatolli, "000");
         servidor = new Servidor();
-        
+        crearPartida = new FrmConfigurarPartida(this) ;
         
         // Conectar automáticamente al servidor cuando se inicia la interfaz
 //        iniciarServidor();

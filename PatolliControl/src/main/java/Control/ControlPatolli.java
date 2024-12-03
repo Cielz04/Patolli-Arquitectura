@@ -20,8 +20,8 @@ import tablero.Tablero;
  *
  * @author Hector Espinoza
  */
-public class ControlPatolli implements IControlPatolli{
-    
+public class ControlPatolli implements IControlPatolli {
+
     private static ControlPatolli instancia;
     private Partida partida;
 
@@ -38,22 +38,28 @@ public class ControlPatolli implements IControlPatolli{
 
     @Override
     public void conectarse(FrmInicio frameInicio) {
-       partida.conectarse(frameInicio); // Pasa la pantalla de inicio al cliente
+        partida.conectarse(frameInicio);
     }
-    
-    
 
     @Override
     public void desconectar(String codigoSala, int miJugador) {
-        partida.desconectar(codigoSala); // Llama al método de desconexión en `Partida`
+        partida.desconectar(codigoSala);
     }
 
     @Override
     public void enviarMensaje(Message mensaje) {
-        partida.enviarMensaje(mensaje); // Llama al método de envío de mensajes en `Partida`
+        partida.enviarMensaje(mensaje);
     }
-    
-    
+
+    // Método para obtener el tablero
+    public Tablero getTablero() {
+        return partida.getTablero();
+    }
+
+    // Método para inicializar el tablero
+    public void inicializarTablero(Tablero tablero) {
+        partida.inicializarTablero(tablero);
+    }
 
 //    static ControlPatolli controlSingleTon;
 //    Partida partida;
@@ -228,7 +234,4 @@ public class ControlPatolli implements IControlPatolli{
 //    public void setJugadores(int jugadores) {
 //        this.jugadores = jugadores;
 //    }
-
-    
-
 }
