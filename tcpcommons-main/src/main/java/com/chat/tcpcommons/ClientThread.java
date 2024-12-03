@@ -55,6 +55,7 @@ public class ClientThread extends Observable implements Runnable, Serializable {
     public void run() {
         try {
             processMessage(); // Procesar mensajes
+            recibirMensaje();
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -68,9 +68,14 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
                 if (salaDeEspera != null) {
                     salaDeEspera.agregarJugador(client);
                     client.subscribe(this);
+                    
                     System.out.println("Cliente agregado a la sala de espera.");
+
                 } else {
                     System.out.println("Error: No se encontró la sala de espera.");
+                }
+                if (rooms.get("000") != null) {
+                    enviarEstadoTablero(rooms.get("000"), client);
                 }
             }
         } catch (IOException ex) {
@@ -82,7 +87,8 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
     public void onConectarse(Message message) {
         lock.lock();
         try {
-            if (message != null && message.getSender() != null) {
+            if (message.getSender() != null){
+            if (message != null && message.getSender() != null) { 
                 Sala salaDeEspera = rooms.get(SALA_DE_ESPERA);
                 if (salaDeEspera != null) {
                     ClientThread clienteDisponible = salaDeEspera.getJugadores().stream()
@@ -92,7 +98,10 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
 
                     if (clienteDisponible != null) {
                         clienteDisponible.setJugador(message.getSender());
+                        message.setSender(clienteDisponible.getJugador());
+                        rooms.get(SALA_DE_ESPERA).agregarJugador(clienteDisponible);
                         System.out.println("Cliente en la sala de espera: " + message.getSender().getNombre());
+                        //onUnirseSala(message);
                     } else {
                         System.out.println("No hay espacio disponible para asignar el usuario en la sala de espera.");
                     }
@@ -101,6 +110,9 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
                 }
             } else {
                 System.out.println("El Message o el que envía es null.");
+            }
+            }else{
+                return;
             }
         } finally {
             lock.unlock();
@@ -165,7 +177,8 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
                 Sala nuevaSala = new Sala(codigoSala); // Crear una nueva sala
                 rooms.put(codigoSala, nuevaSala); // Añadir la sala al mapa
                 System.out.println("Sala " + codigoSala + " creada exitosamente.");
-                onConectarse(message);
+                
+//                onConectarse(message);
                 onUnirseSala(message); // Unir al cliente a la nueva sala
             }
         } finally {
@@ -196,11 +209,10 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
 
     @Override
     public void onUnirseSala(Message message) {
-
         lock.lock();
         try {
             String codigoSala = message.getContent().getCodigoSala();
-
+            message.setSender ( rooms.get(SALA_DE_ESPERA).getJugadores().get(rooms.get(SALA_DE_ESPERA).getJugadores().size()-1).getJugador());
             // Buscar al cliente en la sala de espera
             var user = rooms.get(SALA_DE_ESPERA).getJugadores().stream()
                     .filter(c -> c.getJugador().equals(message.getSender()))

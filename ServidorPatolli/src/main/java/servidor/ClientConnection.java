@@ -33,7 +33,7 @@ public class ClientConnection implements TemplateConnection, IObserver, IConnect
     public ClientConnection(FrmInicio frameInicio) {
         this.frameInicio = frameInicio;
         jugador = new Jugador();
-        jugador.setNombre("Jugador 1"); // Nombre predeterminado
+        jugador.setNombre(Utileria.generarNombre()); // Nombre predeterminado
     }
 
     public void init() {
@@ -47,7 +47,7 @@ public class ClientConnection implements TemplateConnection, IObserver, IConnect
 
             // Enviar el mensaje de conexión al servidor
             MessageBody cuerpo = new MessageBody();
-            cuerpo.setCodigoSala(jugador.getNombre());
+            cuerpo.setCodigoSala("000");
             var connectionMessage = new Message.Builder().sender(jugador).messageType(MessageType.CONECTARSE).body(cuerpo).build();
             sendMessage(connectionMessage);
 
@@ -72,6 +72,7 @@ public class ClientConnection implements TemplateConnection, IObserver, IConnect
 
     public Message recibirMensaje() throws IOException {
         if (cliente != null) {
+            System.out.println(cliente.recibirMensaje().getContent().getTamaño());
             return cliente.recibirMensaje(); // Obtener mensaje desde ClientThread
         }
         return null;
@@ -212,8 +213,19 @@ public class ClientConnection implements TemplateConnection, IObserver, IConnect
     }
 
     @Override
-    public void onUpdate(Object obj) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void onUpdate(Object message) {
+        if (message instanceof Message) {
+        Message msg = (Message) message;
+        // Lógica para manejar el mensaje recibido
+        System.out.println("Mensaje recibido: " + msg);
+        
+       message = msg;
+        // Actualiza el cliente o envía una respuesta
+    } else {
+        System.out.println("Tipo de mensaje desconocido.");
     }
+    }
+    
+    
 
 }

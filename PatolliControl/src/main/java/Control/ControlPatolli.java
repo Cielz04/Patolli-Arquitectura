@@ -56,6 +56,7 @@ public class ControlPatolli implements IControlPatolli {
 
     // Método para recibir mensajes
     public Message recibirMensaje() throws IOException {
+        System.out.println();
         return partida.recibirMensaje(); // Delegar la recepción a la clase Partida
     }
 

@@ -15,6 +15,15 @@ public class Sala {
     private Tablero tablero; // Estado del tablero
     private List<ClientThread> jugadores; // Clientes en la sala
 
+    public Sala(Sala sala) {
+        this.codigo = sala.codigo;
+        this.tablero = new Tablero(); // Inicializa el tablero
+        this.jugadores = new ArrayList<>();
+    }
+    
+    
+    
+
     public Sala(String codigo) {
         this.codigo = codigo;
         this.tablero = new Tablero(); // Inicializa el tablero

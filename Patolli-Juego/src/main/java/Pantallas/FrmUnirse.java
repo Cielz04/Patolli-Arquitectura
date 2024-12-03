@@ -106,12 +106,12 @@ public class FrmUnirse extends javax.swing.JFrame {
             body.setCodigoSala(codigoSala);
 
             // Crear el mensaje con la información del jugador
-            Jugador jugador = new Jugador("Jugador 3", Color.BLUE); // Puedes ajustar el nombre y color
+            Jugador jugador = new Jugador("Jugador 3",  Color.BLUE); // Puedes ajustar el nombre y color
             Message mensajeUnirseSala = new Message.Builder()
                     .messageType(MessageType.UNIRSE_SALA)
                     .body(body)
                     .build();
-
+            
             // Enviar el mensaje para unirse a la sala
             ControlPatolli.getInstance().conectarse(frmInicio);
             ControlPatolli.getInstance().enviarMensaje(mensajeUnirseSala);
