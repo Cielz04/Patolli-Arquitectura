@@ -4,7 +4,6 @@ package Pantallas;
 
 import servidor.Servidor;
 import Control.ControlPatolli;
-import Control.IControlPatolli;
 import entidades.Juego;
 import java.io.IOException;
 import javax.swing.JOptionPane;
@@ -21,20 +20,17 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
      */
     DlgApuesta crearApuesta;
     Servidor servidor;
-    ControlPatolli control;
     
     public FrmConfigurarPartida(){
         initComponents();
-        control = new ControlPatolli();
-        crearApuesta= new DlgApuesta(this, rootPaneCheckingEnabled, control);
+        crearApuesta= new DlgApuesta(this, rootPaneCheckingEnabled);
         btnGroupAspas.add(aspa8);
         btnGroupAspas.add(aspa10);
         btnGroupAspas.add(aspa14);
         btnGroupFichas.add(fichas2);
         btnGroupFichas.add(fichas4);
         btnGroupFichas.add(fichas6);
-        
-        //ControlPatolli.getInstance().setTablero(new Tablero());
+        ControlPatolli.getInstance().setTablero(new Tablero());
 //        servidor = Servidor.getInstance();
     }
 
@@ -299,30 +295,21 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
 
     private void btnApuestaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApuestaActionPerformed
         dispose();
-        if (control!=null){
+        if (ControlPatolli.getInstance()!=null){
             if (fichas2.isSelected()){
-                control.setCantidadFichas(2);
-                control.setCantidadFichasJugador(2);
+                ControlPatolli.getInstance().setCantidadFichas(2);
             }else if (fichas4.isSelected()){
-                control.setCantidadFichas(4);
-                control.setCantidadFichasJugador(4);
+                ControlPatolli.getInstance().setCantidadFichas(4);
             }else if (fichas6.isSelected()){
-                control.setCantidadFichas(6);
-                control.setCantidadFichasJugador(6);
+                ControlPatolli.getInstance().setCantidadFichas(6);
             }
             
             if (aspa8.isSelected()){
-                control.setCantidadCasillasAspa(8);
-                control.setCantidadCasillas(8);
-                control.getTablero().setCantidadCasillasAspa(8);
+                ControlPatolli.getInstance().getTablero().setCantidadCasillasAspa(8);
             }else if(aspa10.isSelected()){
-                control.setCantidadCasillasAspa(10);
-                control.setCantidadCasillas(10);
-                control.getTablero().setCantidadCasillasAspa(10);
+                ControlPatolli.getInstance().getTablero().setCantidadCasillasAspa(10);
             }else if(aspa14.isSelected()){
-                control.setCantidadCasillasAspa(14);
-                control.setCantidadCasillas(14);
-                control.getTablero().setCantidadCasillasAspa(14);
+                ControlPatolli.getInstance().getTablero().setCantidadCasillasAspa(14);
             }
         }
         else {

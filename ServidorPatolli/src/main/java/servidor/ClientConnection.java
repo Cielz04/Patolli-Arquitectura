@@ -11,13 +11,12 @@ import com.chat.tcpcommons.TemplateConnection;
 import com.chat.tcpcommons.logging.IChatLogger;
 import com.chat.tcpcommons.logging.LoggerFactory;
 import entidades.Jugador;
-
+import java.awt.Color;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
 import java.util.concurrent.locks.ReentrantLock;
 import utileria.Utileria;
-
 
 /**
  *
@@ -38,7 +37,7 @@ public class ClientConnection implements TemplateConnection, IObserver, IConnect
     public ClientConnection(FrmInicio frameInicio) {
         this.frameInicio=frameInicio;
         jugador = new Jugador();
-        jugador.setNombre(Utileria.generarNombre());
+        jugador.setNombre("Jugador 1");
     }
 
     @Override
@@ -92,7 +91,7 @@ public class ClientConnection implements TemplateConnection, IObserver, IConnect
     
     @Override
     public void onConectarse(Message mensaje) {
-//        frameInicio.onCo                                                                                                                                                                                                                        nectarse(mensaje);
+//        frameInicio.onConectarse(mensaje);
     }
     
     @Override

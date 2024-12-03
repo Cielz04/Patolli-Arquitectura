@@ -15,14 +15,12 @@ import servidor.ControlMessage;
  */
 public class DlgApuesta extends javax.swing.JDialog {
 
-    ControlPatolli control;
-    
     /**
      * Creates new form DlgApuesta
      */
-    public DlgApuesta(java.awt.Frame parent, boolean modal, ControlPatolli control) {
+    public DlgApuesta(java.awt.Frame parent, boolean modal) {
     super(parent, modal);
-      this.control = control;
+      
         initComponents();
     }
 
@@ -220,15 +218,15 @@ public class DlgApuesta extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
-        if (control!=null){
+        if (ControlPatolli.getInstance()!=null){
             String jugadores = (String) CmBJugadores.getSelectedItem();
             int numJugadores = Integer.parseInt(jugadores);
-            control.configurarJugadores(numJugadores);
-            control.setApuesta(Integer.parseInt(this.txtApuesta.getText()));
-            control.conectarse();
+            ControlPatolli.getInstance().configurarJugadores(numJugadores);
+            ControlPatolli.getInstance().setApuesta(Integer.parseInt(this.txtApuesta.getText()));
+            ControlPatolli.getInstance().conectarse();
             ControlMessage cm = new ControlMessage();
-            control.crearSala();
-            FrmTablero tablero = new FrmTablero(control, "000");
+            ControlPatolli.getInstance().crearSala();
+            FrmTablero tablero = new FrmTablero(ControlPatolli.getInstance(), "000");
             tablero.inicializar();
             dispose();
             tablero.setVisible(true);

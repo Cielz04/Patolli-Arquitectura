@@ -1,8 +1,5 @@
-Control\ControlPantalla.class
-Control\ControlPatolli.class
-utileriaControl\GeneradorNombres.class
-Control\Partida.class
-Control\IControlJugador.class
-Control\IControlPantalla.class
-Control\ControlJugador.class
-Control\IControlPatolli.class
+Control/Partida.class
+Control/IControlPatolli.class
+Control/ControlPantalla.class
+Control/ControlJugador.class
+Control/ControlPatolli.class

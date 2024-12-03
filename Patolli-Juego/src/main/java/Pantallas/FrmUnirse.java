@@ -87,15 +87,17 @@ public class FrmUnirse extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-//        if (ControlPatolli.getInstance().unirseSala(txtCodigoPartida.getText().toUpperCase()).getTamaño() !=0){
-//            tablero = new FrmTablero(ControlPatolli.getInstance(), "000");
-//            tablero.inicializar();
-//            tablero.setVisible(true);
-//           
-//            dispose();
-//     
-//        }
-        ControlPatolli.getInstance().unirseSala(txtCodigoPartida.getText());
+        if (ControlPatolli.getInstance().unirseSala(txtCodigoPartida.getText().toUpperCase()).getTamaño() !=0){
+            tablero = new FrmTablero(ControlPatolli.getInstance(), "000");
+            tablero.inicializar();
+            tablero.setVisible(true);
+           
+            dispose();
+     
+        }
+        
+        
+        
     }
 
     public void existeSala(boolean resultado) {
