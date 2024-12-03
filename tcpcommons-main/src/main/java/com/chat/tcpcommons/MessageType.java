@@ -11,7 +11,8 @@ public enum MessageType {
     UNIRSE_SALA(4),
     PASAR_OPCIONES(5),
     PASAR_CAMBIOS(6),
-    PASAR_JUGADORES(7);
+    PASAR_JUGADORES(7),
+    ESTADO_TABLERO(8);
     
     private final int type;
     

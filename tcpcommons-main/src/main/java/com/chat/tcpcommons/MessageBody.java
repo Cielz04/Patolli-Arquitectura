@@ -25,6 +25,7 @@ public class MessageBody implements Serializable{
     private List<Integer> fichasJugador3Posicion= new ArrayList<>();
     private List<Integer> fichasJugador4Posicion= new ArrayList<>();
     private int apuesta;
+    private Tablero estadoTablero;
 
   
     public String getCodigoSala() {
@@ -138,6 +139,16 @@ public class MessageBody implements Serializable{
     public void setApuesta(int apuesta) {
         this.apuesta = apuesta;
     }
+
+    public Tablero getEstadoTablero() {
+        return estadoTablero;
+    }
+
+    public void setEstadoTablero(Tablero estadoTablero) {
+        this.estadoTablero = estadoTablero;
+    }
+    
+    
     
     
     

@@ -210,10 +210,13 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
                     .body(cuerpoRespuesta)
                     .messageType(tipoRespuesta)
                     .build();
+            
 
             rooms.get(codigoSala).forEach(cliente -> {
                 if (!cliente.equals(user)) {
                     cliente.sendMessage(MessageOtrosJugadores);
+                }else{
+                    
                 }
             });
 

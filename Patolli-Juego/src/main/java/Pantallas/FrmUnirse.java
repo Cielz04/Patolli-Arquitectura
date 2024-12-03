@@ -113,9 +113,30 @@ public class FrmUnirse extends javax.swing.JFrame {
         // Enviar el mensaje a través de ControlPatolli
         ControlPatolli.getInstance().conectarse(frmInicio);
         ControlPatolli.getInstance().enviarMensaje(mensaje);
+        
+        
+        MessageBody content = new MessageBody();
+        body.setCodigoSala(codigoSala);
+        body.setEstadoTablero(ControlPatolli.getInstance().getTablero()); // Obtén el tablero actual de la sala
+
+        Message message = new Message.Builder()
+                .messageType(MessageType.ESTADO_TABLERO)
+                .body(content)
+                .build();
+        
+        ControlPatolli.getInstance().enviarMensaje(message);
+        
+        FrmTablero tablero = new FrmTablero (ControlPatolli.getInstance(), "000");
+        
+        tablero.manejarEstadoTablero(message);
+        tablero.setVisible(true);
+        
+        dispose();
+        
+        
 
         // Confirmación visual
-        JOptionPane.showMessageDialog(this, "Te has unido a la sala correctamente");
+        //JOptionPane.showMessageDialog(this, "Te has unido a la sala correctamente");
 
     } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "Error al unirse a la sala: " + e.getMessage());
