@@ -290,8 +290,13 @@ public class FrmInicio extends javax.swing.JFrame {
 
     private void btnUnirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnirseActionPerformed
         // Crear un nuevo hilo para la conexión al servidor
-        ControlPantalla controlPantalla = new ControlPantalla();
-        controlPantalla.PasarPantallaUnirseCrear(this);
+        FrmUnirse unirse = new FrmUnirse (this);
+        unirse.setVisible(true);
+        setVisible(false);
+        
+        
+//        ControlPantalla controlPantalla = new ControlPantalla();
+//        controlPantalla.PasarPantallaUnirseCrear(this);
     }//GEN-LAST:event_btnUnirseActionPerformed
 
     /**

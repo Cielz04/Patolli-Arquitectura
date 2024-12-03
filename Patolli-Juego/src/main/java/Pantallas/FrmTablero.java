@@ -79,6 +79,7 @@ public class FrmTablero extends javax.swing.JFrame {
 //        this.canCasillasAspa = controlPatolli.getTablero().getCantidadCasillasAspa();
 //        this.jugadores = controlPatolli.getJugadores();
 //        this.casillasTablero = controlPatolli.getTablero().getCasillas();
+        casillasTablero = new LinkedList<>();
         this.canCasillasAspa = controlPatolli.getTablero().getCantidadCasillasAspa();
         this.monto = 33;//TODO
         initComponents();
@@ -395,6 +396,7 @@ public class FrmTablero extends javax.swing.JFrame {
 
             // Añadir el JLabel al tablero y a la lista de casillas
             tablero.add(label);
+            this.casillasTablero.add(label);
             controlPatolli.getTablero().agregarCasilla(label);
         }
     }
