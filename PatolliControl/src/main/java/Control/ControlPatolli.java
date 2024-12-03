@@ -1,19 +1,12 @@
 package Control;
 
 import Pantallas.FrmInicio;
-import com.chat.tcpcommons.ClientThread;
+import Pantallas.FrmTablero;
 
 import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
-import entidades.Juego;
-import entidades.Jugador;
-import java.awt.Color;
 import java.io.IOException;
-import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import servidor.ControlMessage;
 import tablero.Tablero;
 
 /**
@@ -21,7 +14,7 @@ import tablero.Tablero;
  * @author Hector Espinoza
  */
 public class ControlPatolli implements IControlPatolli {
-
+    
     private static ControlPatolli instancia;
     private Partida partida;
 
@@ -60,6 +53,95 @@ public class ControlPatolli implements IControlPatolli {
     public void inicializarTablero(Tablero tablero) {
         partida.inicializarTablero(tablero);
     }
+
+    // Método para recibir mensajes
+    public Message recibirMensaje() throws IOException {
+        return partida.recibirMensaje(); // Delegar la recepción a la clase Partida
+    }
+
+//    public void iniciarObservador() {
+//        // Hacer que ControlPatolli sea un observador de ClientThread
+//        partida.getCliente().subscribe(this);
+//    }
+
+//    @Override
+    public void onUpdate(Object obj) {
+        // Cuando llega un mensaje, se maneja aquí
+        Message mensaje = (Message) obj;
+        System.out.println("Mensaje recibido: " + mensaje.getMessageType());
+        proccessMessage(mensaje);
+    }
+
+    // Procesar el mensaje recibido
+    private void proccessMessage(Message mensaje) {
+        switch (mensaje.getMessageType()) {
+            case ESTADO_TABLERO:
+                // Aquí procesas el estado del tablero
+                manejarEstadoTablero(mensaje);
+                break;
+            // Otros tipos de mensajes pueden ser gestionados aquí
+            default:
+                System.out.println("Mensaje no manejado: " + mensaje.getMessageType());
+        }
+    }
+
+    private void manejarEstadoTablero(Message mensaje) {
+        if (mensaje.getMessageType() == MessageType.ESTADO_TABLERO) {
+            MessageBody body = mensaje.getContent();
+            Tablero tablero = body.getEstadoTablero();
+            // Aquí inicializamos el tablero con el estado recibido
+            this.getTablero().setCantidadCasillasAspa(tablero.getCantidadCasillasAspa());
+            // Inicializar la interfaz gráfica del tablero
+            FrmTablero tableroFrame = new FrmTablero(ControlPatolli.getInstance(), body.getCodigoSala());
+            tableroFrame.manejarEstadoTablero(mensaje); // Llamar a la inicialización del tablero
+            tableroFrame.setVisible(true);
+        }
+    }
+    
+    
+
+//////////////////    private static ControlPatolli instancia;
+//////////////////    private Partida partida;
+//////////////////
+//////////////////    private ControlPatolli() {
+//////////////////        partida = new Partida();
+//////////////////    }
+//////////////////
+//////////////////    public static ControlPatolli getInstance() {
+//////////////////        if (instancia == null) {
+//////////////////            instancia = new ControlPatolli();
+//////////////////        }
+//////////////////        return instancia;
+//////////////////    }
+//////////////////
+//////////////////    @Override
+//////////////////    public void conectarse(FrmInicio frameInicio) {
+//////////////////        partida.conectarse(frameInicio);
+//////////////////    }
+//////////////////
+//////////////////    @Override
+//////////////////    public void desconectar(String codigoSala, int miJugador) {
+//////////////////        partida.desconectar(codigoSala);
+//////////////////    }
+//////////////////
+//////////////////    @Override
+//////////////////    public void enviarMensaje(Message mensaje) {
+//////////////////        partida.enviarMensaje(mensaje);
+//////////////////    }
+//////////////////
+//////////////////    // Método para obtener el tablero
+//////////////////    public Tablero getTablero() {
+//////////////////        return partida.getTablero();
+//////////////////    }
+//////////////////
+//////////////////    // Método para inicializar el tablero
+//////////////////    public void inicializarTablero(Tablero tablero) {
+//////////////////        partida.inicializarTablero(tablero);
+//////////////////    }
+//////////////////
+//////////////////    public Message recibirMensaje() {
+//////////////////        return partida.recibirMensaje(); // Lógica de recepción desde el servidor
+//////////////////    }
 
 //    static ControlPatolli controlSingleTon;
 //    Partida partida;

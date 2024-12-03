@@ -80,15 +80,9 @@ public class FrmTablero extends javax.swing.JFrame {
 //        this.jugadores = controlPatolli.getJugadores();
 //        this.casillasTablero = controlPatolli.getTablero().getCasillas();
         casillasTablero = new LinkedList<>();
-        
-        
-            
-        
-            this.canCasillasAspa = controlPatolli.getTablero().getCantidadCasillasAspa();
-        
-        
-        
-        
+
+        this.canCasillasAspa = controlPatolli.getTablero().getCantidadCasillasAspa();
+
         this.monto = 33;//TODO
         initComponents();
     }
@@ -464,27 +458,25 @@ public class FrmTablero extends javax.swing.JFrame {
 //            e.printStackTrace();
 //        }
     }
-    
-    public void manejarEstadoTablero (Message mensaje){
-         if (mensaje.getMessageType() == MessageType.ESTADO_TABLERO) {
-        MessageBody body = mensaje.getContent();
 
-        // Obtener el tablero desde el mensaje recibido
-        Tablero tablero = body.getEstadoTablero();
-        
-        canCasillasAspa = controlPatolli.getTablero().getCantidadCasillasAspa();
-                
-        controlPatolli.getTablero().setCantidadCasillasAspa(canCasillasAspa);
-        
-        
-        // Inicializar el tablero en el cliente
-        inicializar();
+    public void manejarEstadoTablero(Message mensaje) {
+        if (mensaje.getMessageType() == MessageType.ESTADO_TABLERO) {
+            MessageBody body = mensaje.getContent();
+
+            // Obtener el estado del tablero desde el mensaje recibido
+            Tablero tableroRecibido = body.getEstadoTablero();
+
+            // Actualizar el tablero en ControlPatolli
+            controlPatolli.getTablero().setCantidadCasillasAspa(tableroRecibido.getCantidadCasillasAspa());
+
+            // Actualizar parámetros locales
+            this.canCasillasAspa = tableroRecibido.getCantidadCasillasAspa();
+            this.casillasTablero = tableroRecibido.getCasillas();
+
+            // Inicializar el tablero visualmente
+            inicializar();
+        }
     }
-    }
-    
-    
-    
-    
 
     /**
      * This method is called from within the constructor to initialize the form.

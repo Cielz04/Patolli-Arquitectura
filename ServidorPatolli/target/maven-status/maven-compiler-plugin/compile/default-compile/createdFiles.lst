@@ -1,5 +1,6 @@
 servidor\Cliente.class
 servidor\PatolliServer.class
+salas\Sala.class
 servidor\IPatolliServer.class
 itson\mx\servidorpatolli\ServidorPatolli.class
 servidor\ControlMessage.class
