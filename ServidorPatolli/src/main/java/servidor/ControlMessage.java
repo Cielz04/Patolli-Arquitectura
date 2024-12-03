@@ -22,14 +22,15 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author Hector Espinoza
  */
-public class ControlMessage extends Observable implements TemplateConnection, Runnable, IObserver{
-    
+public class ControlMessage extends Observable implements TemplateConnection, Runnable, IObserver {
+
     private ServerSocket server;
     public final Map<String, List<ClientThread>> rooms;
     private final String SALA_DE_ESPERA = "sala de espera";
     private final int PORT = 50064;
     private final Thread serverThread;
     private final ReentrantLock lock = new ReentrantLock();
+    private final Map<String, Integer> roomSizes = new HashMap<>();
 
     private final IChatLogger logger = LoggerFactory.getLogger(ControlMessage.class);
 
@@ -125,7 +126,8 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
     public void onCrearSala(Message message) {
         lock.lock();
         try {
-            String codigoSala = "000";
+            String codigoSala = "000"; // Código fijo, puedes cambiarlo para que sea dinámico
+            int tamaño = message.getContent().getTamaño();
 
             if (codigoSala == null || codigoSala.isEmpty()) {
                 System.out.println("El código de la sala no puede estar vacío.");
@@ -136,21 +138,75 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
                 System.out.println("La sala " + codigoSala + " ya existe.");
             } else {
                 rooms.put(codigoSala, new ArrayList<>());
-                System.out.println("Sala " + codigoSala + " creada exitosamente.");
+                roomSizes.put(codigoSala, tamaño); // Asociar el tamaño con la sala
+                System.out.println("Sala " + codigoSala + " creada exitosamente con tamaño " + tamaño);
                 onConectarse(message);
-                onUnirseSala(message); // Unir al cliente a la nueva sala
+                onUnirseSala(message);
             }
         } finally {
             lock.unlock();
         }
     }
 
+//    @Override
+//    public void onCrearSala(Message message) {
+//        lock.lock();
+//        try {
+//            String codigoSala = "000";
+//
+//            if (codigoSala == null || codigoSala.isEmpty()) {
+//                System.out.println("El código de la sala no puede estar vacío.");
+//                return;
+//            }
+//
+//            if (rooms.containsKey(codigoSala)) {
+//                System.out.println("La sala " + codigoSala + " ya existe.");
+//            } else {
+//                // Aquí accedemos al tamaño
+//                int tamaño = message.getContent().getTamaño();
+//                System.out.println("Tamaño de la sala recibido: " + tamaño);
+//
+//                // Usar el tamaño recibido en la lógica
+//                rooms.put(codigoSala, new ArrayList<>());
+//                System.out.println("Sala " + codigoSala + " creada exitosamente.");
+//                onConectarse(message);
+//                onUnirseSala(message); // Unir al cliente a la nueva sala
+//            }
+//        } finally {
+//            lock.unlock();
+//        }
+//    }
+//    @Override
+//    public void onCrearSala(Message message) {
+//        lock.lock();
+//        try {
+//            String codigoSala = "000";
+//
+//            if (codigoSala == null || codigoSala.isEmpty()) {
+//                System.out.println("El código de la sala no puede estar vacío.");
+//                return;
+//            }
+//
+//            if (rooms.containsKey(codigoSala)) {
+//                System.out.println("La sala " + codigoSala + " ya existe.");
+//            } else {
+//                rooms.put(codigoSala, new ArrayList<>());
+//                System.out.println("Sala " + codigoSala + " creada exitosamente.");
+//                onConectarse(message);
+//                onUnirseSala(message); // Unir al cliente a la nueva sala
+//            }
+//        } finally {
+//            lock.unlock();
+//        }
+//    }
+    
     @Override
     public void onUnirseSala(Message message) {
         lock.lock();
         try {
             String codigoSala = message.getContent().getCodigoSala();
 
+            // Buscar al cliente en la sala de espera
             var user = rooms.get(SALA_DE_ESPERA).stream()
                     .filter(c -> c.getJugador().equals(message.getSender()))
                     .findFirst()
@@ -161,16 +217,19 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
                 return;
             }
 
+            // Verificar si la sala existe
             if (codigoSala == null || !rooms.containsKey(codigoSala)) {
                 System.out.println("La sala " + codigoSala + " no existe.");
-                //Message para el jugador que no se pudo unir
+
+                // Crear mensaje de error para el cliente
                 MessageBody cuerpoNegativo = new MessageBody();
                 cuerpoNegativo.setRazonDesconexion("La sala " + codigoSala + " no existe.");
-                MessageType tipoRespuesta = MessageType.DESCONECTARSE;
                 Message MessageNegativo = new Message.Builder()
                         .body(cuerpoNegativo)
-                        .messageType(tipoRespuesta)
+                        .messageType(MessageType.DESCONECTARSE)
                         .build();
+
+                // Eliminar al cliente de la sala de espera y desconectarlo
                 rooms.get(SALA_DE_ESPERA).remove(user);
                 user.sendMessage(MessageNegativo);
                 user.disconnect();
@@ -181,34 +240,30 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
             rooms.get(SALA_DE_ESPERA).remove(user);
             rooms.get(codigoSala).add(user);
             System.out.println("El cliente " + message.getSender().getNombre() + " se unió a la sala " + codigoSala);
-//            message.setContent(rooms.get(codigoSala).get(0));
 
-            if (rooms.get(codigoSala).size() == 0) {
-                System.out.println("No sala");
-            } else {
-                System.out.println("Si sala");
+            // Obtener el tamaño de la sala (debería estar almacenado en un mapa como `roomSizes`)
+            int tamañoSala = roomSizes.getOrDefault(codigoSala, -1); // Verificar si existe el tamaño
+
+            if (tamañoSala == -1) {
+                System.out.println("No se encontró el tamaño de la sala " + codigoSala);
+                return;
             }
 
-            for (int i = 0; i < rooms.get(codigoSala).size(); i++) {
-                System.out.println(rooms.get(codigoSala).get(i).getJugador().getNombre());
-            }
-
-            //Message para los jugador que ya estaban en la sala
-            MessageBody cuerpoOtrosJugadores = new MessageBody();
-            MessageType tipoOtrosJugadores = MessageType.UNIRSE_SALA;
-            Message MessageOtrosJugadores = new Message.Builder()
-                    .body(cuerpoOtrosJugadores)
-                    .messageType(tipoOtrosJugadores)
+            // Enviar mensaje al cliente con el tamaño de la sala
+            MessageBody cuerpoTamaño = new MessageBody();
+            cuerpoTamaño.setTamaño(tamañoSala);
+            Message mensajeTamaño = new Message.Builder()
+                    .body(cuerpoTamaño)
+                    .messageType(MessageType.PASAR_JUGADORES)
                     .build();
 
-            //Message para el jugador que se unio
-            MessageBody cuerpoRespuesta = new MessageBody();
-            cuerpoRespuesta.setJugadores(rooms.get(codigoSala).size());
-            cuerpoRespuesta.setExisteSala(true);
-            MessageType tipoRespuesta = MessageType.PASAR_JUGADORES;
-            Message MessageRespuesta = new Message.Builder()
-                    .body(cuerpoRespuesta)
-                    .messageType(tipoRespuesta)
+            user.sendMessage(mensajeTamaño);
+
+            // Notificar a los demás jugadores que un nuevo cliente se unió
+            MessageBody cuerpoOtrosJugadores = new MessageBody();
+            Message MessageOtrosJugadores = new Message.Builder()
+                    .body(cuerpoOtrosJugadores)
+                    .messageType(MessageType.UNIRSE_SALA)
                     .build();
 
             rooms.get(codigoSala).forEach(cliente -> {
@@ -217,17 +272,95 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
                 }
             });
 
-            for (int i = 0; i < rooms.get(codigoSala).size(); i++) {
-                rooms.get(codigoSala).get(i).sendMessage(MessageOtrosJugadores);
-            }
-
+            System.out.println("El cliente " + message.getSender().getNombre()
+                    + " recibió el tamaño de la sala: " + tamañoSala);
 
         } finally {
             lock.unlock();
-
         }
     }
-    
+
+//    @Override
+//    public void onUnirseSala(Message message) {
+//        lock.lock();
+//        try {
+//            String codigoSala = message.getContent().getCodigoSala();
+//
+//            var user = rooms.get(SALA_DE_ESPERA).stream()
+//                    .filter(c -> c.getJugador().equals(message.getSender()))
+//                    .findFirst()
+//                    .orElse(null);
+//
+//            if (user == null) {
+//                System.out.println("El cliente no está en la sala de espera.");
+//                return;
+//            }
+//
+//            if (codigoSala == null || !rooms.containsKey(codigoSala)) {
+//                System.out.println("La sala " + codigoSala + " no existe.");
+//                //Message para el jugador que no se pudo unir
+//                MessageBody cuerpoNegativo = new MessageBody();
+//                cuerpoNegativo.setRazonDesconexion("La sala " + codigoSala + " no existe.");
+//                MessageType tipoRespuesta = MessageType.DESCONECTARSE;
+//                Message MessageNegativo = new Message.Builder()
+//                        .body(cuerpoNegativo)
+//                        .messageType(tipoRespuesta)
+//                        .build();
+//                rooms.get(SALA_DE_ESPERA).remove(user);
+//                user.sendMessage(MessageNegativo);
+//                user.disconnect();
+//                return;
+//            }
+//
+//            // Mover al cliente a la nueva sala
+//            rooms.get(SALA_DE_ESPERA).remove(user);
+//            rooms.get(codigoSala).add(user);
+//            System.out.println("El cliente " + message.getSender().getNombre() + " se unió a la sala " + codigoSala);
+////            message.setContent(rooms.get(codigoSala).get(0));
+//
+//            if (rooms.get(codigoSala).size() == 0) {
+//                System.out.println("No sala");
+//            } else {
+//                System.out.println("Si sala");
+//            }
+//
+//            for (int i = 0; i < rooms.get(codigoSala).size(); i++) {
+//                System.out.println(rooms.get(codigoSala).get(i).getJugador().getNombre());
+//            }
+//
+//            //Message para los jugador que ya estaban en la sala
+//            MessageBody cuerpoOtrosJugadores = new MessageBody();
+//            MessageType tipoOtrosJugadores = MessageType.UNIRSE_SALA;
+//            Message MessageOtrosJugadores = new Message.Builder()
+//                    .body(cuerpoOtrosJugadores)
+//                    .messageType(tipoOtrosJugadores)
+//                    .build();
+//
+//            //Message para el jugador que se unio
+//            MessageBody cuerpoRespuesta = new MessageBody();
+//            cuerpoRespuesta.setJugadores(rooms.get(codigoSala).size());
+//            cuerpoRespuesta.setExisteSala(true);
+//            MessageType tipoRespuesta = MessageType.PASAR_JUGADORES;
+//            Message MessageRespuesta = new Message.Builder()
+//                    .body(cuerpoRespuesta)
+//                    .messageType(tipoRespuesta)
+//                    .build();
+//
+//            rooms.get(codigoSala).forEach(cliente -> {
+//                if (!cliente.equals(user)) {
+//                    cliente.sendMessage(MessageOtrosJugadores);
+//                }
+//            });
+//
+//            for (int i = 0; i < rooms.get(codigoSala).size(); i++) {
+//                rooms.get(codigoSala).get(i).sendMessage(MessageOtrosJugadores);
+//            }
+//
+//        } finally {
+//            lock.unlock();
+//
+//        }
+//    }
     @Override
     public void onPasarOpciones(Message mensaje) {
         lock.lock();
@@ -253,7 +386,7 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
             lock.unlock();
         }
     }
-    
+
     @Override
     public void onPasarJugadores(Message mensaje) {
 
@@ -278,5 +411,5 @@ public class ControlMessage extends Observable implements TemplateConnection, Ru
 
         System.out.println("Mensaje enviado a los demás jugadores en la sala: " + codigoSala);
     }
-    
+
 }

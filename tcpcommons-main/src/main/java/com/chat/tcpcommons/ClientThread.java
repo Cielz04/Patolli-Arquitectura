@@ -66,10 +66,6 @@ public class ClientThread extends Observable implements Runnable, Serializable {
     private void processMessage() throws Exception{
         while (connected) {
             Message mensaje = (Message) in.readObject();
-            //if (mensaje.getMessageType() == TipoMensaje.CONECTARSE) {
-            //    usuario = mensaje.getSender();
-            //    mensaje.setMessageType(TipoMensaje.ACTUALIZAR_USUARIO);
-            //}
             if (mensaje.getMessageType() == MessageType.DESCONECTARSE) {
                 connected = false;
                 disconnect();

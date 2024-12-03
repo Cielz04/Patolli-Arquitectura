@@ -7,14 +7,14 @@ import java.util.Objects;
 public class Jugador implements Serializable{
 
 	private String nombre;
-	private Color color;
+//	private Color color;
 
          public Jugador() { 
     }
 
     public Jugador(String nombre, Color color) {
         this.nombre = nombre;
-        this.color = color;
+//        this.color = color;
     }
 
    
@@ -26,18 +26,40 @@ public class Jugador implements Serializable{
         this.nombre = nombre;
     }
 
-    public Color getColor() {
-        return color;
-    }
+//    public Color getColor() {
+//        return color;
+//    }
 
-    public void setColor(Color color) {
-        this.color = color;
-    }
+//    public void setColor(Color color) {
+//        this.color = color;
+//    }
+
+//    @Override
+//    public int hashCode() {
+//        int hash = 7;
+//        hash = 61 * hash + Objects.hashCode(this.color);
+//        return hash;
+//    }
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//        if (this == obj) {
+//            return true;
+//        }
+//        if (obj == null) {
+//            return false;
+//        }
+//        if (getClass() != obj.getClass()) {
+//            return false;
+//        }
+//        final Jugador other = (Jugador) obj;
+//        return Objects.equals(this.color, other.color);
+//    }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 61 * hash + Objects.hashCode(this.color);
+        hash = 83 * hash + Objects.hashCode(this.nombre);
         return hash;
     }
 
@@ -53,8 +75,10 @@ public class Jugador implements Serializable{
             return false;
         }
         final Jugador other = (Jugador) obj;
-        return Objects.equals(this.color, other.color);
+        return Objects.equals(this.nombre, other.nombre);
     }
+    
+    
 
     @Override
     public String toString() {

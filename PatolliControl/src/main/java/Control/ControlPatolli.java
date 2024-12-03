@@ -15,12 +15,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import servidor.ControlMessage;
 import tablero.Tablero;
+import utileriaControl.GeneradorNombres;
 
 /**
  *
  * @author Hector Espinoza
  */
-public class ControlPatolli implements IControlPatolli{
+public class ControlPatolli implements IControlPatolli {
 
     static ControlPatolli controlSingleTon;
     Partida partida;
@@ -29,6 +30,8 @@ public class ControlPatolli implements IControlPatolli{
     FrmInicio frameInicio;
     private int jugadores;
     private ClientThread hiloCliente;
+    private int cantidadCasillasAspa;
+    private int cantidadFichasJugador;
 
     public ControlPatolli(FrmInicio frameInicio) throws IOException {
         this.frameInicio = frameInicio;
@@ -49,71 +52,104 @@ public class ControlPatolli implements IControlPatolli{
     }
 
     public void crearSala() {
+
+        host = true;
+
+        conectarse();
+
+        MessageBody cuerpo = new MessageBody();
+        cuerpo.setCodigoSala("000");
+        cuerpo.setTamaño(getCantidadCasillasAspa());
+
+        MessageType tipo = MessageType.CREAR_SALA;
+
+        Message mensaje = new Message.Builder()
+                .body(cuerpo)
+                .messageType(tipo)
+                .build();
+
+        enviarMensaje(mensaje);
+        
+
+//        hiloCliente.sendMessage(mensaje);
+
         // Crear el tablero y el mensaje
-        MessageBody mb = new MessageBody();
-        mb.setCodigoSala("000");
-        mb.setJugador(1);
-        mb.setTamaño(getTablero().getCantidadCasillasAspa());
-        mb.setJugadores(getTablero().getCanJugadores());
-
-        Jugador nJugador = new Jugador("Jugador 1", Color.RED);
-        Message mensaje = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.CREAR_SALA);
-        Message mensajeConectarse = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.CONECTARSE);
-
-        // Inicializar el servidor
-        ControlMessage cm = new ControlMessage();
-        
-            // Simular la conexión de un cliente
-            hiloCliente.setJugador(nJugador);
-
-            // Agregar el cliente a la sala de espera
-            cm.rooms.get("sala de espera").add(hiloCliente);
-            hiloCliente.subscribe(cm); // Suscribir el cliente al observable
-
-            // Simular los mensajes
-//            cm.onCrearSala(mensaje);
-//            cm.onConectarse(mensajeConectarse);
-            hiloCliente.sendMessage(mensaje);
-           
-//            cliente.sendMessage(mensajeConectarse);
-
-        
-    }
-
-    public MessageBody unirseSala(String codigoPartida) {
-        // Crear el mensaje base para unirse a la sala
-        MessageBody mb = new MessageBody();
-        mb.setCodigoSala(codigoPartida);
-        mb.setJugador(4);
-
-        // Crear el jugador que se va a unir
-        Jugador nJugador = new Jugador("Jugador 3", Color.BLUE); // Cambia el nombre y el color según corresponda
-
+//        MessageBody mb = new MessageBody();
+//        mb.setCodigoSala("000");
+//        mb.setJugador(1);
+//        mb.setTamaño(getTablero().getCantidadCasillasAspa());
+//        mb.setJugadores(getTablero().getCanJugadores());
+//
+//        Jugador nJugador = new Jugador(GeneradorNombres.generarNombre(), Color.RED);
+//        Message mensaje = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.CREAR_SALA);
 //        Message mensajeConectarse = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.CONECTARSE);
-        // Crear el mensaje de unirse a sala
-        Message mensajeUnirse = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.UNIRSE_SALA);
-        Message mensajeConectarse = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.CONECTARSE);
-        // Inicializar la lógica de mensajes
-        ControlMessage cm = new ControlMessage();
-       
-            // Simular la conexión de un cliente
-            hiloCliente.setJugador(nJugador);
-
-            // Agregar el cliente a la sala de espera
-            cm.rooms.get("sala de espera").add(hiloCliente);
-            hiloCliente.subscribe(cm); // Suscribir el cliente al observable
-
-            // Procesar el mensaje de unirse a sala
-//            cm.onConectarse(mensajeConectarse);
-//            cliente.sendMessage(mensajeConectarse);
-            hiloCliente.sendMessage(mensajeConectarse);
-            hiloCliente.sendMessage(mensajeUnirse);
-        
-            return mb;
-        
+//
+//        // Inicializar el servidor
+//        ControlMessage cm = new ControlMessage();
+//        
+//            // Simular la conexión de un cliente
+//            hiloCliente.setJugador(nJugador);
+//
+//            // Agregar el cliente a la sala de espera
+//            cm.rooms.get("sala de espera").add(hiloCliente);
+//            hiloCliente.subscribe(cm); // Suscribir el cliente al observable
+//
+//            // Simular los mensajes
+////            cm.onCrearSala(mensaje);
+////            cm.onConectarse(mensajeConectarse);
+//            hiloCliente.sendMessage(mensaje);
+//           
+////            cliente.sendMessage(mensajeConectarse);
     }
-    
-    
+
+    public void unirseSala(String codigoPartida) {
+        host = false;
+
+        controlSingleTon.conectarse();
+
+        MessageBody cuerpo = new MessageBody();
+        cuerpo.setCodigoSala("000");
+
+        MessageType tipo = MessageType.UNIRSE_SALA;
+
+        Message mensaje = new Message.Builder()
+                .body(cuerpo)
+                .messageType(tipo)
+                .build();
+
+        enviarMensaje(mensaje);
+
+//        hiloCliente.sendMessage(mensaje);
+
+//        MessageBody mb = new MessageBody();
+//        mb.setCodigoSala(codigoPartida);
+//        mb.setJugador(4);
+//
+//        // Crear el jugador que se va a unir
+//        Jugador nJugador = new Jugador("Jugador 3", Color.BLUE); // Cambia el nombre y el color según corresponda
+//
+////        Message mensajeConectarse = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.CONECTARSE);
+//        // Crear el mensaje de unirse a sala
+//        Message mensajeUnirse = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.UNIRSE_SALA);
+//        Message mensajeConectarse = new Message(mb, nJugador, nJugador, com.chat.tcpcommons.MessageType.CONECTARSE);
+//        // Inicializar la lógica de mensajes
+//        ControlMessage cm = new ControlMessage();
+//       
+//            // Simular la conexión de un cliente
+//            hiloCliente.setJugador(nJugador);
+//
+//            // Agregar el cliente a la sala de espera
+//            cm.rooms.get("sala de espera").add(hiloCliente);
+//            hiloCliente.subscribe(cm); // Suscribir el cliente al observable
+//
+//            // Procesar el mensaje de unirse a sala
+////            cm.onConectarse(mensajeConectarse);
+////            cliente.sendMessage(mensajeConectarse);
+//            hiloCliente.sendMessage(mensajeConectarse);
+//            hiloCliente.sendMessage(mensajeUnirse);
+//        
+//            return mb;
+    }
 
     public void configurarJugadores(int canJugadores) {
         juego.setCanJugadores(canJugadores);
@@ -146,10 +182,9 @@ public class ControlPatolli implements IControlPatolli{
         juego.setTablero(tablero);
     }
 
-    public Color getColorTurnoJugador() {
-        return juego.getJugadores().get(1).getColor();
-    }
-
+//    public Color getColorTurnoJugador() {
+//        return juego.getJugadores().get(1).getColor();
+//    }
     public Tablero getTablero() {
         return juego.getTablero();
     }
@@ -196,4 +231,34 @@ public class ControlPatolli implements IControlPatolli{
         this.jugadores = jugadores;
     }
 
+    public int getCantidadCasillasAspa() {
+        return cantidadCasillasAspa;
+    }
+
+    public void setCantidadCasillasAspa(int cantidadCasillasAspa) {
+        this.cantidadCasillasAspa = cantidadCasillasAspa;
+    }
+
+    public int getCantidadFichasJugador() {
+        return cantidadFichasJugador;
+    }
+
+    public void setCantidadFichasJugador(int cantidadFichasJugador) {
+        this.cantidadFichasJugador = cantidadFichasJugador;
+    } 
+
+    public void setCantitadFichasAspaServidor(){
+        MessageBody content = new MessageBody();
+        content.setCodigoSala("000");
+        content.setTamaño(this.cantidadCasillasAspa);
+        
+        MessageType tipo = MessageType.PASAR_CAMBIOS;
+
+        Message mensaje = new Message.Builder()
+                .body(content)
+                .messageType(tipo)
+                .build();
+
+        enviarMensaje(mensaje);
+    }
 }

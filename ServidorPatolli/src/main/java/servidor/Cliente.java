@@ -4,12 +4,6 @@ import Pantallas.FrmInicio;
 import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
 
 /**
  *
