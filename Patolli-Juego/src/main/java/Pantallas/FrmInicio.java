@@ -15,7 +15,7 @@ import javax.swing.JOptionPane;
  */
 public class FrmInicio extends javax.swing.JFrame {
 
-    FrmConfigurarPartida crearPartida = new FrmConfigurarPartida() ;
+    FrmConfigurarPartida crearPartida;
     FrmTablero tablero;
     private static FrmInicio menuS;
     private Servidor servidor;
@@ -28,10 +28,10 @@ public class FrmInicio extends javax.swing.JFrame {
      */
     public FrmInicio() {
         initComponents();
-        controlPatolli = new ControlPatolli();
+        controlPatolli = ControlPatolli.getInstance();
         tablero= new FrmTablero(controlPatolli, "000");
         servidor = new Servidor();
-        
+        crearPartida = new FrmConfigurarPartida(this) ;
         
         // Conectar automáticamente al servidor cuando se inicia la interfaz
 //        iniciarServidor();
@@ -47,7 +47,7 @@ public class FrmInicio extends javax.swing.JFrame {
     
     public void conectarse(){
         volverInicio=false;
-        controlPatolli.conectarse();
+        controlPatolli.conectarse(this);
     }
     /**
      * El jugador se desconecta del servidor
@@ -290,8 +290,13 @@ public class FrmInicio extends javax.swing.JFrame {
 
     private void btnUnirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnirseActionPerformed
         // Crear un nuevo hilo para la conexión al servidor
-        ControlPantalla controlPantalla = new ControlPantalla();
-        controlPantalla.PasarPantallaUnirseCrear(this);
+        FrmUnirse unirse = new FrmUnirse (this);
+        unirse.setVisible(true);
+        setVisible(false);
+        
+        
+//        ControlPantalla controlPantalla = new ControlPantalla();
+//        controlPantalla.PasarPantallaUnirseCrear(this);
     }//GEN-LAST:event_btnUnirseActionPerformed
 
     /**

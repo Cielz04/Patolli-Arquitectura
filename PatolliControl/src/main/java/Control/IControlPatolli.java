@@ -1,5 +1,6 @@
 package Control;
 
+import Pantallas.FrmInicio;
 import com.chat.tcpcommons.Message;
 
 /**
@@ -8,7 +9,7 @@ import com.chat.tcpcommons.Message;
  */
 public interface IControlPatolli {
     
-    public void conectarse();
+    public void conectarse(FrmInicio frameInicio);
     public void desconectar(String codigoSala, int miJugador);
     public void enviarMensaje(Message mensaje);
     

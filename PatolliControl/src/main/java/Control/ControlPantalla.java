@@ -14,12 +14,13 @@ import javax.swing.JDialog;
 public class ControlPantalla implements IControlPantalla{
 
     FrmUnirse unirse;
+    FrmInicio inicio;
 
    
 
     @Override
     public void PasarPantallaUnirseCrear(FrmInicio inicio) {
-        FrmUnirse unirse = new FrmUnirse();
+        this.inicio = inicio;
         unirse.setVisible(true);
         inicio.dispose();
     }

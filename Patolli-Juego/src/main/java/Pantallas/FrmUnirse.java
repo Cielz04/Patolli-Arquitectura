@@ -8,8 +8,10 @@ import com.chat.tcpcommons.MessageType;
 import servidor.Servidor;
 import entidades.EstadoDelJuego;
 import entidades.Jugador;
+import java.awt.Color;
 import javax.swing.JOptionPane;
 import servidor.ControlMessage;
+import tablero.Tablero;
 
 /**
  *
@@ -19,14 +21,15 @@ public class FrmUnirse extends javax.swing.JFrame {
 
     EstadoDelJuego estado = new EstadoDelJuego();
 //    private Servidor servidor = Servidor.getInstance();
-    FrmInicio unirse;
+    FrmInicio frmInicio;
     FrmTablero tablero;
 
     /**
      * Creates new form FrmUnirse
      */
-    public FrmUnirse() {
+    public FrmUnirse(FrmInicio frmInicio) {
         initComponents();
+        this.frmInicio = frmInicio;
 //        tablero = new FrmTablero();
     }
 
@@ -87,35 +90,130 @@ public class FrmUnirse extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-        if (ControlPatolli.getInstance().unirseSala(txtCodigoPartida.getText().toUpperCase()).getTamaño() !=0){
-            tablero = new FrmTablero(ControlPatolli.getInstance(), "000");
-            tablero.inicializar();
-            tablero.setVisible(true);
-           
-            dispose();
-     
-        }
-        
-        
-        
-    }
 
-    public void existeSala(boolean resultado) {
-        if (ControlPatolli.getInstance().host) {
-            return;
-        }
-        if (resultado) {
-            JOptionPane.showMessageDialog(null, "Uniéndose a la partida", "Partida encontrada", JOptionPane.INFORMATION_MESSAGE);
-            ControlPantalla controlPantalla = new ControlPantalla();
-            controlPantalla.PasarPantallaTablero(ControlPatolli.getInstance());
-            dispose();
-        } else {
-            JOptionPane.showMessageDialog(null, "No se encontró la partida", "Partida no encontrada", JOptionPane.INFORMATION_MESSAGE);
+        try {
+            // Obtener el código de la sala desde el campo de texto
+            String codigoSala = txtCodigoPartida.getText();
 
+            // Validar que el código no esté vacío
+            if (codigoSala.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor ingresa un código de sala");
+                return;
+            }
+
+            // Crear el cuerpo del mensaje para unirse a la sala
+            MessageBody body = new MessageBody();
+            body.setCodigoSala(codigoSala);
+
+            // Crear el mensaje con la información del jugador
+            Jugador jugador = new Jugador("Jugador 3",  Color.BLUE); // Puedes ajustar el nombre y color
+            Message mensajeUnirseSala = new Message.Builder()
+                    .messageType(MessageType.UNIRSE_SALA)
+                    .body(body)
+                    .build();
+            
+            // Enviar el mensaje para unirse a la sala
+            ControlPatolli.getInstance().conectarse(frmInicio);
+            ControlPatolli.getInstance().enviarMensaje(mensajeUnirseSala);
+
+            // Esperar la respuesta del servidor con el estado del tablero
+            Message mensajeEstadoTablero = ControlPatolli.getInstance().recibirMensaje(); // Este método debe manejar la recepción del mensaje
+
+            if (mensajeEstadoTablero.getMessageType() == MessageType.ESTADO_TABLERO) {
+                // Obtener el estado del tablero desde el mensaje
+                MessageBody bodyTablero = mensajeEstadoTablero.getContent();
+                Tablero estadoTablero = bodyTablero.getEstadoTablero(); // Obtener el tablero actual
+
+                // Crear y mostrar el FrmTablero
+                FrmTablero tablero = new FrmTablero(ControlPatolli.getInstance(), codigoSala);
+                tablero.manejarEstadoTablero(mensajeEstadoTablero); // Pasar el mensaje con el estado del tablero
+                tablero.setVisible(true);
+
+                // Cerrar la ventana actual
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error: No se pudo obtener el estado del tablero.");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al unirse a la sala: " + e.getMessage());
         }
+
+//        try {
+//        // Obtener el código de la sala desde el campo de texto
+//        String codigoSala = txtCodigoPartida.getText();
+//
+//        // Validar que el código no esté vacío
+//        if (codigoSala.isEmpty()) {
+//            JOptionPane.showMessageDialog(this, "Por favor ingresa un código de sala");
+//            return;
+//        }
+//
+//        // Crear el cuerpo del mensaje para unirse a la sala
+//        MessageBody body = new MessageBody();
+//        body.setCodigoSala(codigoSala);
+//
+//        // Crear el mensaje con la información del jugador
+//        Jugador jugador = new Jugador("Jugador 3", Color.BLUE); // Puedes ajustar el nombre y color
+//        Message mensaje = new Message.Builder()
+//                .messageType(MessageType.UNIRSE_SALA)
+//                .body(body)
+//                .build();
+//
+//        // Enviar el mensaje a través de ControlPatolli
+//        ControlPatolli.getInstance().conectarse(frmInicio);
+//        ControlPatolli.getInstance().enviarMensaje(mensaje);
+//        
+//        
+//        MessageBody content = new MessageBody();
+//        body.setCodigoSala(codigoSala);
+//        body.setEstadoTablero(ControlPatolli.getInstance().getTablero()); // Obtén el tablero actual de la sala
+//
+//        Message message = new Message.Builder()
+//                .messageType(MessageType.ESTADO_TABLERO)
+//                .body(content)
+//                .build();
+//        
+//        ControlPatolli.getInstance().enviarMensaje(message);
+//        
+//        FrmTablero tablero = new FrmTablero (ControlPatolli.getInstance(), "000");
+//        
+//        tablero.manejarEstadoTablero(message);
+//        tablero.setVisible(true);
+//        
+//        dispose();
+//        
+//        
+//
+//        // Confirmación visual
+//        //JOptionPane.showMessageDialog(this, "Te has unido a la sala correctamente");
+//
+//    } catch (Exception e) {
+//        JOptionPane.showMessageDialog(this, "Error al unirse a la sala: " + e.getMessage());
+//    }
+//        if (ControlPatolli.getInstance().unirseSala(txtCodigoPartida.getText().toUpperCase()).getTamaño() !=0){
+//            tablero = new FrmTablero(ControlPatolli.getInstance(), "000");
+//            tablero.inicializar();
+//            tablero.setVisible(true);
+//           
+//            dispose();
+//     
+//        }
+//    public void existeSala(boolean resultado) {
+//        if (ControlPatolli.getInstance().host) {
+//            return;
+//        }
+//        if (resultado) {
+//            JOptionPane.showMessageDialog(null, "Uniéndose a la partida", "Partida encontrada", JOptionPane.INFORMATION_MESSAGE);
+//            ControlPantalla controlPantalla = new ControlPantalla();
+//            controlPantalla.PasarPantallaTablero(ControlPatolli.getInstance());
+//            dispose();
+//        } else {
+//            JOptionPane.showMessageDialog(null, "No se encontró la partida", "Partida no encontrada", JOptionPane.INFORMATION_MESSAGE);
+//
+//        }
     }//GEN-LAST:event_btnAceptarActionPerformed
 
-   
     /**
      * @param args the command line arguments
      */
