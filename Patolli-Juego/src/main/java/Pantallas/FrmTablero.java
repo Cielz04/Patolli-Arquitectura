@@ -52,7 +52,6 @@ public class FrmTablero extends javax.swing.JFrame {
         this.tableroLocal = tablero;
         this.clienteControlador = clienteControlador;
         initComponents();
-        inicializar();
     }
 
     // Método estático para obtener la instancia única de FrmTablero

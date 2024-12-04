@@ -17,9 +17,8 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
     /**
      * Creates new form FrmConfigurarPartida
      */
-    
     private ClienteControlador cliente;
-    
+
     public FrmConfigurarPartida() {
         initComponents();
         btnGroupAspas.add(aspa8);
@@ -28,7 +27,7 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
         btnGroupFichas.add(fichas2);
         btnGroupFichas.add(fichas4);
         btnGroupFichas.add(fichas6);
-        cliente = new ClienteControlador(new Jugador ("Jugador 1", Color.RED));
+        cliente = new ClienteControlador(new Jugador("Jugador 1", Color.RED));
     }
 
     @SuppressWarnings("unchecked")
@@ -287,25 +286,42 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
 
     private void btnApuestaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApuestaActionPerformed
         try {
-        int tamanio = aspa8.isSelected() ? 8 : aspa10.isSelected() ? 10 : 14;
-        int fichas = fichas2.isSelected() ? 2 : fichas4.isSelected() ? 4 : 6;
+            // Determinar el tamaño del aspa basado en la selección
+            int tamanio = aspa8.isSelected() ? 8 : aspa10.isSelected() ? 10 : 14;
 
-        cliente.getTableroLocal().setCantidadCasillasAspa(tamanio);
-        cliente.getTableroLocal().setCantidadFichas(fichas);
+            // Determinar la cantidad de fichas basado en la selección
+            int fichas = fichas2.isSelected() ? 2 : fichas4.isSelected() ? 4 : 6;
 
-        cliente.procesarMensaje(new Message.Builder()
-                .messageType(MessageType.CONFIGURAR_TABLERO)
-                .sender(cliente.getJugador())
-                .body(new MessageBody("Configuración enviada", cliente.getTableroLocal()))
-                .build());
+            // Establecer la configuración en el tablero local del cliente
+            cliente.getTableroLocal().setCantidadCasillasAspa(tamanio);
+            cliente.getTableroLocal().setCantidadFichas(fichas);
 
-        DlgApuesta dlgApuesta = new DlgApuesta(cliente);
-        dlgApuesta.setVisible(true);
-        this.dispose();
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Error al configurar: " + e.getMessage());
-    }
-        
+            // Enviar la configuración del tablero al servidor
+            Message mensajeConfiguracion = new Message.Builder()
+                    .messageType(MessageType.CONFIGURAR_TABLERO) // Tipo de mensaje para configurar el tablero
+                    .sender(cliente.getJugador()) // Jugador que envía la solicitud
+                    .body(new MessageBody("Configuración enviada", cliente.getTableroLocal())) // Contiene el tablero local con la nueva configuración
+                    .build();
+
+            cliente.enviarMensaje(mensajeConfiguracion);
+
+            // Confirmar la configuración en el cliente
+            JOptionPane.showMessageDialog(this, "Configuración enviada al servidor:\n"
+                    + "Tamaño de aspa: " + tamanio + "\n"
+                    + "Cantidad de fichas: " + fichas);
+
+            // Mostrar el diálogo de apuestas
+            DlgApuesta dlgApuesta = new DlgApuesta(cliente);
+            dlgApuesta.setVisible(true);
+
+            // Cerrar la ventana actual
+            this.dispose();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al configurar: " + e.getMessage());
+            e.printStackTrace();
+        }
+
     }//GEN-LAST:event_btnApuestaActionPerformed
 
     private void aspa8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aspa8ActionPerformed

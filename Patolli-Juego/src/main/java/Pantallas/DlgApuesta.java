@@ -6,7 +6,10 @@ import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
 import javax.swing.JOptionPane;
 import PatolliCliente.ClienteControlador;  // Asegúrate de que esta clase exista y esté correctamente implementada
-import tablero.Tablero;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 
 
 public class DlgApuesta extends javax.swing.JDialog {
@@ -220,31 +223,42 @@ public class DlgApuesta extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
-    try {
-        String selectedOption = (String) cmbJugadores.getSelectedItem();
-        int canJugadores = Integer.parseInt(selectedOption);
-        
+        try {
+            // Obtener la cantidad de jugadores seleccionados en el ComboBox
+            String selectedOption = (String) cmbJugadores.getSelectedItem();
+            int canJugadores = Integer.parseInt(selectedOption);
 
-        clienteControlador.getTableroLocal().setCantidadJugadores(canJugadores);
+            // Configurar la cantidad de jugadores en el tablero local del cliente
+            clienteControlador.getTableroLocal().setCantidadJugadores(canJugadores);
 
-        clienteControlador.procesarMensaje(new Message.Builder()
-                .messageType(MessageType.CONFIGURAR_TABLERO)
-                .sender(clienteControlador.getJugador())
-                .body(new MessageBody("Configuración enviada", clienteControlador.getTableroLocal()))
-                .build());
-        
-        clienteControlador.procesarMensaje(new Message.Builder()
-        .messageType(MessageType.CONECTARSE)
-        .body(new MessageBody("CONECTANDO"))
-        .sender(clienteControlador.getJugador())
-        .build());
+            // Configurar la lista de montos por jugador (inicializar en 0 para cada jugador)
+            List<Integer> montosPorJugador = new LinkedList<>();
+            for (int i = 0; i < canJugadores; i++) {
+                montosPorJugador.add(0); // Inicializa en 0 el monto de cada jugador
+            }
+            clienteControlador.getTableroLocal().setCantidadMontoJugadores(montosPorJugador);
 
-        FrmTablero tablero = new FrmTablero(clienteControlador.getTableroLocal(), clienteControlador);
-        tablero.setVisible(true);
-        this.dispose();
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Error al configurar: " + e.getMessage());
-    }
+            // Crear el mensaje para actualizar la configuración del tablero en el servidor
+            Message mensajeConfiguracion = new Message.Builder()
+                    .messageType(MessageType.CONFIGURAR_TABLERO)
+                    .sender(clienteControlador.getJugador())
+                    .body(new MessageBody("Configuración enviada", clienteControlador.getTableroLocal()))
+                    .build();
+
+            // Enviar la configuración del tablero al servidor
+            clienteControlador.enviarMensaje(mensajeConfiguracion);
+
+            // Mostrar un mensaje confirmando la configuración
+            JOptionPane.showMessageDialog(this, "Configuración enviada al servidor:\n"
+                    + "Cantidad de jugadores: " + canJugadores);
+
+            // Cerrar la ventana actual
+            this.dispose();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al configurar: " + e.getMessage());
+            e.printStackTrace();
+        }
    
     }//GEN-LAST:event_btnCrearActionPerformed
 

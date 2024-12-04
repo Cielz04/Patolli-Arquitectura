@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 import tablero.Tablero;
 import entidades.Jugador;
+import java.awt.Color;
 
 /**
  * Clase que gestiona las conexiones de clientes y la lógica del juego en el
@@ -57,7 +58,7 @@ public class ControlMessage implements Runnable {
                 System.out.println("Cliente conectado desde: " + clientSocket.getInetAddress());
 
                 // Crea un nuevo hilo de cliente para manejar la comunicación con el cliente conectado.
-                ClientThread client = new ClientThread(clientSocket);
+                ClientThread client = new ClientThread(clientSocket, jugadorNuevo());
 
                 // Aquí puedes agregar el cliente a una lista de clientes activos si es necesario
                 agregarCliente(client); // Método para agregar el cliente a la lista de clientes
@@ -96,11 +97,16 @@ public class ControlMessage implements Runnable {
         }
     }
 
+    private void agregarCliente(ClientThread cliente) {
+        clientesConectados.add(cliente);
+    }
+
     private void manejarConectarse(Message mensaje) {
         Jugador jugador = mensaje.getSender();
         ClientThread cliente = obtenerClientePorJugador(jugador);
 
-        if (cliente != null) {
+        if (esClienteRegistrado(jugador)) {
+            System.out.println("El jugador ya está registrado: " + jugador.getNombre());
             cliente.sendMessage(new Message.Builder()
                     .messageType(MessageType.ERROR)
                     .body(new MessageBody("El jugador ya está conectado"))
@@ -109,7 +115,6 @@ public class ControlMessage implements Runnable {
         }
 
         if (tableroServidor.isJuegoInicia()) {
-            // Respuesta de error si el juego ya inició
             cliente.sendMessage(new Message.Builder()
                     .messageType(MessageType.ERROR)
                     .body(new MessageBody("El juego ya ha comenzado"))
@@ -118,7 +123,15 @@ public class ControlMessage implements Runnable {
         }
 
         if (tableroServidor.agregarJugador(jugador)) {
-            // Actualización y notificación
+            System.out.println("Jugador " + jugador.getNombre() + " se ha conectado.");
+
+            // Añadir el cliente a la lista de clientes conectados
+            agregarCliente(cliente);
+
+            // Enviar el estado del tablero al nuevo cliente
+            enviarEstadoTablero(cliente);
+
+            // Notificar a todos los jugadores conectados sobre el nuevo jugador
             notificarTodos(new Message.Builder()
                     .messageType(MessageType.UNIRSE_SALA)
                     .body(new MessageBody("Jugador conectado: " + jugador.getNombre()))
@@ -129,6 +142,16 @@ public class ControlMessage implements Runnable {
                     .body(new MessageBody("No hay espacio para más jugadores"))
                     .build());
         }
+    }
+
+    private boolean esClienteRegistrado(Jugador jugador) {
+        System.out.println("Entro a verificar cliente");
+        for (ClientThread cliente : clientesConectados) {
+            if (cliente.getJugador() != null && cliente.getJugador().equals(jugador)) {
+                return true; // El cliente ya está registrado
+            }
+        }
+        return false; // El cliente no está registrado
     }
 
     // Verifica si el jugador ya está conectado al juego
@@ -143,28 +166,30 @@ public class ControlMessage implements Runnable {
 
     // Método para manejar cuando un jugador se une a la sala
     private void manejarUnirseSala(Message mensaje) {
+        System.out.println("Entro unirseSala");
         Jugador jugador = mensaje.getSender();
 
         if (tableroServidor.isJuegoInicia()) {
-            // Notificar que el juego ya ha comenzado
+            // Notificar al jugador que no puede unirse si el juego ya ha comenzado
             notificarJugadorError(jugador, "El juego ya ha comenzado");
             return;
         }
 
+        // Añadir el jugador al tablero
         if (tableroServidor.agregarJugador(jugador)) {
-            System.out.println("Jugador " + jugador.getNombre() + " se unió a la sala.");
+            System.out.println("Jugador " + jugador.getNombre() + " se unió al tablero.");
 
-            // Enviar estado actualizado del tablero al nuevo jugador
+            // Enviar al cliente el estado actual del tablero
             ClientThread cliente = obtenerClientePorJugador(jugador);
-            enviarEstadoTablero(cliente);
+            enviarEstadoTablero(cliente);  // Enviar el tablero actualizado al cliente
 
-            // Notificar a los demás jugadores
+            // Notificar a los demás jugadores que un nuevo jugador se ha unido
             notificarTodos(new Message.Builder()
                     .messageType(MessageType.UNIRSE_SALA)
-                    .body(new MessageBody("Jugador " + jugador.getNombre() + " se ha unido a la sala"))
+                    .body(new MessageBody("Jugador " + jugador.getNombre() + " se ha unido al juego"))
                     .build());
         } else {
-            // No hay espacio para más jugadores
+            // Si no hay espacio en el tablero
             notificarJugadorError(jugador, "No hay espacio para más jugadores");
         }
     }
@@ -175,9 +200,9 @@ public class ControlMessage implements Runnable {
 
         // Actualizar el tablero del servidor
         tableroServidor.actualizarConMensaje(tableroActualizado);
-        System.out.println("Cambios en el tablero aplicados.");
+        System.out.println("Tablero del servidor actualizado con cambios del cliente.");
 
-        // Notificar a todos los jugadores sobre los cambios
+        // Propagar los cambios a todos los clientes conectados
         notificarTodos(new Message.Builder()
                 .messageType(MessageType.TABLERO_ACTUALIZADO)
                 .body(new MessageBody("Tablero actualizado", tableroServidor))
@@ -187,24 +212,17 @@ public class ControlMessage implements Runnable {
     // Método para enviar el estado del tablero a un cliente
     private void enviarEstadoTablero(ClientThread cliente) {
         MessageBody body = new MessageBody();
-        body.setEstadoTablero(tableroServidor);
-        body.setMensaje("NUEVO TABLERO");
+        body.setEstadoTablero(tableroServidor);  // El estado actual del tablero
+        body.setMensaje("Tablero actualizado");  // Mensaje informativo
+
+        // Enviar el mensaje con el tablero actualizado
         Message mensaje = new Message.Builder()
                 .messageType(MessageType.TABLERO_ACTUALIZADO)
                 .body(body)
                 .build();
-        cliente.sendMessage(mensaje);
-        System.out.println("Estado del tablero enviado al cliente.");
-    }
 
-    // Método para agregar un cliente a la lista de clientes conectados
-    private void agregarCliente(ClientThread cliente) {
-        lock.lock();
-        try {
-            clientesConectados.add(cliente);
-        } finally {
-            lock.unlock();
-        }
+        cliente.sendMessage(mensaje);  // Enviar el mensaje al cliente que se unió
+        System.out.println("Estado del tablero enviado al cliente.");
     }
 
     // Método para eliminar un cliente de la lista de clientes conectados
@@ -280,18 +298,19 @@ public class ControlMessage implements Runnable {
 
     // Método para manejar la configuración del tablero (para servidor)
     private void manejarConfigurarTableroServidor(Message mensaje) {
-        MessageBody configuracion = mensaje.getContent();
+        // Obtener el tablero actualizado del mensaje
+        Tablero tableroActualizado = mensaje.getContent().getEstadoTablero();
 
-        // Aquí puedes extraer parámetros del mensaje y aplicarlos al tablero
-        tableroServidor.actualizarConMensaje(configuracion.getEstadoTablero());
+        // Actualizar el tablero del servidor
+        tableroServidor.actualizarConMensaje(tableroActualizado);
 
-        System.out.println("Configuración del tablero aplicada: " + configuracion);
-
-        // Notificar a todos los jugadores sobre la nueva configuración
+        // Notificar a todos los clientes conectados sobre la nueva configuración
         notificarTodos(new Message.Builder()
                 .messageType(MessageType.CONFIGURAR_TABLERO)
-                .body(new MessageBody("El tablero ha sido configurado."))
+                .body(new MessageBody("Tablero configurado en el servidor", tableroServidor))
                 .build());
+
+        System.out.println("Tablero del servidor actualizado con la configuración.");
     }
 
     // Método para manejar la actualización del tablero (cuando un cliente actualiza el tablero)
@@ -300,6 +319,23 @@ public class ControlMessage implements Runnable {
         System.out.println("Actualización de tablero recibida.");
     }
 
-    
+    private Jugador jugadorNuevo() {
+        int numeroJugador = tableroServidor.getJugadores().size() + 1;
+        Color color = null;
+        if (numeroJugador == 1) {
+            color = Color.RED;
+        }
+        if (numeroJugador == 2) {
+            color = Color.BLUE;
+        }
+        if (numeroJugador == 3) {
+            color = Color.GREEN;
+        }
+        if (numeroJugador == 4) {
+            color = Color.YELLOW;
+        }
+
+        return new Jugador("Jugador " + numeroJugador, color);
+    }
 
 }

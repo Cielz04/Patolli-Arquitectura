@@ -15,17 +15,23 @@ import tablero.Tablero;
  */
 public class FrmUnirse extends javax.swing.JFrame {
 
-//    private ClienteControlador clienteControlador = new ClienteControlador();
-    FrmInicio frmInicio;
+////    private ClienteControlador clienteControlador = new ClienteControlador();
+//    FrmInicio frmInicio;
+    private ClienteControlador cliente;
 
     /**
      * Creates new form FrmUnirse
      */
-    public FrmUnirse(FrmInicio frmInicio) {
+    public FrmUnirse() {
         initComponents();
-        this.frmInicio = frmInicio;
-    }
+        Jugador jugador = new Jugador ("Jugador 2", Color.BLUE);
+        cliente = new ClienteControlador(jugador);
 
+    }
+//    public FrmUnirse(FrmInicio frmInicio) {
+//        initComponents();
+//        this.frmInicio = frmInicio;
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -84,62 +90,30 @@ public class FrmUnirse extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        try {
+            cliente.enviarMensaje(new Message.Builder()
+            .messageType(MessageType.CONECTARSE)
+            .body(new MessageBody ("CONECTANDO AL SERVIDOR"))
+            .build());
+            // Enviar la solicitud para unirse al servidor
+            cliente.enviarMensaje(new Message.Builder()
+                    .messageType(MessageType.UNIRSE_SALA) // Tipo de mensaje para unirse
+                    .sender(cliente.getJugador()) // El jugador que se une
+                    .body(new MessageBody("Solicitud para unirse al juego")) // Cuerpo del mensaje
+                    .build());
 
-//        try {
-//            // Obtener el código de la sala desde el campo de texto
-//            String codigoSala = txtCodigoPartida.getText();
-//
-//            // Validar que el código no esté vacío
-//            if (codigoSala.isEmpty()) {
-//                JOptionPane.showMessageDialog(this, "Por favor ingresa un código de sala");
-//                return;
-//            }
-//
-//            // Crear el cuerpo del mensaje para unirse a la sala
-//            MessageBody body = new MessageBody();
-//            body.setCodigoSala(codigoSala);
-//
-//            // Crear el mensaje para unirse a la sala
-//            Jugador jugador = new Jugador("Jugador 3", Color.BLUE); // Ajusta el nombre y color
-//            Message mensajeUnirseSala = new Message.Builder()
-//                    .messageType(MessageType.UNIRSE_SALA)
-//                    .body(body)
-//                    .build();
-//
-//            // Conectar al servidor
-//            clienteControlador.iniciarConexion();
-//            clienteControlador.enviarMensaje(mensajeUnirseSala);
-//
-//            // Esperar respuesta del servidor con el estado del tablero
-//            Message mensajeEstadoTablero = clienteControlador.recibirMensaje();
-//
-//            // Verificar si el mensaje recibido es de tipo "ESTADO_TABLERO"
-//            if (mensajeEstadoTablero.getMessageType() == MessageType.TABLERO_ACTUALIZADO) {
-//                // Obtener el estado del tablero
-//                MessageBody bodyTablero = (MessageBody) mensajeEstadoTablero.getContent();
-//                Tablero estadoTablero = bodyTablero.getEstadoTablero(); // El tablero actual
-//
-//                // Verificar si el juego ya ha iniciado
-//                if (!estadoTablero.isJuegoInicia()) {
-//                    // El juego no ha iniciado, el jugador puede unirse
-//                    // Crear el FrmTablero y pasarlo al nuevo tablero
-//                    FrmTablero frmTablero = new FrmTablero(estadoTablero, clienteControlador);
-//                    frmTablero.setVisible(true);
-//
-//                    // Cerrar la ventana actual de "Unirse"
-//                    dispose();
-//                } else {
-//                    // El juego ya ha comenzado
-//                    JOptionPane.showMessageDialog(this, "El juego ya ha comenzado, no puedes unirte.");
-//                }
-//            } else {
-//                JOptionPane.showMessageDialog(this, "Error: No se pudo obtener el estado del tablero.");
-//            }
-//
-//        } catch (Exception e) {
-//            JOptionPane.showMessageDialog(this, "Error al unirse a la sala: " + e.getMessage());
-//        }
+            // Esperamos que el servidor nos envíe el tablero actualizado
+            // El servidor nos enviará un mensaje con el tablero actual
+            // Mostrar un mensaje o cambiar la pantalla mientras el cliente espera
+            JOptionPane.showMessageDialog(null, "Esperando confirmación del servidor...");
+            
 
+            
+            
+            
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Error al solicitar unirse: " + ex.getMessage());
+        }
     }//GEN-LAST:event_btnAceptarActionPerformed
 
     /**
