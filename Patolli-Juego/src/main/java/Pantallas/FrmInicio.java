@@ -4,18 +4,53 @@
  */
 package Pantallas;
 
+<<<<<<< refs/remotes/origin/melle
+=======
+//import Cliente.Cliente;
+import Servidor.Servidor;
+
+import java.io.IOException;
+import java.net.Socket;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
+>>>>>>> local
 /**
  *
  * @author Enrique Rodriguez
  */
 public class FrmInicio extends javax.swing.JFrame {
 
+<<<<<<< refs/remotes/origin/melle
+=======
+    FrmConfigurarPartida crearPartida;
+    private static FrmInicio menuS;
+    private Servidor servidor;
+
+>>>>>>> local
     /**
      * Creates new form PantallaInicio
      */
     public FrmInicio() {
         initComponents();
+<<<<<<< refs/remotes/origin/melle
     }
+=======
+        crearPartida = new FrmConfigurarPartida();
+        // Conectar automáticamente al servidor cuando se inicia la interfaz
+//        iniciarServidor();
+
+    }
+
+    public static FrmInicio getInstance() {
+        if (menuS == null) {
+            menuS = new FrmInicio();
+        }
+        return menuS;
+    }
+
+
+>>>>>>> local
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -56,6 +91,61 @@ public class FrmInicio extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+<<<<<<< refs/remotes/origin/melle
+=======
+    private void btnIniciarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarPartidaActionPerformed
+         try {
+            new Thread(() -> {
+                try {
+                    SwingUtilities.invokeLater(() -> {
+                        crearPartida.setVisible(true);
+                        JOptionPane.showMessageDialog(this, "Partida creada con éxito. Esperando jugadores...");
+                        setVisible(false);
+                    });
+                } catch (Exception e) {
+                    SwingUtilities.invokeLater(() -> {
+                        JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
+                    });
+                    e.printStackTrace();
+                }
+            }).start();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnIniciarPartidaActionPerformed
+
+    private void btnReglasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReglasActionPerformed
+       dispose();
+        DlgReglas control = new DlgReglas();
+        control.setVisible(true);
+    }//GEN-LAST:event_btnReglasActionPerformed
+
+    private void btnSalir1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalir1ActionPerformed
+        String[] botones = {"Si", "No"};
+        int variable = JOptionPane.showOptionDialog(null, "¿Desea cerrar el juego?",
+                "Confirmación", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, botones, botones[0]);
+        if (variable == 0) {
+            dispose();
+        }
+    }//GEN-LAST:event_btnSalir1ActionPerformed
+
+    private void btnUnirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnirseActionPerformed
+        new Thread(() -> {
+            try {
+                Socket socket = new Socket("localhost", 50065);
+                JOptionPane.showMessageDialog(this, "Conexión exitosa a la partida.");
+
+                FrmUnirse frmUnirsePartida = new FrmUnirse();
+                frmUnirsePartida.setVisible(true);
+                this.dispose();
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error al conectarse a la partida: " + e.getMessage());
+            }
+        }).start();
+    }//GEN-LAST:event_btnUnirseActionPerformed
+
+>>>>>>> local
     /**
      * @param args the command line arguments
      */

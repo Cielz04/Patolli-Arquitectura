@@ -4,19 +4,46 @@
  */
 package Pantallas;
 
+<<<<<<< refs/remotes/origin/melle
+=======
+import Cliente.Cliente;
+
+import Servidor.ControladorDeJuego;
+import entidades.Codigo;
+import entidades.EstadoDelJuego;
+import entidades.Jugador;
+import java.awt.Color;
+import javax.swing.ButtonGroup;
+import javax.swing.JOptionPane;
+import tablero.Tablero;
+
+
+>>>>>>> local
 /**
  *
  * @author Enrique Rodriguez
  */
 public class DlgApuesta extends javax.swing.JDialog {
 
+    private EstadoDelJuego estadoDelJuego;
+    
+
     /**
      * Creates new form DlgApuesta
      */
     public DlgApuesta(java.awt.Frame parent, boolean modal) {
+<<<<<<< refs/remotes/origin/melle
         super(parent, modal);
+=======
+         super(parent, modal);
+>>>>>>> local
         initComponents();
+        estadoDelJuego = new EstadoDelJuego();  // Asegúrate de que el estado del juego se inicialice
+
+        
     }
+
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -43,6 +70,50 @@ public class DlgApuesta extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+<<<<<<< refs/remotes/origin/melle
+=======
+    private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
+    estadoDelJuego = ControladorDeJuego.getEstadoDelJuego();
+    
+    try {
+        // Verificar que el monto de la apuesta sea un número válido
+        String montoStr = txtApuesta.getText();  // Suponiendo que tienes un campo txtMontoApuesta para ingresar el monto
+        if (montoStr.isEmpty() || !montoStr.matches("\\d+")) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingresa un monto válido para la apuesta.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Registrar la apuesta en el estado del juego
+        int montoApuesta = Integer.parseInt(montoStr);
+        estadoDelJuego.setApuesta(montoApuesta);
+
+        // Configurar el tablero con las opciones elegidas previamente en el FrmConfigurarPartida
+        if (estadoDelJuego.getCantidadCasillas() == 0) {
+            JOptionPane.showMessageDialog(this, "Por favor, configura el tamaño del tablero antes de crear la partida.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Crear la partida
+        System.out.println("La partida ha sido creada con éxito con el monto de apuesta: " + montoApuesta);
+       
+        // Abrir el tablero
+        EstadoDelJuego estadoDelJuego = new EstadoDelJuego();
+        estadoDelJuego.iniciarPartida();
+        
+        FrmTablero.getInstance().inicializar();  // Este método inicializa el tablero con la configuración que ya está en estadoDelJuego
+        FrmTablero.getInstance().setVisible(true);
+
+        // Cerrar la ventana de apuesta
+        dispose();
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error al crear la partida: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
+
+    }//GEN-LAST:event_btnCrearActionPerformed
+
+>>>>>>> local
     /**
      * @param args the command line arguments
      */
