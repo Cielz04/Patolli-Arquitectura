@@ -11,133 +11,31 @@ import tablero.Tablero;
  */
 public class MessageBody implements Serializable{
     
-    private String razonDesconexion;
-    private String codigoSala;
-    private List<Integer> montoJugadores= new ArrayList<>();
-    private int jugador;
-    private int tamanio;
-    private int jugadores;
-    private int monto; 
-    private int fichas;
-    private boolean existeSala;
-    private List<Integer> fichasJugador2Posicion= new ArrayList<>();
-    private List<Integer> fichasJugador1Posicion= new ArrayList<>();
-    private List<Integer> fichasJugador3Posicion= new ArrayList<>();
-    private List<Integer> fichasJugador4Posicion= new ArrayList<>();
-    private int apuesta;
+    private String mensaje;
     private Tablero estadoTablero;
 
-  
-    public String getCodigoSala() {
-        return codigoSala;
+    public MessageBody() {
     }
 
-    public void setCodigoSala(String codigoSala) {
-        this.codigoSala = codigoSala;
+    public MessageBody(String mensaje, Tablero estadoTablero) {
+        this.mensaje = mensaje;
+        this.estadoTablero = estadoTablero;
     }
 
-    public List<Integer> getMontoJugadores() {
-        return montoJugadores;
+    public MessageBody(String mensaje) {
+        this.mensaje = mensaje;
     }
 
-    public void setMontoJugadores(List<Integer> montoJugadores) {
-        this.montoJugadores = montoJugadores;
+    public MessageBody(Tablero estadoTablero) {
+        this.estadoTablero = estadoTablero;
     }
 
-    public int getJugador() {
-        return jugador;
+    public String getMensaje() {
+        return mensaje;
     }
 
-    public void setJugador(int jugador) {
-        this.jugador = jugador;
-    }
-
-    public int getTamaño() {
-        return tamanio;
-    }
-
-    public void setTamaño(int tamanio) {
-        this.tamanio = tamanio;
-    }
-
-    public int getMonto() {
-        return monto;
-    }
-
-    public void setMonto(int monto) {
-        this.monto = monto;
-    }
-
-    public int getFichas() {
-        return fichas;
-    }
-
-    public void setFichas(int fichas) {
-        this.fichas = fichas;
-    }
-
-    public int getJugadores() {
-        return jugadores;
-    }
-
-    public void setJugadores(int jugadores) {
-        this.jugadores = jugadores;
-    }
-
-    public List<Integer> getFichasJugador2Posicion() {
-        return fichasJugador2Posicion;
-    }
-
-    public void setFichasJugador2Posicion(List<Integer> fichasJugador2Posicion) {
-        this.fichasJugador2Posicion = fichasJugador2Posicion;
-    }
-
-    public List<Integer> getFichasJugador1Posicion() {
-        return fichasJugador1Posicion;
-    }
-
-    public void setFichasJugador1Posicion(List<Integer> fichasJugador1Posicion) {
-        this.fichasJugador1Posicion = fichasJugador1Posicion;
-    }
-
-    public List<Integer> getFichasJugador3Posicion() {
-        return fichasJugador3Posicion;
-    }
-
-    public void setFichasJugador3Posicion(List<Integer> fichasJugador3Posicion) {
-        this.fichasJugador3Posicion = fichasJugador3Posicion;
-    }
-
-    public List<Integer> getFichasJugador4Posicion() {
-        return fichasJugador4Posicion;
-    }
-
-    public void setFichasJugador4Posicion(List<Integer> fichasJugador4Posicion) {
-        this.fichasJugador4Posicion = fichasJugador4Posicion;
-    }
-
-    public boolean isExisteSala() {
-        return existeSala;
-    }
-
-    public void setExisteSala(boolean existeSala) {
-        this.existeSala = existeSala;
-    }
-
-    public String getRazonDesconexion() {
-        return razonDesconexion;
-    }
-
-    public void setRazonDesconexion(String razonDesconexion) {
-        this.razonDesconexion = razonDesconexion;
-    }
-
-    public int getApuesta() {
-        return apuesta;
-    }
-
-    public void setApuesta(int apuesta) {
-        this.apuesta = apuesta;
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
     }
 
     public Tablero getEstadoTablero() {
@@ -147,6 +45,12 @@ public class MessageBody implements Serializable{
     public void setEstadoTablero(Tablero estadoTablero) {
         this.estadoTablero = estadoTablero;
     }
+    
+    
+    
+
+  
+    
     
     
     

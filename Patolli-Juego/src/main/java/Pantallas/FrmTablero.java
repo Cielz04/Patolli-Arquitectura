@@ -1,30 +1,23 @@
 package Pantallas;
 
-import Control.ControlJugador;
-import Control.ControlPatolli;
+
+
+import PatolliCliente.ClienteControlador;
 import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import tablero.Casilla;
 import tablero.Tablero;
@@ -35,12 +28,8 @@ import tablero.Tablero;
  */
 public class FrmTablero extends javax.swing.JFrame {
 
-    private final ControlPatolli controlPatolli;
-
-    private final String codigoSala;
-    private int canCasillasAspa;
-    private final int monto;
-    private final int jugadores = 0;
+   private static FrmTablero tableroS;  // Instancia estática de FrmTablero
+    
 
     private List<Casilla> fichaJugador1;
     private List<Casilla> fichaJugador2;
@@ -48,204 +37,107 @@ public class FrmTablero extends javax.swing.JFrame {
     private List<Casilla> fichaJugador4;
 
     private int ultimoTiro = 0;
+    
+    private ClienteControlador clienteControlador;
 
     private List<Casilla> casillasTablero;
-//    private static FrmTablero tableroS;
     private boolean numerarCasillas;
-//    private Tablero tablero = new Tablero();
     private int numeroCasilla;
-//    
-    private List<Integer> fichasJugador1Posicion;
-    private List<Integer> fichasJugador2Posicion;
-    private List<Integer> fichasJugador3Posicion;
-    private List<Integer> fichasJugador4Posicion;
-    private List<Integer> montoJugadores;
+    private Tablero tableroLocal;
 
-    private int jugadorTurno = 0;
-//    private final List<JLabel> casillas;
-//    private Servidor servidor;
-//    private int ultimoTiro;
-//    private Socket socket;
-//    private BufferedReader reader;
-//    private PrintWriter writer;
-    private boolean juegoTermino;
 
-    /**
-     * Creates new form Tablero
-     */
-    public FrmTablero(ControlPatolli controlPatolli, String codigoSala) {
-        this.controlPatolli = controlPatolli;
-        this.codigoSala = codigoSala;
-//        this.canCasillasAspa = controlPatolli.getTablero().getCantidadCasillasAspa();
-//        this.jugadores = controlPatolli.getJugadores();
-//        this.casillasTablero = controlPatolli.getTablero().getCasillas();
+    // Constructor privado
+    public FrmTablero(Tablero tablero, ClienteControlador clienteControlador) {
         casillasTablero = new LinkedList<>();
-
-        this.canCasillasAspa = controlPatolli.getTablero().getCantidadCasillasAspa();
-
-        this.monto = 33;//TODO
+        this.tableroLocal = tablero;
+        this.clienteControlador = clienteControlador;
         initComponents();
+        inicializar();
     }
 
-    private void subirCambios() {
-
-        if (!this.juegoTermino) {
-            //observarJugadorSale();
-            //observarFinJuego();
+    // Método estático para obtener la instancia única de FrmTablero
+    public static FrmTablero getInstance(Tablero tablero, ClienteControlador clienteControlador) {
+        if (tableroS == null) {
+            tableroS = new FrmTablero(tablero, clienteControlador);
         }
-        //actualizarSiguienteJugador();
-
-        MessageBody content = new MessageBody();
-        content.setCodigoSala(this.codigoSala);
-        content.setFichasJugador1Posicion(fichasJugador1Posicion);
-        content.setFichasJugador2Posicion(fichasJugador2Posicion);
-        content.setFichasJugador3Posicion(fichasJugador3Posicion);
-        content.setFichasJugador4Posicion(fichasJugador4Posicion);
-        content.setMontoJugadores(montoJugadores);
-        content.setJugador(jugadorTurno);
-
-        MessageType tipoMensaje = MessageType.PASAR_CAMBIOS;
-
-        Message mensajeServidor = new Message.Builder()
-                .body(content)
-                .messageType(tipoMensaje)
-                .build();
-        controlPatolli.enviarMensaje(mensajeServidor);
-
+        return tableroS;
     }
 
-////////////////////////////////////////////////    public boolean recibirCambios(List<Integer> montoJugadores, int siguienteJugador, List<Integer> fichasGatoPosicion,
-////////////////////////////////////////////////            List<Integer> fichasConchaPosicion, List<Integer> fichasPiramidePosicion, List<Integer> fichasMazorcaPosicion) {
-////////////////////////////////////////////////
-////////////////////////////////////////////////        this.montoJugadores = montoJugadores;
-////////////////////////////////////////////////        this.jugador = siguienteJugador;
-////////////////////////////////////////////////        
-////////////////////////////////////////////////        this.fichasGatoPosicion = fichasGatoPosicion;
-////////////////////////////////////////////////        this.fichasConchaPosicion = fichasConchaPosicion;
-////////////////////////////////////////////////        this.fichasPiramidePosicion = fichasPiramidePosicion;
-////////////////////////////////////////////////        this.fichasMazorcaPosicion = fichasMazorcaPosicion;
-////////////////////////////////////////////////        
-////////////////////////////////////////////////        this.actualizarApuestas(); //Coloca el monto de apuestas correspondiente
-////////////////////////////////////////////////        this.actualizarCasillas(); //Actualiza el valor de la lista de casillas y la lista de fichas de label
-////////////////////////////////////////////////        this.actualizarTablero(); //Actualiza el tablero con la lista de casillas
-////////////////////////////////////////////////        this.actualizarSiguienteJugador(); //Actualiza la vista para el siguiente jugador 
-////////////////////////////////////////////////
-////////////////////////////////////////////////        //Si es mi turno, habilita el lanzar cañas
-////////////////////////////////////////////////        if (jugadoresActivos.get(miJugador)) {
-////////////////////////////////////////////////            if (jugador == miJugador) {
-////////////////////////////////////////////////                this.btnLanzarCañas.setEnabled(true);
-////////////////////////////////////////////////            }
-////////////////////////////////////////////////        }
-////////////////////////////////////////////////
-////////////////////////////////////////////////        return true;
-////////////////////////////////////////////////    }
-//        casillas = new LinkedList<>();
-//
-//        try {
-//            servidor = Servidor.getInstance();
-//            if (!Servidor.isRunning()) {
-//                
-//                
-//                socket = new Socket("localhost", 50065); // Asegúrate de que el servidor esté corriendo en este puerto
-//                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//                writer = new PrintWriter(socket.getOutputStream(), true);
-//                System.out.println("Conectado al servidor.");
-//
-//                servidor = Servidor.getInstance();
-//                System.out.println("Servidor iniciado.");
-//            } else {
-//
-//                System.out.println("Conectado al servidor existente.");
-//            }
-//        } catch (Exception e) {
-//            System.err.println("Error al conectar con el servidor: " + e.getMessage());
-//        }
-//        servidor = Servidor.getInstance();
-//        initComponents();
-//        new Thread(new ActualizadorDeInterfaz()).start();
-//    }
-//
-//    public static FrmTablero getInstance() {
-//        if (tableroS == null) {
-//            tableroS = new FrmTablero();
-//        }
-//        return tableroS;
-//    }
-//
-//    private class ActualizadorDeInterfaz implements Runnable {
-//
-//        @Override
-//        public void run() {
-//            try {
-//                String mensaje;
-//                while ((mensaje = reader.readLine()) != null) {
-//                    // Actualizar la interfaz si el servidor envía un mensaje de cambio
-//                    SwingUtilities.invokeLater(() -> {
-//                        // Lógica para actualizar la UI aquí
-//                        actualizarCasillas();
-//                    });
-//                }
-//            } catch (IOException e) {
-//                System.err.println("Error al recibir datos del servidor: " + e.getMessage());
-//            }
-//        }
-//    }
-//
-//    // Método para actualizar las casillas en la UI
-//    public void actualizarCasillas() {
-//        // Obtén las casillas del servidor y actualiza los componentes en la interfaz
-//        LinkedList<Casilla> casillasDelServidor = servidor.getGameState().getTablero().getCasillas();
-//
-//        for (int i = 0; i < casillasDelServidor.size(); i++) {
-//            Casilla casilla = casillasDelServidor.get(i);
-//            JLabel casillaLabel = casillas.get(i);
-//
-//            // Actualiza el estado de la casilla en el JLabel
-//            casillaLabel.setIcon(casilla.getIcon());
-//
-//        }
-//
-//        SwingUtilities.invokeLater(() -> {
-//            revalidate();
-//            repaint();
-//        });
-//    }
-//
+    // Aquí, el método de inicialización o manejo de las casillas, las posiciones, etc.
+    public void inicializarTablero() {
+        // Ejemplo de cómo inicializar las casillas, personaliza según tus necesidades
+        casillasTablero = new ArrayList<>();
+        // Aquí agregas la lógica para crear y añadir casillas a la lista
+    }
+    
+    
+
+    // Este método actualizará el estado visual del tablero
+    public void redibujarTablero(Tablero nuevoTablero) {
+        // Actualiza las casillas del tablero
+        this.casillasTablero = nuevoTablero.getCasillas();
+        
+        // Actualiza las posiciones de las fichas de los jugadores
+        this.tableroLocal.setFichasJugador1Posicion(nuevoTablero.getFichasJugador1Posicion()) ;
+        this.tableroLocal.setFichasJugador2Posicion(nuevoTablero.getFichasJugador2Posicion()) ;
+        this.tableroLocal.setFichasJugador3Posicion(nuevoTablero.getFichasJugador3Posicion()) ;
+        this.tableroLocal.setFichasJugador4Posicion(nuevoTablero.getFichasJugador4Posicion()) ;
+       
+
+        // Actualiza el turno del jugador
+        if (tableroLocal.getJugadorTurno()==1){
+            tableroLocal.setJugadorTurno(2);
+        }
+        if (tableroLocal.getJugadorTurno()==2){
+            if (tableroLocal.getCantidadJugadores()==2) {
+                tableroLocal.setJugadorTurno(1);
+            }else{
+                tableroLocal.setJugadorTurno(3);   
+            }
+            
+        }
+        if (tableroLocal.getJugadorTurno()==3){
+            if (tableroLocal.getCantidadJugadores()==3) {
+                tableroLocal.setJugadorTurno(1);
+            }else{
+                tableroLocal.setJugadorTurno(4);
+            }
+        }
+        if (tableroLocal.getJugadorTurno()==4){
+            tableroLocal.setJugadorTurno(1);
+        }
+
+        // Redibujar el tablero, actualizando las casillas, fichas, etc.
+        revalidate();
+        repaint(); // Esto repinta la interfaz
+    }
+
     /**
      * Metodo que inicializa el tablero estableciando medidas y generando las
      * casillas
      */
     public void inicializar() {
-        inicializarAspa(tableroArriba, canCasillasAspa, 2, false);
-        inicializarAspa(tableroAbajo, canCasillasAspa, 2, true);
-        inicializarAspa(tableroDerecha, 2, canCasillasAspa, true);
-        inicializarAspa(tableroIzq, 2, canCasillasAspa, false);
+        inicializarAspa(tableroArriba, tableroLocal.getCantidadCasillasAspa(), 2, false);
+        inicializarAspa(tableroAbajo, tableroLocal.getCantidadCasillasAspa(), 2, true);
+        inicializarAspa(tableroDerecha, 2, tableroLocal.getCantidadCasillasAspa(), true);
+        inicializarAspa(tableroIzq, 2, tableroLocal.getCantidadCasillasAspa(), false);
 
         inicializarAspa(tableroCentro, 2, 2, true);
 
-//        for (int i = 0; i < tablero.getCasillas().size(); i++) {
-//            tablero.getCasillas().get(i).addMouseListener(new MouseAdapter() {
-//                @Override
-//                public void mouseClicked(MouseEvent e) {
-//                    Casilla clickedLabel = (Casilla) e.getSource();
-//                    moverFicha(clickedLabel, 3);
-//                }
-//            });
-//        }
         asignarNumeroCasillas();
         // Ejemplo de uso
-        Casilla casilla = controlPatolli.getTablero().getCasillas().get(0);
+        Casilla casilla = tableroLocal.getCasillas().get(0);
         agregarFicha(casilla, "/Utilerias/ficha_roja.png");
 
     }
 
     private void asignarNumeroCasillas() {
-        controlPatolli.getTablero().ordenarCasillas(casillasTablero);
+        tableroLocal.ordenarCasillas(tableroLocal.getCasillas());
     }
 
     private void moverFicha(Casilla casilla, int dado) {
         // Validar que la casilla es parte del tablero
-        LinkedList<Casilla> listaCasillas = controlPatolli.getTablero().getCasillas();
+        LinkedList<Casilla> listaCasillas = tableroLocal.getCasillas();
         if (!listaCasillas.contains(casilla)) {
             System.out.println("La casilla no pertenece al tablero.");
             return;
@@ -398,8 +290,7 @@ public class FrmTablero extends javax.swing.JFrame {
 
             // Añadir el JLabel al tablero y a la lista de casillas
             tablero.add(label);
-            this.casillasTablero.add(label);
-            controlPatolli.getTablero().agregarCasilla(label);
+            tableroLocal.agregarCasilla(label);
         }
     }
 
@@ -426,55 +317,33 @@ public class FrmTablero extends javax.swing.JFrame {
             casillaBase.setIcon(icono);
 
             // Actualizar el tablero
-            Tablero tablero = ControlPatolli.getInstance().getTablero();
-            int index = tablero.getCasillas().indexOf(casillaBase);
-            tablero.getCasillas().set(index, casillaBase);
+            
+            int index = tableroLocal.getCasillas().indexOf(casillaBase);
+            tableroLocal.getCasillas().set(index, casillaBase);
 
         } catch (NullPointerException e) {
             System.err.println("No se pudo cargar la imagen: " + rutaImagen);
             e.printStackTrace();
         }
-//        try {
-//            ImageIcon icono = new ImageIcon(getClass().getResource(rutaImagen));
-//            Image imagenOriginal = icono.getImage();
-//
-//            int nuevoAncho = 70;
-//            int nuevoAlto = 100;
-//            Image imagenEscalada = imagenOriginal.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
-//
-//            Casilla ficha = new Casilla(new ImageIcon(imagenEscalada));
-//            ficha.setHorizontalAlignment(JLabel.CENTER);
-//            ficha.setVerticalAlignment(JLabel.CENTER);
-//
-//            casillaBase.setLayout(new BorderLayout());
-//            casillaBase.add(ficha, BorderLayout.CENTER);
-//
-//            casillaBase.revalidate();
-//            casillaBase.repaint();
-//            casillaBase.setIcon(icono);
-//            controlPatolli.getTablero().getCasillas().set(controlPatolli.getTablero().getCasillas().indexOf(casillaBase), casillaBase);
-//        } catch (NullPointerException e) {
-//            System.err.println("No se pudo cargar la imagen: " + rutaImagen);
-//            e.printStackTrace();
-//        }
+
     }
 
     public void manejarEstadoTablero(Message mensaje) {
-        if (mensaje.getMessageType() == MessageType.ESTADO_TABLERO) {
-            MessageBody body = mensaje.getContent();
+        if (mensaje.getMessageType() == MessageType.TABLERO_ACTUALIZADO) {
+            MessageBody body = (MessageBody) mensaje.getContent();
 
             // Obtener el estado del tablero desde el mensaje recibido
             Tablero tableroRecibido = body.getEstadoTablero();
 
             // Actualizar el tablero en ControlPatolli
-            controlPatolli.getTablero().setCantidadCasillasAspa(tableroRecibido.getCantidadCasillasAspa());
+//            clienteControlador.setTableroLocal(tableroLocal);
 
             // Actualizar parámetros locales
-            this.canCasillasAspa = tableroRecibido.getCantidadCasillasAspa();
-            this.casillasTablero = tableroRecibido.getCasillas();
+//            this.canCasillasAspa = tableroRecibido.getCantidadCasillasAspa();
+//            this.casillasTablero = tableroRecibido.getCasillas();
 
             // Inicializar el tablero visualmente
-            inicializar();
+            redibujarTablero(tableroLocal);
         }
     }
 

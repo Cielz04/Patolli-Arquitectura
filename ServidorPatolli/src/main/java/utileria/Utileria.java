@@ -10,7 +10,7 @@ public class Utileria {
     
     
     public static String generarNombre(){
-        String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder nombre = new StringBuilder();
         Random random = new Random();
 

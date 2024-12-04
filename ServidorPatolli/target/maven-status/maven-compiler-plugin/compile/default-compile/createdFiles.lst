@@ -1,9 +1,7 @@
-servidor\Cliente.class
 servidor\PatolliServer.class
-salas\Sala.class
 servidor\IPatolliServer.class
 itson\mx\servidorpatolli\ServidorPatolli.class
 servidor\ControlMessage.class
-servidor\ClientConnection.class
+servidor\ControlMessage$1.class
 servidor\Servidor.class
 utileria\Utileria.class

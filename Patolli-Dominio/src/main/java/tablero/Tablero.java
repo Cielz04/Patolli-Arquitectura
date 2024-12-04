@@ -1,5 +1,6 @@
 package tablero;
 
+import entidades.Jugador;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,12 +12,28 @@ import java.util.List;
 public class Tablero implements Serializable{
 
     private LinkedList<Casilla> casillas; // Lista enlazada de casillas
-    private int canJugadores=0;
-    private int cantidadFichasAspa;
+    private int cantidadFichas;
+    private List <Integer>  fichasJugador1Posicion;
+    private List <Integer>  fichasJugador2Posicion;
+    private List <Integer>  fichasJugador3Posicion;
+    private List <Integer>  fichasJugador4Posicion;
+    private int jugadorTurno = 0;
+    private int cantidadJugadores;
+    private boolean juegoTermino = false;
+    private boolean juegoInicia = false;
+    private int apuesta;
+    private List <Integer> cantidadMontoJugadores;
+    private int cantidadCasillasAspa;
+    private List <Jugador> jugadores;
 
 
     public Tablero() {
         this.casillas = new LinkedList<>();
+        this.fichasJugador1Posicion = new LinkedList<>();
+        this.fichasJugador2Posicion = new LinkedList<>();
+        this.fichasJugador3Posicion = new LinkedList<>();
+        this.fichasJugador4Posicion = new LinkedList<>();
+        this.jugadores = new LinkedList<>();
     }
 
     public void agregarCasilla(Casilla nuevaCasilla) {
@@ -31,14 +48,6 @@ public class Tablero implements Serializable{
             nuevaCasilla.setSiguiente(casillas.getFirst()); // Nueva casilla apunta a la primera
             casillas.add(nuevaCasilla); // Agregar a la lista
         }
-    }
-
-    public int getCanJugadores() {
-        return canJugadores;
-    }
-
-    public void setCanJugadores(int canJugadores) {
-        this.canJugadores = canJugadores;
     }
 
     public int getTamanio() {
@@ -94,12 +103,161 @@ public class Tablero implements Serializable{
     }
 
     public int getCantidadCasillasAspa() {
-        return cantidadFichasAspa;
+        return cantidadCasillasAspa;
     }
 
-    public void setCantidadCasillasAspa(int cantidadFichasAspa) {
-        this.cantidadFichasAspa = cantidadFichasAspa;
+    public void setCantidadCasillasAspa(int cantidadCasillasAspa) {
+        this.cantidadCasillasAspa = cantidadCasillasAspa;
     }
+
+    public int getCantidadFichas() {
+        return cantidadFichas;
+    }
+
+    public void setCantidadFichas(int cantidadFichas) {
+        this.cantidadFichas = cantidadFichas;
+    }
+
+    public List<Integer> getFichasJugador1Posicion() {
+        return fichasJugador1Posicion;
+    }
+
+    public void setFichasJugador1Posicion(List<Integer> fichasJugador1Posicion) {
+        this.fichasJugador1Posicion = fichasJugador1Posicion;
+    }
+
+    public List<Integer> getFichasJugador2Posicion() {
+        return fichasJugador2Posicion;
+    }
+
+    public void setFichasJugador2Posicion(List<Integer> fichasJugador2Posicion) {
+        this.fichasJugador2Posicion = fichasJugador2Posicion;
+    }
+
+    public List<Integer> getFichasJugador3Posicion() {
+        return fichasJugador3Posicion;
+    }
+
+    public void setFichasJugador3Posicion(List<Integer> fichasJugador3Posicion) {
+        this.fichasJugador3Posicion = fichasJugador3Posicion;
+    }
+
+    public List<Integer> getFichasJugador4Posicion() {
+        return fichasJugador4Posicion;
+    }
+
+    public void setFichasJugador4Posicion(List<Integer> fichasJugador4Posicion) {
+        this.fichasJugador4Posicion = fichasJugador4Posicion;
+    }
+
+    public int getJugadorTurno() {
+        return jugadorTurno;
+    }
+
+    public void setJugadorTurno(int jugadorTurno) {
+        this.jugadorTurno = jugadorTurno;
+    }
+
+    public int getCantidadJugadores() {
+        return cantidadJugadores;
+    }
+
+    public void setCantidadJugadores(int cantidadJugadores) {
+        this.cantidadJugadores = cantidadJugadores;
+    }
+
+    public boolean isJuegoTermino() {
+        return juegoTermino;
+    }
+
+    public void setJuegoTermino(boolean juegoTermino) {
+        this.juegoTermino = juegoTermino;
+    }
+
+    public boolean isJuegoInicia() {
+        return juegoInicia;
+    }
+
+    public void setJuegoInicia(boolean juegoInicia) {
+        this.juegoInicia = juegoInicia;
+    }
+
+    public int getApuesta() {
+        return apuesta;
+    }
+
+    public void setApuesta(int apuesta) {
+        this.apuesta = apuesta;
+    }
+
+    public List<Integer> getCantidadMontoJugadores() {
+        return cantidadMontoJugadores;
+    }
+
+    public void setCantidadMontoJugadores(List<Integer> cantidadMontoJugadores) {
+        this.cantidadMontoJugadores = cantidadMontoJugadores;
+    }
+
+    public List<Jugador> getJugadores() {
+        return jugadores;
+    }
+
+    public void setJugadores(List<Jugador> jugadores) {
+        this.jugadores = jugadores;
+    }
+    
+    public boolean agregarJugador (Jugador jugador){
+        if (this.jugadores!=null){
+            jugadores.add(jugador);
+            return true;
+        }else{
+            jugadores = new LinkedList<>();
+            jugadores.add(jugador);
+            return true;
+        }
+        
+    }
+    
+    public boolean eliminarJugador (Jugador jugador){
+        if (this.jugadores!=null){
+            jugadores.remove(jugador);
+            return true;
+        }
+        return false;
+    }
+    
+    
+    
+    
+    
+    
+    public Tablero actualizarConMensaje (Tablero tablero){
+        
+        this.apuesta = tablero.getApuesta();
+        this.cantidadCasillasAspa = tablero.getCantidadCasillasAspa();
+        this.cantidadFichas = tablero.getCantidadFichas();
+        this.cantidadJugadores = tablero.getCantidadJugadores();
+        this.cantidadMontoJugadores = tablero.getCantidadMontoJugadores();
+        this.casillas = tablero.getCasillas();
+        this.fichasJugador1Posicion = tablero.getFichasJugador1Posicion();
+        this.fichasJugador2Posicion = tablero.getFichasJugador2Posicion();
+        this.fichasJugador3Posicion = tablero.getFichasJugador3Posicion();
+        this.fichasJugador4Posicion = tablero.getFichasJugador4Posicion();
+        this.juegoInicia = tablero.isJuegoInicia();
+        this.juegoTermino = tablero.isJuegoTermino();
+        this.jugadorTurno = tablero.getJugadorTurno();
+        this.jugadores = tablero.getJugadores();
+        return this;
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     

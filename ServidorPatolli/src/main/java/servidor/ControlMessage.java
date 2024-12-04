@@ -1,449 +1,305 @@
 package servidor;
 
-import com.chat.tcpcommons.ClientThread;
-import com.chat.tcpcommons.IObserver;
+import PatolliCliente.ClientThread;
 import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
-import com.chat.tcpcommons.Observable;
-import com.chat.tcpcommons.TemplateConnection;
-import com.chat.tcpcommons.logging.IChatLogger;
-import com.chat.tcpcommons.logging.LoggerFactory;
+import static com.chat.tcpcommons.MessageType.UNIRSE_SALA;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
-import salas.Sala;
+import tablero.Tablero;
+import entidades.Jugador;
 
 /**
+ * Clase que gestiona las conexiones de clientes y la lógica del juego en el
+ * servidor.
  *
  * @author Hector Espinoza
  */
-public class ControlMessage extends Observable implements TemplateConnection, Runnable, IObserver {
+public class ControlMessage implements Runnable {
 
     private ServerSocket server;
-    private final Map<String, Sala> rooms;
-    private final String SALA_DE_ESPERA = "sala de espera";
+    private final Tablero tableroServidor; // Único tablero de la partida
     private final int PORT = 50064;
     private final Thread serverThread;
     private final ReentrantLock lock = new ReentrantLock();
-
-    private final IChatLogger logger = LoggerFactory.getLogger(ControlMessage.class);
+    private final List<ClientThread> clientesConectados; // Lista de clientes conectados
 
     public ControlMessage() {
         serverThread = new Thread(this);
-        rooms = new HashMap<>();
-        rooms.put(SALA_DE_ESPERA, new Sala(SALA_DE_ESPERA)); // Sala de espera como una Sala
+        tableroServidor = new Tablero();
+        clientesConectados = new ArrayList<>();
+        tableroServidor.setJuegoInicia(false); // Por defecto, el juego no ha iniciado
     }
 
+    // Método para iniciar el servidor
     public void init() {
         try {
             server = new ServerSocket(PORT);
-            rooms.put(SALA_DE_ESPERA, new Sala(SALA_DE_ESPERA)); // Inicializa la sala de espera como una Sala
+            System.out.println("Servidor iniciado en el puerto: " + PORT);
             serverThread.start();
         } catch (IOException ex) {
-            logger.error(String.format("Error al iniciar el servidor: %s", ex.getMessage()));
+            System.err.println("Error al iniciar el servidor: " + ex.getMessage());
         }
     }
 
     @Override
     public void run() {
         try {
+            // El servidor estará en espera de conexiones entrantes.
             while (true) {
+                // Espera una conexión del cliente (bloqueante).
                 Socket clientSocket = server.accept();
+                System.out.println("Cliente conectado desde: " + clientSocket.getInetAddress());
 
-                // Crear y configurar el cliente
+                // Crea un nuevo hilo de cliente para manejar la comunicación con el cliente conectado.
                 ClientThread client = new ClientThread(clientSocket);
 
-                // Iniciar el hilo del cliente
-                Thread connectionThread = new Thread(client);
-                connectionThread.start();
+                // Aquí puedes agregar el cliente a una lista de clientes activos si es necesario
+                agregarCliente(client); // Método para agregar el cliente a la lista de clientes
 
-                // Agregar el cliente a la sala de espera
-                Sala salaDeEspera = rooms.get(SALA_DE_ESPERA); // Obtenemos la sala de espera como Sala
-                if (salaDeEspera != null) {
-                    salaDeEspera.agregarJugador(client);
-                    client.subscribe(this);
-                    
-                    System.out.println("Cliente agregado a la sala de espera.");
-
-                } else {
-                    System.out.println("Error: No se encontró la sala de espera.");
-                }
-                if (rooms.get("000") != null) {
-                    enviarEstadoTablero(rooms.get("000"), client);
-                }
+                // Inicia un hilo para gestionar la comunicación con este cliente.
+                new Thread(client).start();
             }
         } catch (IOException ex) {
-            logger.error(String.format("Error al iniciar la conexión al servidor: %s", ex.getMessage()));
+            // Si ocurre un error al aceptar conexiones, se imprime el mensaje de error.
+            System.err.println("Error aceptando conexiones: " + ex.getMessage());
         }
     }
 
-    @Override
-    public void onConectarse(Message message) {
+    // Método para procesar los mensajes recibidos
+    public void procesarMensaje(Message mensaje) {
         lock.lock();
         try {
-            if (message.getSender() != null){
-            if (message != null && message.getSender() != null) { 
-                Sala salaDeEspera = rooms.get(SALA_DE_ESPERA);
-                if (salaDeEspera != null) {
-                    ClientThread clienteDisponible = salaDeEspera.getJugadores().stream()
-                            .filter(c -> c.getJugador().getNombre() == null)
-                            .findFirst()
-                            .orElse(null);
-
-                    if (clienteDisponible != null) {
-                        clienteDisponible.setJugador(message.getSender());
-                        message.setSender(clienteDisponible.getJugador());
-                        rooms.get(SALA_DE_ESPERA).agregarJugador(clienteDisponible);
-                        System.out.println("Cliente en la sala de espera: " + message.getSender().getNombre());
-                        //onUnirseSala(message);
-                    } else {
-                        System.out.println("No hay espacio disponible para asignar el usuario en la sala de espera.");
-                    }
-                } else {
-                    System.out.println("Error: Sala de espera no encontrada.");
-                }
-            } else {
-                System.out.println("El Message o el que envía es null.");
-            }
-            }else{
-                return;
+            switch (mensaje.getMessageType()) {
+                case CONECTARSE ->
+                    manejarConectarse(mensaje);
+                case DESCONECTARSE ->
+                    manejarDesconectarse(mensaje);
+                case UNIRSE_SALA ->
+                    manejarUnirseSala(mensaje);
+                case CONFIGURAR_TABLERO ->
+                    manejarConfigurarTableroServidor(mensaje);
+                case TABLERO_ACTUALIZADO ->
+                    manejarPasarCambios(mensaje);
+                case ERROR ->
+                    manejarError(mensaje);
+                default ->
+                    System.out.println("Tipo de mensaje no reconocido: " + mensaje.getMessageType());
             }
         } finally {
             lock.unlock();
         }
     }
 
-    @Override
-    public void onDisconnect(Message message) {
-        lock.lock();
-        try {
-            String codigoSala = message.getContent().getCodigoSala();
-            if (codigoSala != null && rooms.containsKey(codigoSala)) {
-                Sala sala = rooms.get(codigoSala);
+    private void manejarConectarse(Message mensaje) {
+        Jugador jugador = mensaje.getSender();
+        ClientThread cliente = obtenerClientePorJugador(jugador);
 
-                // Buscar al cliente en la sala
-                var user = sala.getJugadores().stream()
-                        .filter(c -> c.getJugador().equals(message.getSender()))
-                        .findFirst()
-                        .orElse(null);
+        if (cliente != null) {
+            cliente.sendMessage(new Message.Builder()
+                    .messageType(MessageType.ERROR)
+                    .body(new MessageBody("El jugador ya está conectado"))
+                    .build());
+            return;
+        }
 
-                if (user != null) {
-                    sala.getJugadores().remove(user); // Eliminar al cliente de la sala
-                    user.disconnect(); // Desconectar al cliente
-                    notifyObservers(message); // Notificar a los observadores
-                    System.out.println("El cliente " + message.getSender().getNombre() + " se ha desconectado de la sala " + codigoSala);
-                } else {
-                    System.out.println("El cliente no fue encontrado en la sala " + codigoSala);
-                }
-            } else {
-                System.out.println("El código de sala es inválido o no existe.");
-            }
-        } finally {
-            lock.unlock();
+        if (tableroServidor.isJuegoInicia()) {
+            // Respuesta de error si el juego ya inició
+            cliente.sendMessage(new Message.Builder()
+                    .messageType(MessageType.ERROR)
+                    .body(new MessageBody("El juego ya ha comenzado"))
+                    .build());
+            return;
+        }
+
+        if (tableroServidor.agregarJugador(jugador)) {
+            // Actualización y notificación
+            notificarTodos(new Message.Builder()
+                    .messageType(MessageType.UNIRSE_SALA)
+                    .body(new MessageBody("Jugador conectado: " + jugador.getNombre()))
+                    .build());
+        } else {
+            cliente.sendMessage(new Message.Builder()
+                    .messageType(MessageType.ERROR)
+                    .body(new MessageBody("No hay espacio para más jugadores"))
+                    .build());
         }
     }
 
-    @Override
-    public void onUpdate(Object obj) {
-        proccessMessage((Message) obj);
+    // Verifica si el jugador ya está conectado al juego
+    private ClientThread jugadorYaConectado(Jugador jugador) {
+        for (ClientThread cliente : clientesConectados) {
+            if (cliente.getJugador() != null && cliente.getJugador().equals(jugador)) {
+                return cliente;  // El jugador ya está conectado
+            }
+        }
+        return null;  // El jugador no está conectado
     }
 
-    @Override
-    public void notifyObservers(Object obj) {
-        observers.forEach(o -> o.onUpdate(obj));
-    }
+    // Método para manejar cuando un jugador se une a la sala
+    private void manejarUnirseSala(Message mensaje) {
+        Jugador jugador = mensaje.getSender();
 
-    @Override
-    public void onCrearSala(Message message) {
-
-        lock.lock();
-        try {
-            String codigoSala = "000";
-
-            if (codigoSala == null || codigoSala.isEmpty()) {
-                System.out.println("El código de la sala no puede estar vacío.");
-                return;
-            }
-
-            if (rooms.containsKey(codigoSala)) {
-                System.out.println("La sala " + codigoSala + " ya existe.");
-            } else {
-                Sala nuevaSala = new Sala(codigoSala); // Crear una nueva sala
-                rooms.put(codigoSala, nuevaSala); // Añadir la sala al mapa
-                System.out.println("Sala " + codigoSala + " creada exitosamente.");
-                
-//                onConectarse(message);
-                onUnirseSala(message); // Unir al cliente a la nueva sala
-            }
-        } finally {
-            lock.unlock();
+        if (tableroServidor.isJuegoInicia()) {
+            // Notificar que el juego ya ha comenzado
+            notificarJugadorError(jugador, "El juego ya ha comenzado");
+            return;
         }
 
-//        lock.lock();
-//        try {
-//            String codigoSala = message.getContent().getCodigoSala();
-//
-//            if (codigoSala == null || codigoSala.isEmpty()) {
-//                System.out.println("El código de la sala no puede estar vacío.");
-//                return;
-//            }
-//
-//            if (rooms.containsKey(codigoSala)) {
-//                System.out.println("La sala " + codigoSala + " ya existe.");
-//            } else {
-//                rooms.put(codigoSala, new ArrayList<>());
-//                System.out.println("Sala " + codigoSala + " creada exitosamente.");
-//                onConectarse(message);
-//                onUnirseSala(message); // Unir al cliente a la nueva sala
-//            }
-//        } finally {
-//            lock.unlock();
-//        }
-    }
+        if (tableroServidor.agregarJugador(jugador)) {
+            System.out.println("Jugador " + jugador.getNombre() + " se unió a la sala.");
 
-    @Override
-    public void onUnirseSala(Message message) {
-        lock.lock();
-        try {
-            String codigoSala = message.getContent().getCodigoSala();
-            message.setSender ( rooms.get(SALA_DE_ESPERA).getJugadores().get(rooms.get(SALA_DE_ESPERA).getJugadores().size()-1).getJugador());
-            // Buscar al cliente en la sala de espera
-            var user = rooms.get(SALA_DE_ESPERA).getJugadores().stream()
-                    .filter(c -> c.getJugador().equals(message.getSender()))
-                    .findFirst()
-                    .orElse(null);
+            // Enviar estado actualizado del tablero al nuevo jugador
+            ClientThread cliente = obtenerClientePorJugador(jugador);
+            enviarEstadoTablero(cliente);
 
-            if (user == null) {
-                System.out.println("El cliente no está en la sala de espera.");
-                return;
-            }
-
-            if (codigoSala == null || !rooms.containsKey(codigoSala)) {
-                System.out.println("La sala " + codigoSala + " no existe.");
-                return;
-            }
-
-            // Mover al cliente a la nueva sala
-            Sala sala = rooms.get(codigoSala);
-            rooms.get(SALA_DE_ESPERA).getJugadores().remove(user);
-            sala.agregarJugador(user);
-            System.out.println("El cliente " + message.getSender().getNombre() + " se unió a la sala " + codigoSala);
-
-            // Enviar el estado del tablero al jugador que se une
-            enviarEstadoTablero(sala, user);
-
-        } finally {
-            lock.unlock();
+            // Notificar a los demás jugadores
+            notificarTodos(new Message.Builder()
+                    .messageType(MessageType.UNIRSE_SALA)
+                    .body(new MessageBody("Jugador " + jugador.getNombre() + " se ha unido a la sala"))
+                    .build());
+        } else {
+            // No hay espacio para más jugadores
+            notificarJugadorError(jugador, "No hay espacio para más jugadores");
         }
-
-//        lock.lock();
-//        try {
-//            String codigoSala = message.getContent().getCodigoSala();
-//
-//            var user = rooms.get(SALA_DE_ESPERA).stream()
-//                    .filter(c -> c.getJugador().equals(message.getSender()))
-//                    .findFirst()
-//                    .orElse(null);
-//
-//            if (user == null) {
-//                System.out.println("El cliente no está en la sala de espera.");
-//                return;
-//            }
-//
-//            if (codigoSala == null || !rooms.containsKey(codigoSala)) {
-//                System.out.println("La sala " + codigoSala + " no existe.");
-//                //Message para el jugador que no se pudo unir
-//                MessageBody cuerpoNegativo = new MessageBody();
-//                cuerpoNegativo.setRazonDesconexion("La sala " + codigoSala + " no existe.");
-//                MessageType tipoRespuesta = MessageType.DESCONECTARSE;
-//                Message MessageNegativo = new Message.Builder()
-//                        .body(cuerpoNegativo)
-//                        .messageType(tipoRespuesta)
-//                        .build();
-//                rooms.get(SALA_DE_ESPERA).remove(user);
-//                user.sendMessage(MessageNegativo);
-//                user.disconnect();
-//                return;
-//            }
-//
-//            // Mover al cliente a la nueva sala
-//            rooms.get(SALA_DE_ESPERA).remove(user);
-//            rooms.get(codigoSala).add(user);
-//            System.out.println("El cliente " + message.getSender().getNombre() + " se unió a la sala " + codigoSala);
-////            message.setContent(rooms.get(codigoSala).get(0));
-//
-//            if (rooms.get(codigoSala).size() == 0) {
-//                System.out.println("No sala");
-//            } else {
-//                System.out.println("Si sala");
-//            }
-//
-//            for (int i = 0; i < rooms.get(codigoSala).size(); i++) {
-//                System.out.println(rooms.get(codigoSala).get(i).getJugador().getNombre());
-//            }
-//
-//            //Message para los jugador que ya estaban en la sala
-//            MessageBody cuerpoOtrosJugadores = new MessageBody();
-//            MessageType tipoOtrosJugadores = MessageType.UNIRSE_SALA;
-//            Message MessageOtrosJugadores = new Message.Builder()
-//                    .body(cuerpoOtrosJugadores)
-//                    .messageType(tipoOtrosJugadores)
-//                    .build();
-//
-//            //Message para el jugador que se unio
-//            MessageBody cuerpoRespuesta = new MessageBody();
-//            cuerpoRespuesta.setJugadores(rooms.get(codigoSala).size());
-//            cuerpoRespuesta.setExisteSala(true);
-//            MessageType tipoRespuesta = MessageType.PASAR_JUGADORES;
-//            Message MessageRespuesta = new Message.Builder()
-//                    .body(cuerpoRespuesta)
-//                    .messageType(tipoRespuesta)
-//                    .build();
-//
-//            rooms.get(codigoSala).forEach(cliente -> {
-//                if (!cliente.equals(user)) {
-//                    cliente.sendMessage(MessageOtrosJugadores);
-//                } else {
-//
-//                }
-//            });
-//
-//            for (int i = 0; i < rooms.get(codigoSala).size(); i++) {
-//                rooms.get(codigoSala).get(i).sendMessage(MessageOtrosJugadores);
-//            }
-//
-//        } finally {
-//            lock.unlock();
-//
-//        }
     }
 
-    private void enviarEstadoTablero(Sala sala, ClientThread user) {
+    // Método para manejar los cambios en el tablero
+    private void manejarPasarCambios(Message mensaje) {
+        Tablero tableroActualizado = mensaje.getContent().getEstadoTablero();
+
+        // Actualizar el tablero del servidor
+        tableroServidor.actualizarConMensaje(tableroActualizado);
+        System.out.println("Cambios en el tablero aplicados.");
+
+        // Notificar a todos los jugadores sobre los cambios
+        notificarTodos(new Message.Builder()
+                .messageType(MessageType.TABLERO_ACTUALIZADO)
+                .body(new MessageBody("Tablero actualizado", tableroServidor))
+                .build());
+    }
+
+    // Método para enviar el estado del tablero a un cliente
+    private void enviarEstadoTablero(ClientThread cliente) {
         MessageBody body = new MessageBody();
-        body.setCodigoSala(sala.getCodigo());
-        body.setEstadoTablero(sala.getTablero()); // Obtener el tablero de la sala
-
+        body.setEstadoTablero(tableroServidor);
+        body.setMensaje("NUEVO TABLERO");
         Message mensaje = new Message.Builder()
-                .messageType(MessageType.ESTADO_TABLERO)
+                .messageType(MessageType.TABLERO_ACTUALIZADO)
                 .body(body)
                 .build();
-
-        // Enviar el mensaje al jugador
-        user.sendMessage(mensaje);
+        cliente.sendMessage(mensaje);
+        System.out.println("Estado del tablero enviado al cliente.");
     }
 
-    @Override
-    public void onPasarOpciones(Message mensaje) {
-
+    // Método para agregar un cliente a la lista de clientes conectados
+    private void agregarCliente(ClientThread cliente) {
         lock.lock();
         try {
-            String codigoSala = mensaje.getContent().getCodigoSala();
-
-            if (codigoSala == null || !rooms.containsKey(codigoSala)) {
-                System.out.println("La sala " + codigoSala + " no existe.");
-                return;
-            }
-
-            Sala sala = rooms.get(codigoSala);
-
-            // Actualizar el estado del tablero en la sala
-            sala.setTablero(mensaje.getContent().getEstadoTablero());
-
-            // Propagar los cambios a todos los jugadores de la sala
-            List<ClientThread> clientesEnSala = sala.getJugadores();
-            clientesEnSala.forEach(cliente -> {
-                if (!cliente.getJugador().equals(mensaje.getSender())) {
-                    cliente.sendMessage(mensaje);
-                }
-            });
-
-            System.out.println("Mensaje enviado a los demás jugadores en la sala: " + codigoSala);
-
+            clientesConectados.add(cliente);
         } finally {
             lock.unlock();
         }
-
-//        lock.lock();
-//        try {
-//            String codigoSala = mensaje.getContent().getCodigoSala();
-//
-//            if (codigoSala == null) {
-//                System.out.println("El cliente no está en ninguna sala.");
-//                return;
-//            }
-//
-//            // Enviar el mensaje a los demás jugadores en la sala
-//            List<ClientThread> clientesEnSala = rooms.get(codigoSala);
-//            clientesEnSala.forEach(cliente -> {
-//                if (!cliente.getJugador().equals(mensaje.getSender())) {
-//                    cliente.sendMessage(mensaje);
-//                }
-//            });
-//
-//            System.out.println("Mensaje enviado a los demás jugadores en la sala: " + codigoSala);
-//
-//        } finally {
-//            lock.unlock();
-//        }
     }
 
-    @Override
-    public void onPasarJugadores(Message mensaje) {
-
-    }
-
-    @Override
-    public void onPasarCambios(Message mensaje) {
-
+    // Método para eliminar un cliente de la lista de clientes conectados
+    public void eliminarCliente(ClientThread cliente) {
         lock.lock();
         try {
-            String codigoSala = mensaje.getContent().getCodigoSala();
-
-            if (codigoSala == null || !rooms.containsKey(codigoSala)) {
-                System.out.println("La sala " + codigoSala + " no existe.");
-                return;
-            }
-
-            Sala sala = rooms.get(codigoSala);
-
-            // Actualizar el estado del tablero en la sala
-            sala.setTablero(mensaje.getContent().getEstadoTablero());
-
-            // Propagar los cambios a todos los jugadores de la sala
-            sala.getJugadores().forEach(cliente -> {
-                if (!cliente.getJugador().equals(mensaje.getSender())) {
-                    cliente.sendMessage(mensaje);
-                }
-            });
-
-            System.out.println("Mensaje enviado a los demás jugadores en la sala: " + codigoSala);
-
+            clientesConectados.remove(cliente);
         } finally {
             lock.unlock();
         }
-
-//        String codigoSala = mensaje.getContent().getCodigoSala();
-//
-//        if (codigoSala == null) {
-//            System.out.println("El cliente no está en ninguna sala.");
-//            return;
-//        }
-//
-//        // Enviar el mensaje a los demás jugadores en la sala
-//        List<ClientThread> clientesEnSala = rooms.get(codigoSala);
-//        clientesEnSala.forEach(cliente -> {
-//            if (!cliente.getJugador().equals(mensaje.getSender())) {
-//                cliente.sendMessage(mensaje);
-//            }
-//        });
-//
-//        System.out.println("Mensaje enviado a los demás jugadores en la sala: " + codigoSala);
     }
+
+    // Método para notificar a todos los clientes conectados
+    private void notificarTodos(Message mensaje) {
+        for (ClientThread cliente : clientesConectados) {
+            cliente.sendMessage(mensaje);
+        }
+    }
+
+    private ClientThread obtenerClientePorJugador(Jugador jugador) {
+        for (ClientThread cliente : clientesConectados) {
+            if (cliente.getJugador() != null && cliente.getJugador().equals(jugador)) {
+                return cliente;
+            }
+        }
+        return null;
+    }
+
+    private void manejarError(Message mensaje) {
+        String mensajeError = mensaje.getContent().getMensaje();
+        Jugador jugador = mensaje.getSender();
+
+        System.err.println("Error recibido del jugador " + jugador.getNombre() + ": " + mensajeError);
+
+    }
+
+    private void notificarJugadorError(Jugador jugador, String mensajeError) {
+        ClientThread cliente = obtenerClientePorJugador(jugador);
+
+        if (cliente != null) {
+            cliente.sendMessage(new Message.Builder()
+                    .messageType(MessageType.ERROR)
+                    .body(new MessageBody(mensajeError))
+                    .build());
+        }
+    }
+
+    // Método para manejar la desconexión de un cliente
+    private void manejarDesconectarse(Message mensaje) {
+        Jugador jugador = mensaje.getSender();
+        ClientThread cliente = obtenerClientePorJugador(jugador);
+
+        if (cliente == null) {
+            System.err.println("El jugador no está conectado.");
+            return;
+        }
+
+        eliminarCliente(cliente);
+
+        // Notificar a todos que el jugador se ha desconectado
+        notificarTodos(new Message.Builder()
+                .messageType(MessageType.DESCONECTARSE)
+                .body(new MessageBody("Jugador desconectado: " + jugador.getNombre()))
+                .build());
+
+        System.out.println("Jugador " + jugador.getNombre() + " se ha desconectado.");
+    }
+
+    // Método para manejar errores
+    private void manejarError(Message mensaje, ClientThread cliente) {
+        System.err.println("Error recibido del cliente: " + mensaje.getContent().getMensaje());
+    }
+
+    // Método para manejar la configuración del tablero (para servidor)
+    private void manejarConfigurarTableroServidor(Message mensaje) {
+        MessageBody configuracion = mensaje.getContent();
+
+        // Aquí puedes extraer parámetros del mensaje y aplicarlos al tablero
+        tableroServidor.actualizarConMensaje(configuracion.getEstadoTablero());
+
+        System.out.println("Configuración del tablero aplicada: " + configuracion);
+
+        // Notificar a todos los jugadores sobre la nueva configuración
+        notificarTodos(new Message.Builder()
+                .messageType(MessageType.CONFIGURAR_TABLERO)
+                .body(new MessageBody("El tablero ha sido configurado."))
+                .build());
+    }
+
+    // Método para manejar la actualización del tablero (cuando un cliente actualiza el tablero)
+    private void manejarActualizacionTablero(Message mensaje, ClientThread cliente) {
+        // Aquí puedes manejar la actualización del tablero, como propagar cambios
+        System.out.println("Actualización de tablero recibida.");
+    }
+
+    
 
 }

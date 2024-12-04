@@ -1,6 +1,7 @@
 
 package Control;
 
+import PatolliCliente.ClienteControlador;
 import Pantallas.FrmInicio;
 import javax.swing.JDialog;
 
@@ -21,5 +22,5 @@ public interface IControlPantalla {
 
     void PasarPantallaInicio();
 
-    void PasarPantallaTablero(ControlPatolli controlPatolli);
+    void PasarPantallaTablero(ClienteControlador controlPatolli);
 }

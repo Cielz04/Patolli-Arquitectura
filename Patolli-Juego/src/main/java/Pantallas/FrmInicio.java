@@ -1,12 +1,15 @@
 package Pantallas;
 
 import Control.ControlPantalla;
-import Control.ControlPatolli;
+import PatolliCliente.ClienteControlador;
 import com.chat.tcpcommons.Message;
+import entidades.Jugador;
+import java.awt.Color;
 import servidor.Servidor;
 import java.io.IOException;
 import java.net.Socket;
 import javax.swing.JOptionPane;
+import tablero.Tablero;
 
 
 /**
@@ -15,27 +18,16 @@ import javax.swing.JOptionPane;
  */
 public class FrmInicio extends javax.swing.JFrame {
 
-    FrmConfigurarPartida crearPartida;
-    FrmTablero tablero;
+    
     private static FrmInicio menuS;
     private Servidor servidor;
     public boolean volverInicio;
     public boolean isHost;
-    ControlPatolli controlPatolli;
 
-    /**
-     * Creates new form PantallaInicio
-     */
     public FrmInicio() {
         initComponents();
-        controlPatolli = ControlPatolli.getInstance();
-        tablero= new FrmTablero(controlPatolli, "000");
+        // Aquí creamos una nueva instancia de FrmTablero sin la necesidad de ControlPatolli
         servidor = new Servidor();
-        crearPartida = new FrmConfigurarPartida(this) ;
-        
-        // Conectar automáticamente al servidor cuando se inicia la interfaz
-//        iniciarServidor();
-
     }
 
     public static FrmInicio getInstance() {
@@ -44,28 +36,26 @@ public class FrmInicio extends javax.swing.JFrame {
         }
         return menuS;
     }
-    
-    public void conectarse(){
-        volverInicio=false;
-        controlPatolli.conectarse(this);
-    }
-    /**
-     * El jugador se desconecta del servidor
-     * @param codigoSala
-     * @param miJugador
-     */
-    public void desconectar(String codigoSala, int miJugador){
-        controlPatolli.desconectar(codigoSala,miJugador);
-    }
-    /**
-     * El jugador envia un mensaje a los demas jugadores
-     * @param mensaje
-     */
-    public void enviarMensaje(Message mensaje){
-        controlPatolli.enviarMensaje(mensaje);
-    }
-    public void onConectarse(Message mensaje) {
 
+    // Conexión a la red, para ejemplo solo un placeholder
+    public void conectarse() {
+        volverInicio = false;
+        // Aquí llamarías a tu lógica para conectarte al servidor
+    }
+
+    // Método para desconectar
+    public void desconectar(String codigoSala, int miJugador) {
+        // Desconectar lógica
+    }
+
+    // Método para enviar un mensaje
+    public void enviarMensaje(Message mensaje) {
+        // Lógica para enviar el mensaje
+    }
+
+    // Método cuando se recibe un mensaje
+    public void onConectarse(Message mensaje) {
+        // Lógica para manejar la conexión o actualizaciones
     }
 //    public void onUnirseSala(Message mensaje) {
 //        if (sala != null) {
@@ -261,10 +251,13 @@ public class FrmInicio extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIniciarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarPartidaActionPerformed
-        isHost = true;
-        crearPartida.setVisible(true);
-        dispose();
-        
+        try {
+        FrmConfigurarPartida configurar = new FrmConfigurarPartida();
+        configurar.setVisible(true);
+        this.dispose();
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error al iniciar partida: " + e.getMessage());
+    }
     }//GEN-LAST:event_btnIniciarPartidaActionPerformed
 
     private void btnReglasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReglasActionPerformed

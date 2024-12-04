@@ -1,33 +1,25 @@
+
 package Pantallas;
 
-import Control.ControlJugador;
-import Control.ControlPatolli;
 import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
-import entidades.Juego;
-import entidades.Jugador;
-import java.awt.Color;
 import javax.swing.JOptionPane;
-import servidor.ControlMessage;
+import PatolliCliente.ClienteControlador;  // Asegúrate de que esta clase exista y esté correctamente implementada
+import tablero.Tablero;
 
 
-/**
- *
- * @author Enrique Rodriguez
- */
 public class DlgApuesta extends javax.swing.JDialog {
 
-    private FrmInicio frmInicio;
+    private ClienteControlador clienteControlador;  // Referencia al controlador del clie
     /**
      * Creates new form DlgApuesta
      */
-    public DlgApuesta(java.awt.Frame parent, boolean modal) {
-    super(parent, modal);
-    this.frmInicio = frmInicio;
-      
+        public DlgApuesta(ClienteControlador clienteControlador) {
+        this.clienteControlador = clienteControlador;  // Inicializa el controlador del cliente
         initComponents();
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -47,7 +39,7 @@ public class DlgApuesta extends javax.swing.JDialog {
         jPanel3 = new javax.swing.JPanel();
         txtApuesta = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        CmBJugadores = new javax.swing.JComboBox<>();
+        cmbJugadores = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         txtFondos = new javax.swing.JTextField();
@@ -100,7 +92,12 @@ public class DlgApuesta extends javax.swing.JDialog {
 
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/frijolitos.png"))); // NOI18N
 
-        CmBJugadores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2", "3", "4" }));
+        cmbJugadores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2", "3", "4" }));
+        cmbJugadores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbJugadoresActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
@@ -143,7 +140,7 @@ public class DlgApuesta extends javax.swing.JDialog {
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addGap(18, 18, 18)
-                                .addComponent(CmBJugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(cmbJugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(29, 29, 29)
                                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -172,7 +169,7 @@ public class DlgApuesta extends javax.swing.JDialog {
                         .addGap(16, 16, 16)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(CmBJugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cmbJugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(30, 30, 30)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -223,106 +220,37 @@ public class DlgApuesta extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
-        try {
-        // Inicializar conexión al servidor
-        ControlPatolli.getInstance().conectarse(frmInicio);
-
-        // Configurar partida con apuesta y jugadores
-        int apuesta = Integer.parseInt(txtApuesta.getText());
-        int jugadores = Integer.parseInt(CmBJugadores.getSelectedItem().toString());
+    try {
+        String selectedOption = (String) cmbJugadores.getSelectedItem();
+        int canJugadores = Integer.parseInt(selectedOption);
         
-        // Crear mensaje con los datos de la apuesta
-        MessageBody body = new MessageBody();
-        body.setApuesta(apuesta);
-        body.setJugadores(jugadores);
-        body.setCodigoSala("000");
-        Message mensaje = new Message.Builder()
-                .messageType(MessageType.CREAR_SALA)
-                .body(body)
-                .build();
 
-        // Enviar mensaje al servidor
-        ControlPatolli.getInstance().enviarMensaje(mensaje);
+        clienteControlador.getTableroLocal().setCantidadJugadores(canJugadores);
 
-        FrmTablero tablero = new FrmTablero (ControlPatolli.getInstance(), "000");
-        tablero.inicializar();
-        dispose();
+        clienteControlador.procesarMensaje(new Message.Builder()
+                .messageType(MessageType.CONFIGURAR_TABLERO)
+                .sender(clienteControlador.getJugador())
+                .body(new MessageBody("Configuración enviada", clienteControlador.getTableroLocal()))
+                .build());
+        
+        clienteControlador.procesarMensaje(new Message.Builder()
+        .messageType(MessageType.CONECTARSE)
+        .body(new MessageBody("CONECTANDO"))
+        .sender(clienteControlador.getJugador())
+        .build());
+
+        FrmTablero tablero = new FrmTablero(clienteControlador.getTableroLocal(), clienteControlador);
         tablero.setVisible(true);
-
+        this.dispose();
     } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Error al crear la partida: " + e.getMessage());
+        JOptionPane.showMessageDialog(this, "Error al configurar: " + e.getMessage());
     }
-
-
-
-
-//        if (ControlPatolli.getInstance()!=null){
-//            String jugadores = (String) CmBJugadores.getSelectedItem();
-//            int numJugadores = Integer.parseInt(jugadores);
-//            ControlPatolli.getInstance().configurarJugadores(numJugadores);
-//            ControlPatolli.getInstance().setApuesta(Integer.parseInt(this.txtApuesta.getText()));
-//            ControlPatolli.getInstance().conectarse();
-//            ControlMessage cm = new ControlMessage();
-//            ControlPatolli.getInstance().crearSala();
-//            FrmTablero tablero = new FrmTablero(ControlPatolli.getInstance(), "000");
-//            tablero.inicializar();
-//            dispose();
-//            tablero.setVisible(true);
-//
-//            if (Integer.valueOf(CmBJugadores.getSelectedItem().toString()) == 2) {
-//                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 1", Color.RED));
-//                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 2", Color.GREEN));
-//                Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
-//                Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
-////                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 1"));
-////                ControlJugador.getInstance().anadirJugador(new Jugador("Jugador 2"));
-
-            
-
-//            FrmTablero.getInstance().pintarTablero();
-            
-            
-        
-
-//        if (Juego.getInstance().ispCreada() == false) {
-//            this.setVisible(false);
-//            Juego.getInstance().setApuesta(Integer.parseInt(this.txtApuesta.getText()));
-//            Juego.getInstance().setpCreada(true);
-//            
-//            String jugadores = (String) CmBJugadores.getSelectedItem();
-//            int numJugadores = Integer.parseInt(jugadores);
-//            
-//            
-//                
-//                if (numJugadores==2){
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
-//                }
-//                if (numJugadores==3){
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 3", Color.YELLOW));
-//                }
-//                
-//                if (numJugadores==4){
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 1", Color.RED));
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 2", Color.BLUE));
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 3", Color.YELLOW));
-//                    Juego.getInstance().addJugador(new Jugador("Jugador 4", Color.GREEN));
-//                }
-//                
-//                
-//            
-//                
-//            
-//            
-////            FrmTablero.getInstance().inicializar();
-////            FrmTablero.getInstance().setVisible(true);
-////           
-//        } else {
-//            JOptionPane.showMessageDialog(null, "Sexo");
-//        }
+   
     }//GEN-LAST:event_btnCrearActionPerformed
+
+    private void cmbJugadoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbJugadoresActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbJugadoresActionPerformed
 
     /**
      * @param args the command line arguments
@@ -367,8 +295,8 @@ public class DlgApuesta extends javax.swing.JDialog {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> CmBJugadores;
     private javax.swing.JButton btnCrear;
+    private javax.swing.JComboBox<String> cmbJugadores;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
