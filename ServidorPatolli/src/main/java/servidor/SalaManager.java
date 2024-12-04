@@ -10,14 +10,17 @@ import java.util.Map;
  */
 public class SalaManager {
 
-    
-    private Map<String, Sala> salas = new HashMap<>();  // Mapa de salas, clave: códigoSala, valor: Sala
+    private Map<String, Sala> salas;
+
+    public SalaManager() {
+        this.salas = new HashMap<>();
+    }
 
     // Método para crear una sala
     public void crearSala(String codigoSala, int maxJugadores) {
         if (!salas.containsKey(codigoSala)) {
             Sala nuevaSala = new Sala(codigoSala, maxJugadores);
-            salas.put(codigoSala, nuevaSala);  // Almacenar la sala en el mapa
+            salas.put(codigoSala, nuevaSala);
             System.out.println("Sala creada con código: " + codigoSala);
         } else {
             System.out.println("La sala con el código " + codigoSala + " ya existe.");
@@ -43,9 +46,5 @@ public class SalaManager {
     // Obtener una sala por su código
     public Sala obtenerSala(String codigoSala) {
         return salas.get(codigoSala);
-    }
-
-    public boolean salaExiste(String codigoSala) {
-        return salas.containsKey(codigoSala);
     }
 }

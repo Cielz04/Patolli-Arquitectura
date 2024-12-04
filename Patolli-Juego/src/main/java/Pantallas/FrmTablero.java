@@ -1,11 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package Pantallas;
 
-<<<<<<< refs/remotes/origin/melle
-=======
 import Cliente.Cliente;
 import entidades.EstadoDelJuego;
 
@@ -30,15 +24,12 @@ import javax.swing.BorderFactory;
 import tablero.Casilla;
 import tablero.Tablero;
 
->>>>>>> local
 /**
  *
  * @author Enrique Rodriguez
  */
 public class FrmTablero extends javax.swing.JFrame {
 
-<<<<<<< refs/remotes/origin/melle
-=======
     private Cliente cliente;
     private static FrmTablero tableroS;
     private boolean numerarCasillas;
@@ -48,18 +39,14 @@ public class FrmTablero extends javax.swing.JFrame {
     private ControladorDeJuego controladorDeJuego;
     EstadoDelJuego estadoDelJuego;
 
->>>>>>> local
     /**
      * Creates new form Tablero
      */
     public FrmTablero() {
-<<<<<<< refs/remotes/origin/melle
-=======
         casillas = new LinkedList<>();
         estadoDelJuego = new EstadoDelJuego();
         controladorDeJuego = new ControladorDeJuego(estadoDelJuego);
 
->>>>>>> local
         initComponents();
         // Inicialización del cliente para la comunicación
         cliente = new Cliente("localhost", 50065);
@@ -70,8 +57,6 @@ public class FrmTablero extends javax.swing.JFrame {
         }
     }
 
-<<<<<<< refs/remotes/origin/melle
-=======
     public static FrmTablero getInstance() {
         if (tableroS == null) {
             tableroS = new FrmTablero();
@@ -283,7 +268,6 @@ public class FrmTablero extends javax.swing.JFrame {
         }
     }
 
->>>>>>> local
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -294,36 +278,147 @@ public class FrmTablero extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        btnRendirse = new javax.swing.JButton();
+        btnLanzar = new javax.swing.JButton();
+        lblCania1 = new javax.swing.JLabel();
+        lblCania2 = new javax.swing.JLabel();
+        lblCania4 = new javax.swing.JLabel();
+        lblCania3 = new javax.swing.JLabel();
+        lblCania5 = new javax.swing.JLabel();
+        tableroIzq = new javax.swing.JPanel();
+        tableroArriba = new javax.swing.JPanel();
+        tableroAbajo = new javax.swing.JPanel();
+        tableroDerecha = new javax.swing.JPanel();
+        tableroCentro = new javax.swing.JPanel();
+        txtCodigo = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(810, 530));
+        setTitle("Tablero");
+        setBackground(new java.awt.Color(51, 0, 0));
+        setMinimumSize(new java.awt.Dimension(1280, 720));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(51, 0, 0));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setText("jLabel1");
+        jPanel3.setBackground(new java.awt.Color(51, 0, 0));
+        jPanel3.setMaximumSize(new java.awt.Dimension(1280, 720));
+        jPanel3.setMinimumSize(new java.awt.Dimension(1280, 720));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(243, 243, 243)
-                .addComponent(jLabel1)
-                .addContainerGap(530, Short.MAX_VALUE))
+        btnRendirse.setBackground(new java.awt.Color(204, 153, 0));
+        btnRendirse.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
+        btnRendirse.setForeground(new java.awt.Color(255, 255, 255));
+        btnRendirse.setText("Rendirse");
+        btnRendirse.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnRendirse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRendirseActionPerformed(evt);
+            }
+        });
+
+        btnLanzar.setBackground(new java.awt.Color(204, 153, 0));
+        btnLanzar.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
+        btnLanzar.setForeground(new java.awt.Color(255, 255, 255));
+        btnLanzar.setText("Lanzar Frijoles");
+        btnLanzar.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnLanzar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLanzarActionPerformed(evt);
+            }
+        });
+
+        lblCania1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lblCania1.setForeground(new java.awt.Color(255, 255, 255));
+        lblCania1.setText("-");
+
+        lblCania2.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lblCania2.setForeground(new java.awt.Color(255, 255, 255));
+        lblCania2.setText("-");
+
+        lblCania4.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lblCania4.setForeground(new java.awt.Color(255, 255, 255));
+        lblCania4.setText("-");
+
+        lblCania3.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lblCania3.setForeground(new java.awt.Color(255, 255, 255));
+        lblCania3.setText("-");
+
+        lblCania5.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        lblCania5.setForeground(new java.awt.Color(255, 255, 255));
+        lblCania5.setText("-");
+
+        tableroIzq.setBackground(new java.awt.Color(51, 0, 0));
+        tableroIzq.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+
+        javax.swing.GroupLayout tableroIzqLayout = new javax.swing.GroupLayout(tableroIzq);
+        tableroIzq.setLayout(tableroIzqLayout);
+        tableroIzqLayout.setHorizontalGroup(
+            tableroIzqLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 304, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(181, 181, 181)
-                .addComponent(jLabel1)
-                .addContainerGap(333, Short.MAX_VALUE))
+        tableroIzqLayout.setVerticalGroup(
+            tableroIzqLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 153, Short.MAX_VALUE)
         );
 
-<<<<<<< refs/remotes/origin/melle
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 530));
-=======
+        tableroArriba.setBackground(new java.awt.Color(51, 0, 0));
+        tableroArriba.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+
+        javax.swing.GroupLayout tableroArribaLayout = new javax.swing.GroupLayout(tableroArriba);
+        tableroArriba.setLayout(tableroArribaLayout);
+        tableroArribaLayout.setHorizontalGroup(
+            tableroArribaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 165, Short.MAX_VALUE)
+        );
+        tableroArribaLayout.setVerticalGroup(
+            tableroArribaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 254, Short.MAX_VALUE)
+        );
+
+        tableroAbajo.setBackground(new java.awt.Color(51, 0, 0));
+        tableroAbajo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+
+        javax.swing.GroupLayout tableroAbajoLayout = new javax.swing.GroupLayout(tableroAbajo);
+        tableroAbajo.setLayout(tableroAbajoLayout);
+        tableroAbajoLayout.setHorizontalGroup(
+            tableroAbajoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 171, Short.MAX_VALUE)
+        );
+        tableroAbajoLayout.setVerticalGroup(
+            tableroAbajoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 254, Short.MAX_VALUE)
+        );
+
+        tableroDerecha.setBackground(new java.awt.Color(51, 0, 0));
+        tableroDerecha.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+
+        javax.swing.GroupLayout tableroDerechaLayout = new javax.swing.GroupLayout(tableroDerecha);
+        tableroDerecha.setLayout(tableroDerechaLayout);
+        tableroDerechaLayout.setHorizontalGroup(
+            tableroDerechaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 304, Short.MAX_VALUE)
+        );
+        tableroDerechaLayout.setVerticalGroup(
+            tableroDerechaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        tableroCentro.setBackground(new java.awt.Color(51, 0, 0));
+        tableroCentro.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+
+        javax.swing.GroupLayout tableroCentroLayout = new javax.swing.GroupLayout(tableroCentro);
+        tableroCentro.setLayout(tableroCentroLayout);
+        tableroCentroLayout.setHorizontalGroup(
+            tableroCentroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        tableroCentroLayout.setVerticalGroup(
+            tableroCentroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 153, Short.MAX_VALUE)
+        );
+
         txtCodigo.setFont(new java.awt.Font("STIX Two Text", 1, 14)); // NOI18N
         txtCodigo.setForeground(new java.awt.Color(255, 255, 255));
 
@@ -426,50 +521,11 @@ public class FrmTablero extends javax.swing.JFrame {
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 720));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
->>>>>>> local
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-<<<<<<< refs/remotes/origin/melle
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmTablero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmTablero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmTablero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmTablero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmTablero().setVisible(true);
-            }
-        });
-    }
-
-=======
     private void btnLanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanzarActionPerformed
         int[] canias = new int[5];
         for (int i = 0; i < 5; i++) {
@@ -504,9 +560,22 @@ public class FrmTablero extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRendirseActionPerformed
 
 
->>>>>>> local
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnLanzar;
+    private javax.swing.JButton btnRendirse;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel lblCania1;
+    private javax.swing.JLabel lblCania2;
+    private javax.swing.JLabel lblCania3;
+    private javax.swing.JLabel lblCania4;
+    private javax.swing.JLabel lblCania5;
+    private javax.swing.JPanel tableroAbajo;
+    private javax.swing.JPanel tableroArriba;
+    private javax.swing.JPanel tableroCentro;
+    private javax.swing.JPanel tableroDerecha;
+    private javax.swing.JPanel tableroIzq;
+    private javax.swing.JLabel txtCodigo;
     // End of variables declaration//GEN-END:variables
 }

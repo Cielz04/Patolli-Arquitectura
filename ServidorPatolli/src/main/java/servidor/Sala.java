@@ -9,6 +9,7 @@ import java.util.List;
  * @author esmeraldamolinaestrada
  */
 public class Sala {
+
     private String codigoSala;
     private List<Jugador> jugadores;
     private int maxJugadores;

@@ -18,15 +18,6 @@
             <artifactId>AbsoluteLayout</artifactId>
             <version>SNAPSHOT</version>
         </dependency>
-<<<<<<< refs/remotes/origin/melle
-    </dependencies>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>19</maven.compiler.source>
-        <maven.compiler.target>19</maven.compiler.target>
-        <exec.mainClass>com.mycompany.patolli.juego.PatolliJuego</exec.mainClass>
-    </properties>
-=======
         <dependency>
             <groupId>itson.mx</groupId>
             <artifactId>ServidorPatolli</artifactId>
@@ -50,5 +41,4 @@
         <exec.mainClass>com.mycompany.patolli.juego.PatolliJuego</exec.mainClass>
     </properties>
     <name>Patolli-Juego</name>
->>>>>>> local
 </project>

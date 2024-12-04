@@ -1,8 +1,5 @@
 package Pantallas;
 
-
-
-
 import entidades.EstadoDelJuego;
 //import entidades.Juego;
 import javax.swing.JOptionPane;
@@ -18,18 +15,18 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
      * Creates new form FrmConfigurarPartida
      */
     DlgApuesta crearApuesta;
-     EstadoDelJuego estadoDelJuego;
-     
+    EstadoDelJuego estadoDelJuego;
+
     public FrmConfigurarPartida() {
         initComponents();
-        crearApuesta= new DlgApuesta(this, rootPaneCheckingEnabled);
+        estadoDelJuego = new EstadoDelJuego();  // Inicializamos aquí
+        this.crearApuesta = new DlgApuesta(this, true, estadoDelJuego);
         btnGroupAspas.add(aspa8);
         btnGroupAspas.add(aspa10);
         btnGroupAspas.add(aspa14);
         btnGroupFichas.add(fichas2);
         btnGroupFichas.add(fichas4);
         btnGroupFichas.add(fichas6);
-        estadoDelJuego = new EstadoDelJuego();
     }
 
     /**
@@ -292,53 +289,44 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
     }//GEN-LAST:event_fichas6ActionPerformed
 
     private void btnApuestaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApuestaActionPerformed
-    try {
-        // Verificar que estadoDelJuego no sea null
-        if (estadoDelJuego == null) {
-            JOptionPane.showMessageDialog(this, "El estado del juego no está configurado correctamente.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Verificar que se haya seleccionado una cantidad de fichas y casillas
-        if (!(fichas2.isSelected() || fichas4.isSelected() || fichas6.isSelected())) {
-            JOptionPane.showMessageDialog(this, "Por favor, selecciona la cantidad de fichas.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (!(aspa8.isSelected() || aspa10.isSelected() || aspa14.isSelected())) {
-            JOptionPane.showMessageDialog(this, "Por favor, selecciona el tamaño del tablero (aspas).", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Cerrar la ventana de configuración
         dispose();
+        try {
+            // Validar y configurar número de fichas
+            if (fichas2.isSelected()) {
+                estadoDelJuego.setCantidadFichas(2);
+            } else if (fichas4.isSelected()) {
+                estadoDelJuego.setCantidadFichas(4);
+            } else if (fichas6.isSelected()) {
+                estadoDelJuego.setCantidadFichas(6);
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecciona un número de fichas.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        // Actualizar el estado del juego con la cantidad de fichas seleccionadas
-        if (fichas2.isSelected()) {
-            estadoDelJuego.setCantidadFichas(2);
-        } else if (fichas4.isSelected()) {
-            estadoDelJuego.setCantidadFichas(4);
-        } else if (fichas6.isSelected()) {
-            estadoDelJuego.setCantidadFichas(6);
+            // Validar y configurar cantidad de casillas por aspa
+            if (aspa8.isSelected()) {
+                estadoDelJuego.setCantidadCasillas(8);
+            } else if (aspa10.isSelected()) {
+                estadoDelJuego.setCantidadCasillas(10);
+            } else if (aspa14.isSelected()) {
+                estadoDelJuego.setCantidadCasillas(14);
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecciona un tamaño de aspa.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Crear el tablero con la configuración actual
+            Tablero tablero = new Tablero(estadoDelJuego);
+            estadoDelJuego.setTablero(tablero);
+
+            // Mostrar la ventana de apuesta
+            crearApuesta.setVisible(true);
+
+            // Cerrar esta ventana
+            dispose();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Ocurrió un error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        // Actualizar el estado del juego con la cantidad de casillas seleccionadas
-        if (aspa8.isSelected()) {
-            estadoDelJuego.setCantidadCasillas(8);
-        } else if (aspa10.isSelected()) {
-            estadoDelJuego.setCantidadCasillas(10);
-        } else if (aspa14.isSelected()) {
-            estadoDelJuego.setCantidadCasillas(14);
-        }
-
-        // Abrir la ventana de Apuesta
-        crearApuesta.setVisible(true);
-
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Error al configurar la partida: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
-    }
-        
     }//GEN-LAST:event_btnApuestaActionPerformed
 
     private void aspa8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aspa8ActionPerformed

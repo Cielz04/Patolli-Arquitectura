@@ -1,11 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package Pantallas;
 
-<<<<<<< refs/remotes/origin/melle
-=======
 //import Cliente.Cliente;
 import Servidor.Servidor;
 
@@ -14,28 +8,21 @@ import java.net.Socket;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
->>>>>>> local
 /**
  *
  * @author Enrique Rodriguez
  */
 public class FrmInicio extends javax.swing.JFrame {
 
-<<<<<<< refs/remotes/origin/melle
-=======
     FrmConfigurarPartida crearPartida;
     private static FrmInicio menuS;
     private Servidor servidor;
 
->>>>>>> local
     /**
      * Creates new form PantallaInicio
      */
     public FrmInicio() {
         initComponents();
-<<<<<<< refs/remotes/origin/melle
-    }
-=======
         crearPartida = new FrmConfigurarPartida();
         // Conectar automáticamente al servidor cuando se inicia la interfaz
 //        iniciarServidor();
@@ -50,7 +37,6 @@ public class FrmInicio extends javax.swing.JFrame {
     }
 
 
->>>>>>> local
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -62,37 +48,108 @@ public class FrmInicio extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        btnIniciarPartida = new javax.swing.JButton();
-        btnSalir = new javax.swing.JButton();
+        btnReglas = new javax.swing.JButton();
         btnUnirse = new javax.swing.JButton();
+        btnSalir1 = new javax.swing.JButton();
+        btnIniciarPartida = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Inicio");
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel1.setBackground(new java.awt.Color(200, 147, 108));
+        jPanel1.setBackground(new java.awt.Color(51, 0, 0));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setText("Patolli");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 70, 281, 59));
+        btnReglas.setBackground(new java.awt.Color(153, 0, 0));
+        btnReglas.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
+        btnReglas.setForeground(new java.awt.Color(255, 255, 255));
+        btnReglas.setText("Reglas del Juego");
+        btnReglas.setBorder(null);
+        btnReglas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReglasActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnReglas, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 480, 160, 40));
 
-        btnIniciarPartida.setText("Crear partida");
-        jPanel1.add(btnIniciarPartida, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 260, 230, 60));
-
-        btnSalir.setText("Salir");
-        jPanel1.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 420, 230, 61));
-
+        btnUnirse.setBackground(new java.awt.Color(153, 0, 0));
+        btnUnirse.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
+        btnUnirse.setForeground(new java.awt.Color(255, 255, 255));
         btnUnirse.setText("Unirse a partida");
-        jPanel1.add(btnUnirse, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 340, 230, 60));
+        btnUnirse.setBorder(null);
+        btnUnirse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUnirseActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnUnirse, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 330, 220, 70));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 530));
+        btnSalir1.setBackground(new java.awt.Color(153, 0, 0));
+        btnSalir1.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
+        btnSalir1.setForeground(new java.awt.Color(255, 255, 255));
+        btnSalir1.setText("Salir");
+        btnSalir1.setBorder(null);
+        btnSalir1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalir1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnSalir1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 410, 220, 70));
+
+        btnIniciarPartida.setBackground(new java.awt.Color(153, 0, 0));
+        btnIniciarPartida.setFont(new java.awt.Font("STXinwei", 1, 18)); // NOI18N
+        btnIniciarPartida.setForeground(new java.awt.Color(255, 255, 255));
+        btnIniciarPartida.setText("Crear partida");
+        btnIniciarPartida.setBorder(null);
+        btnIniciarPartida.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIniciarPartidaActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnIniciarPartida, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 250, 220, 70));
+
+        jLabel1.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel1.setFont(new java.awt.Font("STXinwei", 1, 100)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Patolli");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 150, 360, 90));
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/pajaro.png"))); // NOI18N
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 360, 210, 160));
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/vizu.png"))); // NOI18N
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 370, 210, 160));
+
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/tortuga.png"))); // NOI18N
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 310, 170, 160));
+
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/chango.png"))); // NOI18N
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, -60, 250, 230));
+
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/sol.png"))); // NOI18N
+        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(-40, -20, 310, 230));
+
+        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/pez.png"))); // NOI18N
+        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, -20, 290, 200));
+
+        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/rana.png"))); // NOI18N
+        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 150, 200, 150));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 810, 540));
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-<<<<<<< refs/remotes/origin/melle
-=======
     private void btnIniciarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarPartidaActionPerformed
          try {
             new Thread(() -> {
@@ -145,7 +202,6 @@ public class FrmInicio extends javax.swing.JFrame {
         }).start();
     }//GEN-LAST:event_btnUnirseActionPerformed
 
->>>>>>> local
     /**
      * @param args the command line arguments
      */
@@ -184,9 +240,17 @@ public class FrmInicio extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnIniciarPartida;
-    private javax.swing.JButton btnSalir;
+    private javax.swing.JButton btnReglas;
+    private javax.swing.JButton btnSalir1;
     private javax.swing.JButton btnUnirse;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }
