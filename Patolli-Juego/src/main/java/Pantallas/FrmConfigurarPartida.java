@@ -27,7 +27,7 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
         btnGroupFichas.add(fichas2);
         btnGroupFichas.add(fichas4);
         btnGroupFichas.add(fichas6);
-        cliente = new ClienteControlador(new Jugador("Jugador 1", Color.RED));
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -292,6 +292,8 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
             // Determinar la cantidad de fichas basado en la selección
             int fichas = fichas2.isSelected() ? 2 : fichas4.isSelected() ? 4 : 6;
 
+            cliente = new ClienteControlador(new Jugador("Jugador 1", Color.RED));
+            
             // Establecer la configuración en el tablero local del cliente
             cliente.getTableroLocal().setCantidadCasillasAspa(tamanio);
             cliente.getTableroLocal().setCantidadFichas(fichas);
