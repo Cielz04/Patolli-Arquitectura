@@ -16,13 +16,15 @@ public class ClienteControlador implements IObserver {
     private Jugador jugador;
     private ClientThread hiloCliente;
     private int tableroActualizaciones = 0;
+    private boolean isHost;
     
 
-    public ClienteControlador(Jugador jugador) {
+    public ClienteControlador(Jugador jugador, boolean host) {
         this.jugador = jugador;
         this.tableroLocal = new Tablero();
         this.tablero = FrmTablero.getInstance(tableroLocal, this);
-
+        this.isHost = host;
+        
         try {
             // Crear conexión con el servidor y configurar ClientThread
             Socket socket = new Socket("localhost", 50064);
@@ -52,7 +54,13 @@ public class ClienteControlador implements IObserver {
             case TABLERO_ACTUALIZADO:
                 manejarActualizacionTablero(mensaje);
                 break;
-
+                
+            case CONFIGURAR_TABLERO:
+                if (isHost){
+                    System.out.println("Conexion con servidor exitosa!");
+                }
+                System.out.println("TABLERO DEL SERVIDOR ACTUALIZADO");
+                break;
             case ERROR:
                 System.err.println("Error recibido: " + mensaje.getContent().getMensaje());
                 break;

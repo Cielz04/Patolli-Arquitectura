@@ -6,6 +6,7 @@ import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
 import javax.swing.JOptionPane;
 import PatolliCliente.ClienteControlador;  // Asegúrate de que esta clase exista y esté correctamente implementada
+import java.awt.HeadlessException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +22,8 @@ public class DlgApuesta extends javax.swing.JDialog {
         public DlgApuesta(ClienteControlador clienteControlador) {
         this.clienteControlador = clienteControlador;  // Inicializa el controlador del cliente
         initComponents();
+        txtFondos.setEditable(false);
+        txtApuesta.setEditable(false);
     }
 
 
@@ -80,6 +83,8 @@ public class DlgApuesta extends javax.swing.JDialog {
         jPanel3.setForeground(new java.awt.Color(243, 223, 179));
 
         txtApuesta.setBackground(new java.awt.Color(243, 223, 179));
+        txtApuesta.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        txtApuesta.setText("50");
         txtApuesta.setBorder(null);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -110,7 +115,14 @@ public class DlgApuesta extends javax.swing.JDialog {
         jPanel4.setForeground(new java.awt.Color(243, 223, 179));
 
         txtFondos.setBackground(new java.awt.Color(243, 223, 179));
+        txtFondos.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        txtFondos.setText("100");
         txtFondos.setBorder(null);
+        txtFondos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtFondosActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -145,9 +157,6 @@ public class DlgApuesta extends javax.swing.JDialog {
                                 .addGap(18, 18, 18)
                                 .addComponent(cmbJugadores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(29, 29, 29)
-                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(8, 8, 8)
                                 .addComponent(jLabel3))))
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -155,7 +164,10 @@ public class DlgApuesta extends javax.swing.JDialog {
                         .addComponent(jLabel4))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(42, 42, 42)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(42, 42, 42)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(91, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
@@ -234,10 +246,10 @@ public class DlgApuesta extends javax.swing.JDialog {
             // Configurar la lista de montos por jugador (inicializar en 0 para cada jugador)
             List<Integer> montosPorJugador = new LinkedList<>();
             for (int i = 0; i < canJugadores; i++) {
-                montosPorJugador.add(0); // Inicializa en 0 el monto de cada jugador
+                montosPorJugador.add(50); 
             }
             clienteControlador.getTableroLocal().setCantidadMontoJugadores(montosPorJugador);
-
+            clienteControlador.getTableroLocal().setApuesta(100);
             // Crear el mensaje para actualizar la configuración del tablero en el servidor
             Message mensajeConfiguracion = new Message.Builder()
                     .messageType(MessageType.CONFIGURAR_TABLERO)
@@ -255,9 +267,8 @@ public class DlgApuesta extends javax.swing.JDialog {
             // Cerrar la ventana actual
             this.dispose();
 
-        } catch (Exception e) {
+        } catch (HeadlessException | NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Error al configurar: " + e.getMessage());
-            e.printStackTrace();
         }
    
     }//GEN-LAST:event_btnCrearActionPerformed
@@ -265,6 +276,10 @@ public class DlgApuesta extends javax.swing.JDialog {
     private void cmbJugadoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbJugadoresActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbJugadoresActionPerformed
+
+    private void txtFondosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFondosActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtFondosActionPerformed
 
     /**
      * @param args the command line arguments

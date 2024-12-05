@@ -318,6 +318,8 @@ public class ControlMessage extends Observable implements Runnable {
 
         // Actualizar el tablero del servidor
         tableroServidor.actualizarConMensaje(tableroActualizado);
+        System.out.println(tableroServidor.getApuesta());
+        System.out.println(tableroServidor.getCantidadCasillasAspa());
 
         // Notificar a todos los clientes conectados sobre la nueva configuración
         notificarTodos(new Message.Builder()
@@ -326,6 +328,8 @@ public class ControlMessage extends Observable implements Runnable {
                 .build());
 
         System.out.println("Tablero del servidor actualizado con la configuración.");
+        
+        
     }
 
     // Método para notificar a todos los clientes conectados

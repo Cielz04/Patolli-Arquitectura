@@ -25,7 +25,7 @@ public class FrmUnirse extends javax.swing.JFrame {
     public FrmUnirse() {
         initComponents();
         Jugador jugador = new Jugador ("Jugador 2", Color.BLUE);
-        cliente = new ClienteControlador(jugador);
+        cliente = new ClienteControlador(jugador, false);
 
     }
 //    public FrmUnirse(FrmInicio frmInicio) {
