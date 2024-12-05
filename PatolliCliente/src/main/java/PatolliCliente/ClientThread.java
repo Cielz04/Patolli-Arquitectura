@@ -22,6 +22,7 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
     private boolean connected;
     private final List<IObserver> observers;
     private ClienteControlador cliente;
+//    private boolean connected = true;
 
     public ClientThread(Socket clientSocket, Jugador jugador) {
         this.clientSocket = clientSocket;
@@ -53,18 +54,42 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
     public void run() {
 
         try {
-            Message mensaje = (Message) in.readObject();
-            System.out.println("Mensaje de servidor recibido "+ mensaje.getContent().getMensaje());
-            if (mensaje != null) {
-                notifyObservers(mensaje);
+
+            while (connected) {
+                Message mensaje = (Message) in.readObject();
+
+                if (mensaje != null) {
+                    System.out.println("Mensaje de servidor recibido " + mensaje.getContent().getMensaje());
+                    notifyObservers(mensaje);
+
+                }
+
             }
         } catch (ClassNotFoundException e) {
             System.err.println("Clase no encontrada al leer mensaje: " + e.getMessage());
         } catch (IOException e) {
             System.err.println("Error de E/S: " + e.getMessage());
             connected = false; // Aquí decides desconectar si el error es crítico
+        } finally {
+            cerrarConexion();
         }
+    }
+        
+    private void cerrarConexion() {
+        try {
+            if (in != null) {
+                in.close();
+            }
+            if (clientSocket != null) {
+                clientSocket.close();
+            }
+            System.out.println("Conexión cerrada.");
+        } catch (IOException e) {
+            System.err.println("Error al cerrar la conexión: " + e.getMessage());
+        }
+    }
 
+        
 //        try {
 //
 //            // Enviar mensaje de conexión al servidor
@@ -94,7 +119,7 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
 //        } finally {
 //            disconnect(); // Siempre desconecta para limpiar recursos
 //        }
-    }
+//    }
 
     public void sendMessage(Message mensaje) {
         try {

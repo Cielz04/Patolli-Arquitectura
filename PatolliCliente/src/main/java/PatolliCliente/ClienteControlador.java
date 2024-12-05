@@ -12,7 +12,7 @@ import tablero.Tablero;
 public class ClienteControlador implements IObserver {
 
     private Tablero tableroLocal;
-    private FrmTablero tablero;
+   private FrmTablero tablero;
     private Jugador jugador;
     private ClientThread hiloCliente;
     private boolean isHost;
@@ -92,7 +92,7 @@ public class ClienteControlador implements IObserver {
         tableroLocal.actualizarConMensaje(tableroRecibido);
 
         System.out.println("Tablero local actualizado.");
-//        tablero.redibujarTablero(tableroLocal);
+        tablero.redibujarTablero(tableroLocal);
     }
 
     public void enviarMensaje(Message mensaje) {

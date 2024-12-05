@@ -321,6 +321,7 @@ public class ControlMessage extends Observable implements Runnable {
 
         // Actualizar el tablero del servidor
         tableroServidor.actualizarConMensaje(tableroActualizado);
+        
         if (tableroServidor.getCantidadMontoJugadores().size()!=0){
             System.out.println(tableroServidor.getCantidadMontoJugadores().get(1));
         }
@@ -335,7 +336,7 @@ public class ControlMessage extends Observable implements Runnable {
 
         System.out.println("Tablero del servidor actualizado con la configuración.");
         
-        
+        System.out.println(tableroServidor.getApuesta());
     }
 
     // Método para notificar a todos los clientes conectados
