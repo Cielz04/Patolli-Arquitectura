@@ -4,8 +4,6 @@ package Pantallas;
 
 import servidor.Servidor;
 import Control.ControlPatolli;
-import entidades.Juego;
-import java.io.IOException;
 import javax.swing.JOptionPane;
 import tablero.Tablero;
 
