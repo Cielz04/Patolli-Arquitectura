@@ -14,6 +14,7 @@ import java.util.List;
 
 public class ClientThread extends Observable implements Runnable, Serializable, IObserver {
 
+    private static ClientThread hiloCliente;
     private final Socket clientSocket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
@@ -28,6 +29,13 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
         this.connected = true;
         this.observers = new ArrayList<>();
         initializeStreams();
+    }
+    
+    public static ClientThread getInstance(Socket clientSocket, Jugador jugador){
+        if (hiloCliente == null){
+            hiloCliente = new ClientThread (clientSocket, jugador);
+        }
+        return hiloCliente;
     }
 
     private void initializeStreams() {
@@ -46,6 +54,7 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
 
         try {
             Message mensaje = (Message) in.readObject();
+            System.out.println("Mensaje de servidor recibido "+ mensaje.getContent().getMensaje());
             if (mensaje != null) {
                 notifyObservers(mensaje);
             }

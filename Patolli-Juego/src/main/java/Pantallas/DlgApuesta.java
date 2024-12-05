@@ -250,14 +250,16 @@ public class DlgApuesta extends javax.swing.JDialog {
             }
             clienteControlador.getTableroLocal().setCantidadMontoJugadores(montosPorJugador);
             clienteControlador.getTableroLocal().setApuesta(100);
+            clienteControlador.getTableroLocal().setSalaEspera(false);
+            
+            
             // Crear el mensaje para actualizar la configuración del tablero en el servidor
             Message mensajeConfiguracion = new Message.Builder()
-                    .messageType(MessageType.CONFIGURAR_TABLERO)
-                    .sender(clienteControlador.getJugador())
-                    .body(new MessageBody("Configuración enviada", clienteControlador.getTableroLocal()))
+                    .messageType(MessageType.CONFIGURAR_TABLERO) // Tipo de mensaje para configurar el tablero
+                    .sender(clienteControlador.getJugador()) // Jugador que envía la solicitud
+                    .body(new MessageBody("Configuración enviada", clienteControlador.getTableroLocal())) // Contiene el tablero local con la nueva configuración
                     .build();
 
-            // Enviar la configuración del tablero al servidor
             clienteControlador.enviarMensaje(mensajeConfiguracion);
 
             // Mostrar un mensaje confirmando la configuración

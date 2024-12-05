@@ -15,7 +15,6 @@ public class ClienteControlador implements IObserver {
     private FrmTablero tablero;
     private Jugador jugador;
     private ClientThread hiloCliente;
-    private int tableroActualizaciones = 0;
     private boolean isHost;
     
 
@@ -60,6 +59,14 @@ public class ClienteControlador implements IObserver {
                     System.out.println("Conexion con servidor exitosa!");
                 }
                 System.out.println("TABLERO DEL SERVIDOR ACTUALIZADO");
+
+                if ((tableroLocal.isSalaEspera()== false)){
+                    tablero.inicializar();
+                    tablero.setVisible(true);
+                }
+                break;
+            case UNIRSE_SALA:
+                
                 break;
             case ERROR:
                 System.err.println("Error recibido: " + mensaje.getContent().getMensaje());
@@ -69,6 +76,11 @@ public class ClienteControlador implements IObserver {
                 System.out.println("Mensaje no reconocido: " + mensaje.getMessageType());
         }
     }
+    
+    private void manejarUnirseSala (){
+        
+    }
+    
 
     private void manejarActualizacionTablero(Message mensaje) {
         if (mensaje.getContent().getEstadoTablero() == null) {
@@ -84,12 +96,7 @@ public class ClienteControlador implements IObserver {
     }
 
     public void enviarMensaje(Message mensaje) {
-        if (tableroActualizaciones >=2){
-            tablero.inicializar();
-            tablero.setVisible(true);
-        }
         hiloCliente.sendMessage(mensaje);
-        tableroActualizaciones++;
     }
 
     // Método para enviar actualizaciones del tablero local al servidor

@@ -25,6 +25,7 @@ public class Tablero implements Serializable{
     private List <Integer> cantidadMontoJugadores;
     private int cantidadCasillasAspa;
     private List <Jugador> jugadores;
+    private boolean salaEspera = true;
 
 
     public Tablero() {
@@ -33,6 +34,7 @@ public class Tablero implements Serializable{
         this.fichasJugador2Posicion = new LinkedList<>();
         this.fichasJugador3Posicion = new LinkedList<>();
         this.fichasJugador4Posicion = new LinkedList<>();
+        this.cantidadMontoJugadores = new LinkedList<>();
         this.jugadores = new LinkedList<>();
     }
 
@@ -225,14 +227,24 @@ public class Tablero implements Serializable{
         }
         return false;
     }
+
+    public boolean isSalaEspera() {
+        return salaEspera;
+    }
+
+    public void setSalaEspera(boolean salaEspera) {
+        this.salaEspera = salaEspera;
+    }
     
     
     
     
     
     
-    public Tablero actualizarConMensaje (Tablero tablero){
-        
+    
+    
+    
+    public void actualizarConMensaje (Tablero tablero){
         this.apuesta = tablero.getApuesta();
         this.cantidadCasillasAspa = tablero.getCantidadCasillasAspa();
         this.cantidadFichas = tablero.getCantidadFichas();
@@ -247,8 +259,7 @@ public class Tablero implements Serializable{
         this.juegoTermino = tablero.isJuegoTermino();
         this.jugadorTurno = tablero.getJugadorTurno();
         this.jugadores = tablero.getJugadores();
-        return this;
-        
+        this.salaEspera = tablero.isSalaEspera();
     }
     
     

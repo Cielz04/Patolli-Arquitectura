@@ -120,6 +120,9 @@ public class ControlMessage extends Observable implements Runnable {
             System.err.println("Error al cerrar el servidor: " + e.getMessage());
         }
     }
+    
+    
+    
 
     public void procesarMensaje(Message mensaje) {
         lock.lock();
@@ -318,7 +321,10 @@ public class ControlMessage extends Observable implements Runnable {
 
         // Actualizar el tablero del servidor
         tableroServidor.actualizarConMensaje(tableroActualizado);
-        System.out.println(tableroServidor.getApuesta());
+        if (tableroServidor.getCantidadMontoJugadores().size()!=0){
+            System.out.println(tableroServidor.getCantidadMontoJugadores().get(1));
+        }
+        
         System.out.println(tableroServidor.getCantidadCasillasAspa());
 
         // Notificar a todos los clientes conectados sobre la nueva configuración
