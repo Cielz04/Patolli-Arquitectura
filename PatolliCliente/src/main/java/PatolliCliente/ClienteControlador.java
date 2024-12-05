@@ -6,9 +6,6 @@ import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
 import entidades.Jugador;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import tablero.Tablero;
 
@@ -18,6 +15,8 @@ public class ClienteControlador implements IObserver {
     private FrmTablero tablero;
     private Jugador jugador;
     private ClientThread hiloCliente;
+    private int tableroActualizaciones = 0;
+    
 
     public ClienteControlador(Jugador jugador) {
         this.jugador = jugador;
@@ -34,13 +33,6 @@ public class ClienteControlador implements IObserver {
 
             // Iniciar hilo para manejar mensajes del servidor
             new Thread(hiloCliente).start();
-
-            // Enviar mensaje de conexión al servidor
-            enviarMensaje(new Message.Builder()
-                    .messageType(MessageType.CONECTARSE)
-                    .sender(jugador)
-                    .body(new MessageBody("Conexión solicitada"))
-                    .build());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,11 +72,16 @@ public class ClienteControlador implements IObserver {
         tableroLocal.actualizarConMensaje(tableroRecibido);
 
         System.out.println("Tablero local actualizado.");
-        tablero.redibujarTablero(tableroLocal);
+//        tablero.redibujarTablero(tableroLocal);
     }
 
     public void enviarMensaje(Message mensaje) {
+        if (tableroActualizaciones >=2){
+            tablero.inicializar();
+            tablero.setVisible(true);
+        }
         hiloCliente.sendMessage(mensaje);
+        tableroActualizaciones++;
     }
 
     // Método para enviar actualizaciones del tablero local al servidor

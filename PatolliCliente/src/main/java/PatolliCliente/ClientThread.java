@@ -2,8 +2,6 @@ package PatolliCliente;
 
 import com.chat.tcpcommons.IObserver;
 import com.chat.tcpcommons.Message;
-import com.chat.tcpcommons.MessageBody;
-import com.chat.tcpcommons.MessageType;
 import com.chat.tcpcommons.Observable;
 import entidades.Jugador;
 import java.io.IOException;
@@ -14,7 +12,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientThread extends Observable implements Runnable, Serializable {
+public class ClientThread extends Observable implements Runnable, Serializable, IObserver {
 
     private final Socket clientSocket;
     private ObjectInputStream in;
@@ -22,6 +20,7 @@ public class ClientThread extends Observable implements Runnable, Serializable {
     private Jugador jugador;
     private boolean connected;
     private final List<IObserver> observers;
+    private ClienteControlador cliente;
 
     public ClientThread(Socket clientSocket, Jugador jugador) {
         this.clientSocket = clientSocket;
@@ -44,31 +43,48 @@ public class ClientThread extends Observable implements Runnable, Serializable {
 
     @Override
     public void run() {
-        try {
-            // Enviar mensaje de conexión al servidor
-            sendMessage(new Message.Builder()
-                    .messageType(MessageType.CONECTARSE)
-                    .sender(jugador)
-                    .body(new MessageBody("Solicitud de conexión"))
-                    .build());
 
-            // Escuchar mensajes del servidor
-            while (connected) {
-                try {
-                    Message mensaje = (Message) in.readObject();
-                    if (mensaje != null) {
-                        notifyObservers(mensaje); // Notificar al observador (ClienteControlador)
-                    }
-                } catch (ClassNotFoundException e) {
-                    System.err.println("Error al leer el mensaje: Clase no encontrada.");
-                } catch (IOException e) {
-                    System.err.println("Error de conexión al servidor: " + e.getMessage());
-                    break; // Salir del bucle si hay problemas de conexión
-                }
+        try {
+            Message mensaje = (Message) in.readObject();
+            if (mensaje != null) {
+                notifyObservers(mensaje);
             }
-        } finally {
-            disconnect(); // Siempre desconecta para limpiar recursos
+        } catch (ClassNotFoundException e) {
+            System.err.println("Clase no encontrada al leer mensaje: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Error de E/S: " + e.getMessage());
+            connected = false; // Aquí decides desconectar si el error es crítico
         }
+
+//        try {
+//
+//            // Enviar mensaje de conexión al servidor
+//            sendMessage(new Message.Builder()
+//                    .messageType(MessageType.CONECTARSE)
+//                    .sender(jugador)
+//                    .body(new MessageBody("Solicitud de conexión"))
+//                    .build());
+//
+//            subscribe(cliente);
+//            observers.add(cliente);
+//
+//            // Escuchar mensajes del servidor
+//            while (connected) {
+//                try {
+//                    Message mensaje = (Message) in.readObject();
+//                    if (mensaje != null) {
+//                        notifyObservers(mensaje); // Notificar al observador (ClienteControlador)
+//                    }
+//                } catch (ClassNotFoundException e) {
+//                    System.err.println("Error al leer el mensaje: Clase no encontrada.");
+//                } catch (IOException e) {
+//                    System.err.println("Error de conexión al servidor: " + e.getMessage());
+//                    break; // Salir del bucle si hay problemas de conexión
+//                }
+//            }
+//        } finally {
+//            disconnect(); // Siempre desconecta para limpiar recursos
+//        }
     }
 
     public void sendMessage(Message mensaje) {
@@ -119,5 +135,16 @@ public class ClientThread extends Observable implements Runnable, Serializable {
     public Jugador getJugador() {
         return jugador;
     }
+
+    @Override
+    public void onUpdate(Object obj) {
+        notifyObservers(obj);
+    }
+
+    public ObjectInputStream getInputStream() {
+        return in;
+    }
+    
+    
 
 }

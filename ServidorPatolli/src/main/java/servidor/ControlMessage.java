@@ -1,9 +1,11 @@
 package servidor;
 
 import PatolliCliente.ClientThread;
+import com.chat.tcpcommons.IObserver;
 import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
+import com.chat.tcpcommons.Observable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,10 +16,12 @@ import tablero.Tablero;
 import entidades.Jugador;
 import java.awt.Color;
 
-public class ControlMessage implements Runnable {
+import java.util.Observer;
+
+public class ControlMessage extends Observable implements Runnable {
 
     private ServerSocket server;
-    private final Tablero tableroServidor;
+    private Tablero tableroServidor;
     private final int PORT = 50064;
     private final Thread serverThread;
     private final ReentrantLock lock = new ReentrantLock();
@@ -42,23 +46,71 @@ public class ControlMessage implements Runnable {
 
     @Override
     public void run() {
+
         try {
             while (true) {
                 Socket clientSocket = server.accept();
                 System.out.println("Cliente conectado desde: " + clientSocket.getInetAddress());
 
-                // Crear un nuevo cliente y registrarlo
-                ClientThread client = new ClientThread(clientSocket, jugadorNuevo());
-                agregarCliente(client);
-                new Thread(client).start();
+                // Crear y registrar cliente
+                ClientThread cliente = new ClientThread(clientSocket, jugadorNuevo());
+                this.subscribe(cliente);
+                agregarCliente(cliente);
+
+
+                // Escuchar mensajes de cada cliente en el hilo del servidor
+                new Thread(() -> escucharCliente(cliente)).start();
             }
         } catch (IOException e) {
             System.err.println("Error aceptando conexiones: " + e.getMessage());
         } finally {
             cerrarServidor();
         }
+
+//        try {
+//            while (true) {
+//                Socket clientSocket = server.accept();
+//                System.out.println("Cliente conectado desde: " + clientSocket.getInetAddress());
+//
+//                // Crear un nuevo cliente y registrarlo
+//                ClientThread client = new ClientThread(clientSocket, jugadorNuevo());
+//                this.subscribe((IObserver) client);
+//                agregarCliente(client);
+//                new Thread(client).start();
+//                MessageBody body = new MessageBody("Cliente Conectado");
+//                Message mensaje = new Message.Builder()
+//                        .messageType(MessageType.CONECTARSE)
+//                        .body(body)
+//                        .build();
+//                
+//                if (clientesConectados.size()!=0){
+//                    
+//                }
+//
+//                notificarTodos(mensaje);
+//            }
+//        } catch (IOException e) {
+//            System.err.println("Error aceptando conexiones: " + e.getMessage());
+//        } finally {
+//            cerrarServidor();
+//        }
     }
 
+    private void escucharCliente(ClientThread cliente) {
+    try {
+        while (true) {
+            Message mensaje = (Message) cliente.getInputStream().readObject();
+            if (mensaje != null) {
+                procesarMensaje(mensaje); // Procesar mensaje en el servidor
+            }
+        }
+    } catch (IOException | ClassNotFoundException e) {
+        System.err.println("Error al leer mensaje del cliente: " + e.getMessage());
+        eliminarCliente(cliente); // Desconectar al cliente en caso de error
+    }
+}
+    
+    
     private void cerrarServidor() {
         try {
             if (server != null) {
@@ -73,13 +125,20 @@ public class ControlMessage implements Runnable {
         lock.lock();
         try {
             switch (mensaje.getMessageType()) {
-                case CONECTARSE -> manejarConectarse(mensaje);
-                case DESCONECTARSE -> manejarDesconectarse(mensaje);
-                case UNIRSE_SALA -> manejarUnirseSala(mensaje);
-                case CONFIGURAR_TABLERO -> manejarConfigurarTableroServidor(mensaje);
-                case TABLERO_ACTUALIZADO -> manejarPasarCambios(mensaje);
-                case ERROR -> manejarError(mensaje);
-                default -> System.out.println("Tipo de mensaje no reconocido: " + mensaje.getMessageType());
+                case CONECTARSE ->
+                    manejarConectarse(mensaje);
+                case DESCONECTARSE ->
+                    manejarDesconectarse(mensaje);
+                case UNIRSE_SALA ->
+                    manejarUnirseSala(mensaje);
+                case CONFIGURAR_TABLERO ->
+                    manejarConfigurarTableroServidor(mensaje);
+                case TABLERO_ACTUALIZADO ->
+                    manejarPasarCambios(mensaje);
+                case ERROR ->
+                    manejarError(mensaje);
+                default ->
+                    System.out.println("Tipo de mensaje no reconocido: " + mensaje.getMessageType());
             }
         } finally {
             lock.unlock();
@@ -200,14 +259,20 @@ public class ControlMessage implements Runnable {
     private Jugador jugadorNuevo() {
         int numeroJugador = tableroServidor.getJugadores().size() + 1;
         Color color = switch (numeroJugador) {
-            case 1 -> Color.RED;
-            case 2 -> Color.BLUE;
-            case 3 -> Color.GREEN;
-            case 4 -> Color.YELLOW;
-            default -> Color.BLACK;
+            case 1 ->
+                Color.RED;
+            case 2 ->
+                Color.BLUE;
+            case 3 ->
+                Color.GREEN;
+            case 4 ->
+                Color.YELLOW;
+            default ->
+                Color.BLACK;
         };
         return new Jugador("Jugador " + numeroJugador, color);
     }
+
     // Método para manejar cuando un jugador se une a la sala
     private void manejarUnirseSala(Message mensaje) {
         System.out.println("Entro unirseSala");
@@ -237,7 +302,7 @@ public class ControlMessage implements Runnable {
             notificarJugadorError(jugador, "No hay espacio para más jugadores");
         }
     }
-    
+
     private void manejarError(Message mensaje) {
         String mensajeError = mensaje.getContent().getMensaje();
         Jugador jugador = mensaje.getSender();
@@ -245,7 +310,7 @@ public class ControlMessage implements Runnable {
         System.err.println("Error recibido del jugador " + jugador.getNombre() + ": " + mensajeError);
 
     }
-    
+
     // Método para manejar la configuración del tablero (para servidor)
     private void manejarConfigurarTableroServidor(Message mensaje) {
         // Obtener el tablero actualizado del mensaje
@@ -262,7 +327,7 @@ public class ControlMessage implements Runnable {
 
         System.out.println("Tablero del servidor actualizado con la configuración.");
     }
-    
+
     // Método para notificar a todos los clientes conectados
     private void notificarTodos(Message mensaje) {
         for (ClientThread cliente : clientesConectados) {
@@ -270,19 +335,26 @@ public class ControlMessage implements Runnable {
             cliente.sendMessage(mensaje);
         }
     }
-    
-    private void notificarJugadorError(Jugador jugador, String mensajeError) {
-    ClientThread cliente = obtenerClientePorJugador(jugador);
 
-    if (cliente != null) {
-        cliente.sendMessage(new Message.Builder()
-                .messageType(MessageType.ERROR)
-                .body(new MessageBody(mensajeError))
-                .build());
-    } else {
-        System.err.println("No se pudo enviar el error, cliente no encontrado para el jugador: " + jugador.getNombre());
+    private void notificarJugadorError(Jugador jugador, String mensajeError) {
+        ClientThread cliente = obtenerClientePorJugador(jugador);
+
+        if (cliente != null) {
+            cliente.sendMessage(new Message.Builder()
+                    .messageType(MessageType.ERROR)
+                    .body(new MessageBody(mensajeError))
+                    .build());
+        } else {
+            System.err.println("No se pudo enviar el error, cliente no encontrado para el jugador: " + jugador.getNombre());
+        }
     }
-}
+
+    @Override
+    public void notifyObservers(Object obj) {
+        for (ClientThread cliente : clientesConectados) {
+            cliente.onUpdate((Message) obj);
+        }
+    }
 
 }
 
