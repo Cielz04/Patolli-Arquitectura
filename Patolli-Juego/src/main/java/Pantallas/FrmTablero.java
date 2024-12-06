@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 import tablero.Casilla;
@@ -35,15 +34,15 @@ public class FrmTablero extends javax.swing.JFrame {
 
     private int ultimoTiro = 0;
     private int numJugador;
-    
+
     private ClienteControlador clienteControlador;
 
     private List<Casilla> casillasTablero;
     private boolean numerarCasillas;
     private int numeroCasilla;
     private Tablero tableroLocal;
-    private int jugadorEnTurno = 0;
-    private boolean inicializar=false;
+    private int jugadorEnTurno = 1;
+    private boolean inicializar = false;
 
     private String urlFichaJugador1 = "/Utilerias/ficha_roja.png";
     private String urlFichaJugador2 = "/Utilerias/ficha_verde.png";
@@ -66,11 +65,8 @@ public class FrmTablero extends javax.swing.JFrame {
         this.numJugador = numJugador;
     }
 
-   
     public void actualizarGUI(Tablero tableroActualizado) {
 
-        
-        
         // Limpia los paneles
         tableroArriba.removeAll();
         tableroDerecha.removeAll();
@@ -143,7 +139,7 @@ public class FrmTablero extends javax.swing.JFrame {
 
         // Repinta todas las casillas para asegurar que se actualicen visualmente
         for (Casilla casilla : tableroLocal.getCasillas()) {
-            
+
         }
 
     }
@@ -218,19 +214,19 @@ public class FrmTablero extends javax.swing.JFrame {
 
         asignarNumeroCasillas();
         // Ejemplo de uso
-        
-        if(jugadorEnTurno == tableroLocal.getJugadorTurno()){
+
+        if (jugadorEnTurno == 1) {
             btnLanzar.setEnabled(true);
-            
-        }else{
-             btnLanzar.setEnabled(false);
+
+        } else {
+            btnLanzar.setEnabled(false);
         }
         tableroLocal.getFichasJugador1Posicion().add(0);
 
         Casilla casilla = tableroLocal.getCasillas().get(0);
         agregarFicha(casilla, "/Utilerias/ficha_roja.png");
-        
-        inicializar=true;
+
+        inicializar = true;
 
     }
 
@@ -276,12 +272,28 @@ public class FrmTablero extends javax.swing.JFrame {
         casilla.revalidate();
         casilla.repaint();
         System.out.println("");
+        
+        
 
-        // Agregar la ficha a la nueva casilla
-        agregarFicha(nuevaCasilla, urlFichaJugador1);
+        if (jugadorEnTurno == 0) {
+            // Agregar la ficha a la nueva casilla
+            agregarFicha(nuevaCasilla, urlFichaJugador1);
+        }
+        if (jugadorEnTurno == 1) {
+            // Agregar la ficha a la nueva casilla
+            agregarFicha(nuevaCasilla, urlFichaJugador2);
+        }
+        if (jugadorEnTurno == 2) {
+            // Agregar la ficha a la nueva casilla
+            agregarFicha(nuevaCasilla, urlFichaJugador3);
+        }
+        if (jugadorEnTurno == 3) {
+            // Agregar la ficha a la nueva casilla
+            agregarFicha(nuevaCasilla, urlFichaJugador4);
+        }
 
         tableroLocal.getFichasJugador1Posicion().add(nuevaPosicion);
-        
+
         // Asegurarse de que la casilla destino se repinte
         casilla.repaint();
         nuevaCasilla.repaint();
@@ -295,55 +307,53 @@ public class FrmTablero extends javax.swing.JFrame {
         lblCania5.setText("-");
 
         MessageBody body = new MessageBody();
-        
-        if(tableroLocal.getJugadorTurno() == 0){
+
+        if (tableroLocal.getJugadorTurno() == 0) {
             body.setJugadorTurno(1);
-            
         }
-        
-        if(tableroLocal.getJugadorTurno() == 1){
-            if(tableroLocal.getJugadores().size() != 2){
-                body.setJugadorTurno(2);
-            }else{
-                body.setJugadorTurno(0);
-            }
-        }
-        
-        if(tableroLocal.getJugadorTurno() == 2){
-            if(tableroLocal.getJugadores().size() != 3){
-                body.setJugadorTurno(2);
-            }else{
-                body.setJugadorTurno(0);
-            }
-        }
-        
-        if(tableroLocal.getJugadorTurno() == 3){
-            if(tableroLocal.getJugadores().size() != 3){
-                body.setJugadorTurno(2);
-            }else{
-                body.setJugadorTurno(0);
-            }
-        }
-        
-        
-        body.setJugadorTurno(jugadorEnTurno);
-        body.setApuesta(tableroLocal.getApuesta());
-        body.setCantidadJugadores(tableroLocal.getCantidadJugadores());
-        body.setCantidadMontoJugadores(tableroLocal.getCantidadMontoJugadores());
-        body.setFichasJugador1Posicion(tableroLocal.getFichasJugador1Posicion());
-        body.setFichasJugador2Posicion(tableroLocal.getFichasJugador2Posicion());
-        body.setFichasJugador3Posicion(tableroLocal.getFichasJugador3Posicion());
-        body.setFichasJugador4Posicion(tableroLocal.getFichasJugador4Posicion());
-        
-        tableroLocal.getFichasJugador1Posicion().add(nuevaPosicion);
 
-        Message mensaje = new Message.Builder()
-                .messageType(MessageType.TABLERO_ACTUALIZADO)
-                .body(body)
-                .sender(clienteControlador.getJugador())
-                .build();
+        if (tableroLocal.getJugadorTurno() == 1) {
+            if (tableroLocal.getJugadores().size() != 2) {
+                body.setJugadorTurno(2);
+            } else {
+                body.setJugadorTurno(0);
+            }
+        }
 
-        clienteControlador.enviarMensaje(mensaje);
+        if (tableroLocal.getJugadorTurno() == 2) {
+            if (tableroLocal.getJugadores().size() != 3) {
+                body.setJugadorTurno(2);
+            } else {
+                body.setJugadorTurno(0);
+            }
+        }
+
+        if (tableroLocal.getJugadorTurno() == 3) {
+            if (tableroLocal.getJugadores().size() != 3) {
+                body.setJugadorTurno(2);
+            } else {
+                body.setJugadorTurno(0);
+            }
+        }
+
+//        body.setJugadorTurno(jugadorEnTurno);
+//        body.setApuesta(tableroLocal.getApuesta());
+//        body.setCantidadJugadores(tableroLocal.getCantidadJugadores());
+//        body.setCantidadMontoJugadores(tableroLocal.getCantidadMontoJugadores());
+//        body.setFichasJugador1Posicion(tableroLocal.getFichasJugador1Posicion());
+//        body.setFichasJugador2Posicion(tableroLocal.getFichasJugador2Posicion());
+//        body.setFichasJugador3Posicion(tableroLocal.getFichasJugador3Posicion());
+//        body.setFichasJugador4Posicion(tableroLocal.getFichasJugador4Posicion());
+//
+//        tableroLocal.getFichasJugador1Posicion().add(nuevaPosicion);
+//
+//        Message mensaje = new Message.Builder()
+//                .messageType(MessageType.TABLERO_ACTUALIZADO)
+//                .body(body)
+//                .sender(clienteControlador.getJugador())
+//                .build();
+//
+//        clienteControlador.enviarMensaje(mensaje);
     }
 
     /**
@@ -478,7 +488,6 @@ public class FrmTablero extends javax.swing.JFrame {
 
             // Obtener el estado del tablero desde el mensaje recibido
 //            Tablero tableroRecibido = body.getEstadoTablero();
-
             // Actualizar el tablero en ControlPatolli
 //            clienteControlador.setTableroLocal(tableroLocal);
             // Actualizar parámetros locales
@@ -496,8 +505,6 @@ public class FrmTablero extends javax.swing.JFrame {
     public void setInicializar(boolean inicializar) {
         this.inicializar = inicializar;
     }
-    
-    
 
     /**
      * This method is called from within the constructor to initialize the form.

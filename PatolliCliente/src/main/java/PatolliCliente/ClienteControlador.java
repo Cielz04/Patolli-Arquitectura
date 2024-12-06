@@ -78,7 +78,7 @@ public class ClienteControlador implements IObserver {
         
         tableroLocal.actualizarMenosCasillas(mensaje.getContent().getTablero());
         if (tableroLocal!=null && tablero.isInicializar()==false){
-            tablero.setNumJugador(tableroLocal.getJugadores().size() -1);
+            tablero.setNumJugador(tableroLocal.getJugadores().size());
             tablero.inicializar();
             tablero.setVisible(true);
             
