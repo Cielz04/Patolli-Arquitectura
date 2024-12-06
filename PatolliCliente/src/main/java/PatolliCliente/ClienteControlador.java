@@ -57,9 +57,7 @@ public class ClienteControlador implements IObserver {
 
                 if (!tableroLocal.isSalaEspera()) {
                     // Obtener el número de jugador del mensaje
-                    int numJugadorAsignado = mensaje.getContent().getNumJugador();
-                    tablero.setNumJugadorDesdeServidor(numJugadorAsignado);
-
+                    tablero.setNumJugador(1);
                     tablero.inicializar();
                     tablero.setVisible(true);
                 }

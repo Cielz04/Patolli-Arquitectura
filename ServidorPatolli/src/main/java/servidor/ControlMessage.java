@@ -220,13 +220,13 @@ public class ControlMessage extends Observable implements Runnable {
         tableroServidor.actualizarConMensaje(mensaje);
         notificarTodos(new Message.Builder()
                 .messageType(MessageType.TABLERO_ACTUALIZADO)
-                .body(new MessageBody(tableroServidor))
+                .body(mensaje.getContent())
                 .build());
-        notifyObservers(new Message.Builder()
-                .messageType(MessageType.TABLERO_ACTUALIZADO)
-                .body(new MessageBody(tableroServidor))
-                .build()
-        );
+//        notifyObservers(new Message.Builder()
+//                .messageType(MessageType.TABLERO_ACTUALIZADO)
+//                .body(new MessageBody(tableroServidor))
+//                .build()
+//        );
     }
 
     private void enviarEstadoTablero(ClientThread cliente) {
@@ -366,6 +366,7 @@ public class ControlMessage extends Observable implements Runnable {
         tableroServidor.actualizarConMensaje(mensaje);
         if (tablerou == 1) {
             tableroServidor.agregarJugador(mensaje.getSender());
+            tableroServidor.setJugadorTurno(1);
         }
 
         System.out.println(tableroServidor.getCantidadCasillasAspa());

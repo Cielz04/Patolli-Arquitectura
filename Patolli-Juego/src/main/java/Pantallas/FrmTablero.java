@@ -41,7 +41,7 @@ public class FrmTablero extends javax.swing.JFrame {
     private boolean numerarCasillas;
     private int numeroCasilla;
     private Tablero tableroLocal;
-    private int jugadorEnTurno;
+    private int jugadorEnTurno = 1;
     private boolean inicializar = false;
 
     private String urlFichaJugador1 = "/Utilerias/ficha_roja.png";
@@ -54,9 +54,8 @@ public class FrmTablero extends javax.swing.JFrame {
         casillasTablero = new LinkedList<>();
         this.tableroLocal = tablero;
         this.clienteControlador = clienteControlador;
-        this.numJugador = numJugadorInicial; 
+        this.numJugador = numJugadorInicial;
 
-        
         initComponents();
     }
 
@@ -67,18 +66,17 @@ public class FrmTablero extends javax.swing.JFrame {
     public void setNumJugador(int numJugador) {
         this.numJugador = numJugador;
     }
-    
-   
+
     public void recibirActualizacionTablero(Tablero tableroActualizado) {
         this.tableroLocal = tableroActualizado;
         actualizarGUI(tableroActualizado);
     }
 
     public void setNumJugadorDesdeServidor(int jugador) {
-       this.numJugador = jugador;   
+        this.numJugador = jugador;
         System.out.println("El cliente es el jugador: " + numJugador);
     }
-    
+
     private boolean validarMovimiento(Casilla casilla, int dado) {
         if (!tableroLocal.getCasillas().contains(casilla)) {
             System.out.println("La casilla no pertenece al tablero.");
@@ -90,14 +88,15 @@ public class FrmTablero extends javax.swing.JFrame {
         }
         return true;
     }
-    
-    private void actualizarTurno() {  
-        
-    int totalJugadores = tableroLocal.getCantidadJugadores();
-    jugadorEnTurno = (jugadorEnTurno % totalJugadores) + 1;
-    tableroLocal.setJugadorTurno(jugadorEnTurno);
-    btnLanzar.setEnabled(jugadorEnTurno == numJugador);
-}
+
+    private void actualizarTurno() {
+
+        int totalJugadores = tableroLocal.getCantidadJugadores();
+        jugadorEnTurno = (jugadorEnTurno % totalJugadores) + 1;
+        tableroLocal.setJugadorTurno(jugadorEnTurno);
+        btnLanzar.setEnabled(jugadorEnTurno == numJugador);
+    }
+
     public void actualizarGUI(Tablero tableroActualizado) {
 
         // Limpia los paneles
@@ -110,10 +109,10 @@ public class FrmTablero extends javax.swing.JFrame {
         // Actualiza los datos del tablero local
         this.tableroLocal.actualizarMenosCasillas(tableroActualizado);
 
-        if (tableroLocal.getJugadorTurno() == numJugador) {
+        if (jugadorEnTurno == numJugador) {
             btnLanzar.setEnabled(true);
         } else {
-            btnLanzar.setEnabled(false); 
+            btnLanzar.setEnabled(false);
         }
 
         // Revalida y repinta los paneles después de limpiar
@@ -138,23 +137,19 @@ public class FrmTablero extends javax.swing.JFrame {
         // Asigna números a las casillas (si es necesario)
         asignarNumeroCasillas();
 
-        
-        
         // Actualiza las fichas en sus posiciones correspondientes
-        for (Integer posicion: tableroLocal.getFichasJugador1Posicion()) {
+        for (Integer posicion : tableroLocal.getFichasJugador1Posicion()) {
             agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador1);
         }
-        for (Integer posicion: tableroLocal.getFichasJugador2Posicion()) {
+        for (Integer posicion : tableroLocal.getFichasJugador2Posicion()) {
             agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador2);
         }
-        for (Integer posicion: tableroLocal.getFichasJugador3Posicion()) {
+        for (Integer posicion : tableroLocal.getFichasJugador3Posicion()) {
             agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador3);
         }
-        for (Integer posicion: tableroLocal.getFichasJugador4Posicion()) {
+        for (Integer posicion : tableroLocal.getFichasJugador4Posicion()) {
             agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador4);
         }
-
-
 
     }
 
@@ -236,7 +231,17 @@ public class FrmTablero extends javax.swing.JFrame {
         if (tableroLocal.getJugadorTurno() == 4) {
             tableroLocal.setJugadorTurno(1);
         }
+
+        if (jugadorEnTurno == numJugador) {
+            btnLanzar.setEnabled(true);
+
+        } else {
+            btnLanzar.setEnabled(false);
+        }
         
+        System.out.println("Jugador en turno "+jugadorEnTurno);
+        System.out.println("Jugador que eres "+numJugador);
+
         actualizarPosicionFichas();
 
         // Redibujar el tablero, actualizando las casillas, fichas, etc.
@@ -259,21 +264,20 @@ public class FrmTablero extends javax.swing.JFrame {
         lblApuestaGlobal.setText("APUESTA GLOBAL: " + String.valueOf(tableroLocal.getApuesta()));
 
         asignarNumeroCasillas();
-        // Ejemplo de uso
-//
-//        if (jugadorEnTurno == 1) {
-//            btnLanzar.setEnabled(true);
-//
-//        } else {
-//            btnLanzar.setEnabled(false);
-//        }
-//
-//        
+        //Ejemplo de uso
+
+        if (jugadorEnTurno == numJugador) {
+            btnLanzar.setEnabled(true);
+
+        } else {
+            btnLanzar.setEnabled(false);
+        }
+
         agregarFicha(tableroLocal.getCasillas().get(0), urlFichaJugador1);
         agregarFicha(tableroLocal.getCasillas().get(17), urlFichaJugador3);
         agregarFicha(tableroLocal.getCasillas().get(34), urlFichaJugador2);
         agregarFicha(tableroLocal.getCasillas().get(51), urlFichaJugador4);
-        
+
         tableroLocal.getFichasJugador1Posicion().add(0);
         tableroLocal.getFichasJugador3Posicion().add(17);
         tableroLocal.getFichasJugador2Posicion().add(34);
@@ -315,7 +319,7 @@ public class FrmTablero extends javax.swing.JFrame {
         Casilla nuevaCasilla = listaCasillas.get(nuevaPosicion);
 
         // Validar si la nueva casilla está ocupada
-        if (!nuevaCasilla.isOcupada()) {  // Verificamos si la casilla destino está ocupada
+        if (nuevaCasilla.isOcupada()) {  // Verificamos si la casilla destino está ocupada
             System.out.println("La casilla destino ya está ocupada.");
             return;
         }
@@ -325,27 +329,38 @@ public class FrmTablero extends javax.swing.JFrame {
         casilla.revalidate();
         casilla.repaint();
         System.out.println("");
-        
-        
 
-        if (jugadorEnTurno == 0) {
-            // Agregar la ficha a la nueva casilla
-            agregarFicha(nuevaCasilla, urlFichaJugador1);
-        }
+        
+        
         if (jugadorEnTurno == 1) {
             // Agregar la ficha a la nueva casilla
-            agregarFicha(nuevaCasilla, urlFichaJugador2);
+            Integer indiceFicha = tableroLocal.getFichasJugador1Posicion().indexOf(indiceActual);
+            agregarFicha(nuevaCasilla, urlFichaJugador1);
+            tableroLocal.getFichasJugador1Posicion().add(nuevaPosicion);
+            tableroLocal.getFichasJugador1Posicion().remove(indiceFicha); 
         }
         if (jugadorEnTurno == 2) {
             // Agregar la ficha a la nueva casilla
-            agregarFicha(nuevaCasilla, urlFichaJugador3);
+            Integer indiceFicha = tableroLocal.getFichasJugador2Posicion().indexOf(indiceActual);
+            agregarFicha(nuevaCasilla, urlFichaJugador2);
+            tableroLocal.getFichasJugador2Posicion().add(nuevaPosicion);
+            tableroLocal.getFichasJugador2Posicion().remove(indiceFicha);
         }
         if (jugadorEnTurno == 3) {
             // Agregar la ficha a la nueva casilla
-            agregarFicha(nuevaCasilla, urlFichaJugador4);
+            Integer indiceFicha = tableroLocal.getFichasJugador3Posicion().indexOf(indiceActual);
+            agregarFicha(nuevaCasilla, urlFichaJugador3);
+            tableroLocal.getFichasJugador3Posicion().add(nuevaPosicion);
+            tableroLocal.getFichasJugador3Posicion().remove(indiceActual);
+            tableroLocal.getFichasJugador3Posicion().remove(indiceFicha);
         }
-
-        tableroLocal.getFichasJugador1Posicion().add(nuevaPosicion);
+        if (jugadorEnTurno == 4) {
+            // Agregar la ficha a la nueva casilla
+            Integer indiceFicha = tableroLocal.getFichasJugador4Posicion().indexOf(indiceActual);
+            agregarFicha(nuevaCasilla, urlFichaJugador4);
+            tableroLocal.getFichasJugador4Posicion().add(nuevaPosicion);
+            tableroLocal.getFichasJugador4Posicion().remove(indiceFicha);
+        }
 
         // Asegurarse de que la casilla destino se repinte
         casilla.repaint();
@@ -361,32 +376,28 @@ public class FrmTablero extends javax.swing.JFrame {
 
         MessageBody body = new MessageBody();
 
-        if (tableroLocal.getJugadorTurno() == 0) {
-            body.setJugadorTurno(1);
+        if (jugadorEnTurno == 1) {
+            body.setJugadorTurno(2);
         }
 
-        if (tableroLocal.getJugadorTurno() == 1) {
+        if (jugadorEnTurno == 2) {
             if (tableroLocal.getJugadores().size() != 2) {
-                body.setJugadorTurno(2);
+                body.setJugadorTurno(3);
             } else {
-                body.setJugadorTurno(0);
+                body.setJugadorTurno(1);
             }
         }
 
-        if (tableroLocal.getJugadorTurno() == 2) {
+        if (jugadorEnTurno == 3) {
             if (tableroLocal.getJugadores().size() != 3) {
-                body.setJugadorTurno(2);
+                body.setJugadorTurno(4);
             } else {
-                body.setJugadorTurno(0);
+                body.setJugadorTurno(1);
             }
         }
 
-        if (tableroLocal.getJugadorTurno() == 3) {
-            if (tableroLocal.getJugadores().size() != 3) {
-                body.setJugadorTurno(2);
-            } else {
-                body.setJugadorTurno(0);
-            }
+        if (jugadorEnTurno == 4) {
+            body.setJugadorTurno(0);
         }
 
         body.setJugadorTurno(jugadorEnTurno);
@@ -544,8 +555,6 @@ public class FrmTablero extends javax.swing.JFrame {
             this.jugadorEnTurno = body.getJugadorTurno();
             System.out.println("Turno recibido del servidor: " + jugadorEnTurno);
 
-            // Redibuja el tablero después de actualizar
-            redibujarTablero(tableroLocal);
         } else {
             System.out.println("Tipo de mensaje no reconocido: " + mensaje.getMessageType());
         }
@@ -833,27 +842,27 @@ public class FrmTablero extends javax.swing.JFrame {
     private void btnLanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanzarActionPerformed
 
 //        if () {
-         if (jugadorEnTurno == numJugador) {
-        // Lógica para lanzar el dado
-        int[] canias = new int[5];
-        int ultimoTiro = 0;
-        
-        for (int i = 0; i < 5; i++) {
-            canias[i] = (int) (Math.random() * 2);
-            if (canias[i] == 1) {
-                ultimoTiro++;
+        if (jugadorEnTurno == numJugador) {
+            // Lógica para lanzar el dado
+            int[] canias = new int[5];
+            int ultimoTiro = 0;
+
+            for (int i = 0; i < 5; i++) {
+                canias[i] = (int) (Math.random() * 2);
+                if (canias[i] == 1) {
+                    ultimoTiro++;
+                }
+            }
+            escribirCanias(canias);
+            procesarResultado(ultimoTiro);
+        } else {
+            // Mensaje de depuración
+            System.out.println("No es tu turno. Turno actual: " + jugadorEnTurno + ", Tú eres el jugador: " + numJugador);
+            if (jugadorEnTurno == 0) {
+                jugadorEnTurno = 1;
+                System.out.println("Error: El servidor no ha inicializado correctamente el turno.");
             }
         }
-        escribirCanias(canias);
-        procesarResultado(ultimoTiro);
-    } else {
-        // Mensaje de depuración
-        System.out.println("No es tu turno. Turno actual: " + jugadorEnTurno + ", Tú eres el jugador: " + numJugador);
-        if (jugadorEnTurno == 0) {
-            jugadorEnTurno = 1;
-            System.out.println("Error: El servidor no ha inicializado correctamente el turno.");
-        }
-    }
 
 //        }
     }//GEN-LAST:event_btnLanzarActionPerformed
@@ -861,28 +870,32 @@ public class FrmTablero extends javax.swing.JFrame {
     private void escribirCanias(int canias[]) {
         if (canias[0] == 1) {
             lblCania1.setText("•");
+            ultimoTiro++;
         }
         if (canias[1] == 1) {
             lblCania2.setText("•");
+            ultimoTiro++;
         }
         if (canias[2] == 1) {
             lblCania3.setText("•");
+            ultimoTiro++;
         }
         if (canias[3] == 1) {
             lblCania4.setText("•");
+            ultimoTiro++;
         }
         if (canias[4] == 1) {
             lblCania5.setText("•");
+            ultimoTiro++;
         }
 
     }
 
-     private void procesarResultado(int ultimoTiro) {
+    private void procesarResultado(int ultimoTiro) {
         System.out.println("Puntos obtenidos en este turno: " + ultimoTiro);
 
         if (ultimoTiro == 0) {
             System.out.println("¡Pierdes el turno!");
-            actualizarTurno();
         } else {
             // Aquí puedes implementar lógica adicional, como mover fichas o acumular puntos
             System.out.println("Puedes mover tu ficha " + ultimoTiro + " casillas.");
