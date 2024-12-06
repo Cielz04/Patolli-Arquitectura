@@ -75,7 +75,7 @@ public class ClienteControlador implements IObserver {
     private void manejarUnirseSala(Message mensaje) {
         
         tableroLocal.actualizarMenosCasillas(mensaje.getContent().getTablero());
-        if (tableroLocal!=null && !(tablero.isVisible())){
+        if (tableroLocal!=null && tablero.isInicializar()==false){
             tablero.inicializar();
             tablero.setVisible(true);
         }

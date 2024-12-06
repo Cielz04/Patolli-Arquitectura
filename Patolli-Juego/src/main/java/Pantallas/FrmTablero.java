@@ -41,6 +41,8 @@ public class FrmTablero extends javax.swing.JFrame {
     private boolean numerarCasillas;
     private int numeroCasilla;
     private Tablero tableroLocal;
+    
+    private boolean inicializar=false;
 
     private String urlFichaJugador1 = "/Utilerias/ficha_roja.png";
     private String urlFichaJugador2 = "/Utilerias/ficha_verde.png";
@@ -202,6 +204,8 @@ public class FrmTablero extends javax.swing.JFrame {
 
         Casilla casilla = tableroLocal.getCasillas().get(0);
         agregarFicha(casilla, "/Utilerias/ficha_roja.png");
+        
+        inicializar=true;
 
     }
 
@@ -418,6 +422,16 @@ public class FrmTablero extends javax.swing.JFrame {
             redibujarTablero(tableroLocal);
         }
     }
+
+    public boolean isInicializar() {
+        return inicializar;
+    }
+
+    public void setInicializar(boolean inicializar) {
+        this.inicializar = inicializar;
+    }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
