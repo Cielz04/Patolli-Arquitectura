@@ -56,8 +56,10 @@ public class ClienteControlador implements IObserver {
                 System.out.println("TABLERO DEL SERVIDOR ACTUALIZADO");
 
                 if ((tableroLocal.isSalaEspera() == false)) {
+                    tablero.setNumJugador(0);
                     tablero.inicializar();
                     tablero.setVisible(true);
+                    
                 }
                 break;
             case UNIRSE_SALA:
@@ -76,8 +78,10 @@ public class ClienteControlador implements IObserver {
         
         tableroLocal.actualizarMenosCasillas(mensaje.getContent().getTablero());
         if (tableroLocal!=null && tablero.isInicializar()==false){
+            tablero.setNumJugador(tableroLocal.getJugadores().size() -1);
             tablero.inicializar();
             tablero.setVisible(true);
+            
         }
         
     }

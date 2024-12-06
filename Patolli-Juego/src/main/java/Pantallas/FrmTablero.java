@@ -34,14 +34,15 @@ public class FrmTablero extends javax.swing.JFrame {
     private List<Casilla> fichaJugador4;
 
     private int ultimoTiro = 0;
-
+    private int numJugador;
+    
     private ClienteControlador clienteControlador;
 
     private List<Casilla> casillasTablero;
     private boolean numerarCasillas;
     private int numeroCasilla;
     private Tablero tableroLocal;
-    
+    private int jugadorEnTurno = 0;
     private boolean inicializar=false;
 
     private String urlFichaJugador1 = "/Utilerias/ficha_roja.png";
@@ -57,8 +58,19 @@ public class FrmTablero extends javax.swing.JFrame {
         initComponents();
     }
 
+    public int getNumJugador() {
+        return numJugador;
+    }
+
+    public void setNumJugador(int numJugador) {
+        this.numJugador = numJugador;
+    }
+
+   
     public void actualizarGUI(Tablero tableroActualizado) {
 
+        
+        
         // Limpia los paneles
         tableroArriba.removeAll();
         tableroDerecha.removeAll();
@@ -69,6 +81,12 @@ public class FrmTablero extends javax.swing.JFrame {
         // Actualiza los datos del tablero local
         this.tableroLocal.actualizarMenosCasillas(tableroActualizado);
 
+        if (tableroLocal.getJugadorTurno() == numJugador) {
+            btnLanzar.setEnabled(true);
+        } else {
+            btnLanzar.setEnabled(false);
+
+        }
         // Revalida y repinta los paneles después de limpiar
         tableroArriba.revalidate();
         tableroArriba.repaint();
@@ -200,6 +218,13 @@ public class FrmTablero extends javax.swing.JFrame {
 
         asignarNumeroCasillas();
         // Ejemplo de uso
+        
+        if(jugadorEnTurno == tableroLocal.getJugadorTurno()){
+            btnLanzar.setEnabled(true);
+            
+        }else{
+             btnLanzar.setEnabled(false);
+        }
         tableroLocal.getFichasJugador1Posicion().add(0);
 
         Casilla casilla = tableroLocal.getCasillas().get(0);
@@ -256,7 +281,7 @@ public class FrmTablero extends javax.swing.JFrame {
         agregarFicha(nuevaCasilla, urlFichaJugador1);
 
         tableroLocal.getFichasJugador1Posicion().add(nuevaPosicion);
-
+        
         // Asegurarse de que la casilla destino se repinte
         casilla.repaint();
         nuevaCasilla.repaint();
@@ -271,6 +296,37 @@ public class FrmTablero extends javax.swing.JFrame {
 
         MessageBody body = new MessageBody();
         
+        if(tableroLocal.getJugadorTurno() == 0){
+            body.setJugadorTurno(1);
+            
+        }
+        
+        if(tableroLocal.getJugadorTurno() == 1){
+            if(tableroLocal.getJugadores().size() != 2){
+                body.setJugadorTurno(2);
+            }else{
+                body.setJugadorTurno(0);
+            }
+        }
+        
+        if(tableroLocal.getJugadorTurno() == 2){
+            if(tableroLocal.getJugadores().size() != 3){
+                body.setJugadorTurno(2);
+            }else{
+                body.setJugadorTurno(0);
+            }
+        }
+        
+        if(tableroLocal.getJugadorTurno() == 3){
+            if(tableroLocal.getJugadores().size() != 3){
+                body.setJugadorTurno(2);
+            }else{
+                body.setJugadorTurno(0);
+            }
+        }
+        
+        
+        body.setJugadorTurno(jugadorEnTurno);
         body.setApuesta(tableroLocal.getApuesta());
         body.setCantidadJugadores(tableroLocal.getCantidadJugadores());
         body.setCantidadMontoJugadores(tableroLocal.getCantidadMontoJugadores());

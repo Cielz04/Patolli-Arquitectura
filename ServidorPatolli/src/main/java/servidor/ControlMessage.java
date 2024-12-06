@@ -198,6 +198,25 @@ public class ControlMessage extends Observable implements Runnable {
             return;
         }
 
+        if (tableroServidor.getJugadorTurno() == 0) {
+            tableroServidor.setJugadorTurno(1);
+
+        }
+
+        if (tableroServidor.getJugadorTurno() == 1) {
+            tableroServidor.setJugadorTurno(2);
+
+        }
+
+        if (tableroServidor.getJugadorTurno() == 2) {
+            tableroServidor.setJugadorTurno(3);
+
+        }
+        if (tableroServidor.getJugadorTurno() == 3) {
+            tableroServidor.setJugadorTurno(0);
+
+        }
+
         tableroServidor.actualizarConMensaje(mensaje);
         notificarTodos(new Message.Builder()
                 .messageType(MessageType.TABLERO_ACTUALIZADO)
@@ -346,7 +365,7 @@ public class ControlMessage extends Observable implements Runnable {
         // Continuar con la lógica
         tableroServidor.actualizarConMensaje(mensaje);
         if (tablerou == 1) {
-            System.out.println(tableroServidor.getApuesta());
+            tableroServidor.agregarJugador(mensaje.getSender());
         }
 
         System.out.println(tableroServidor.getCantidadCasillasAspa());
