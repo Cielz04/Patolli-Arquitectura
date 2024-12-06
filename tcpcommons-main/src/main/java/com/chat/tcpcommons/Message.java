@@ -6,10 +6,10 @@ import tablero.Tablero;
 
 public class Message implements Serializable {
 
-    private MessageType messageType;  // Tipo de mensaje
-    private MessageBody content;           // Contenido del mensaje (ahora genérico)
-    private Jugador sender;           // Jugador que envía el mensaje
-    private Jugador receiver;         // Jugador que recibe el mensaje
+    private MessageType messageType;  
+    private MessageBody content;          
+    private Jugador sender;         
+    private Jugador receiver;      
 
     // Constructor actualizado
     public Message(MessageType messageType, MessageBody content, Jugador sender, Jugador receiver) {
@@ -25,7 +25,12 @@ public class Message implements Serializable {
     }
 
     public void setContent(MessageBody content) {
-        this.content = content;
+        if (content == null) {
+            System.err.println("Advertencia: Se está intentando asignar un contenido nulo.");
+            this.content = new MessageBody("Contenido por defecto");
+        } else {
+            this.content = content;
+        }
     }
 
     public MessageBody getContent() {

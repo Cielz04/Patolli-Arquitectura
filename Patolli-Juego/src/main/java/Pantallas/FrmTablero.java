@@ -34,7 +34,7 @@ public class FrmTablero extends javax.swing.JFrame {
 
     private int ultimoTiro = 0;
     private int numJugador;
-
+    private int numJugadorInicial;
     private ClienteControlador clienteControlador;
 
     private List<Casilla> casillasTablero;
@@ -54,6 +54,8 @@ public class FrmTablero extends javax.swing.JFrame {
         casillasTablero = new LinkedList<>();
         this.tableroLocal = tablero;
         this.clienteControlador = clienteControlador;
+        this.numJugador = numJugadorInicial; // Inicializar el número del jugador
+
         initComponents();
     }
 
@@ -70,6 +72,23 @@ public class FrmTablero extends javax.swing.JFrame {
         actualizarGUI(tableroActualizado);
     }
 
+    private boolean validarMovimiento(Casilla casilla, int dado) {
+        if (!tableroLocal.getCasillas().contains(casilla)) {
+            System.out.println("La casilla no pertenece al tablero.");
+            return false;
+        }
+        if (!casilla.isOcupada()) {
+            System.out.println("No hay ficha en la casilla seleccionada.");
+            return false;
+        }
+        return true;
+    }
+    private void actualizarTurno() {
+    int totalJugadores = tableroLocal.getCantidadJugadores();
+    jugadorEnTurno = (jugadorEnTurno % totalJugadores) + 1;
+    tableroLocal.setJugadorTurno(jugadorEnTurno);
+    btnLanzar.setEnabled(jugadorEnTurno == numJugador);
+}
     public void actualizarGUI(Tablero tableroActualizado) {
 
         // Limpia los paneles
@@ -509,19 +528,15 @@ public class FrmTablero extends javax.swing.JFrame {
     }
 
     public void manejarEstadoTablero(Message mensaje) {
-        if (mensaje.getMessageType() == MessageType.TABLERO_ACTUALIZADO) {
-            MessageBody body = (MessageBody) mensaje.getContent();
+       if (mensaje.getMessageType() == MessageType.TABLERO_ACTUALIZADO) {
+        MessageBody body = (MessageBody) mensaje.getContent();
 
-            // Obtener el estado del tablero desde el mensaje recibido
-//            Tablero tableroRecibido = body.getEstadoTablero();
-            // Actualizar el tablero en ControlPatolli
-//            clienteControlador.setTableroLocal(tableroLocal);
-            // Actualizar parámetros locales
-//            this.canCasillasAspa = tableroRecibido.getCantidadCasillasAspa();
-//            this.casillasTablero = tableroRecibido.getCasillas();
-            // Inicializar el tablero visualmente
-            redibujarTablero(tableroLocal);
-        }
+        // Actualizar el turno desde el mensaje del servidor
+        this.jugadorEnTurno = body.getJugadorTurno();
+
+        // Redibujar el tablero
+        redibujarTablero(tableroLocal);
+    }
     }
 
     public boolean isInicializar() {
@@ -806,18 +821,21 @@ public class FrmTablero extends javax.swing.JFrame {
     private void btnLanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanzarActionPerformed
 
 //        if () {
-        int[] canias = new int[5];
-        int i = 0;
-
-        while (i < 5) {
-            canias[i] = (int) (Math.random() * 2);
-            if (canias[i] == 1) {
-                ultimoTiro++;
+        if (jugadorEnTurno == numJugador) {
+            int[] canias = new int[5];
+            int ultimoTiro = 0;
+            for (int i = 0; i < 5; i++) {
+                canias[i] = (int) (Math.random() * 2);
+                if (canias[i] == 1) {
+                    ultimoTiro++;
+                }
             }
-            i++;
-
+            escribirCanias(canias);
+            procesarResultado(ultimoTiro);
+        } else {
+            System.out.println("No es tu turno. Turno actual: " + jugadorEnTurno + ", Tú eres el jugador: " + numJugador);
         }
-        escribirCanias(canias);
+
 //        }
     }//GEN-LAST:event_btnLanzarActionPerformed
 
@@ -838,6 +856,18 @@ public class FrmTablero extends javax.swing.JFrame {
             lblCania5.setText("•");
         }
 
+    }
+
+     private void procesarResultado(int ultimoTiro) {
+        System.out.println("Puntos obtenidos en este turno: " + ultimoTiro);
+
+        if (ultimoTiro == 0) {
+            System.out.println("¡Pierdes el turno!");
+            actualizarTurno();
+        } else {
+            // Aquí puedes implementar lógica adicional, como mover fichas o acumular puntos
+            System.out.println("Puedes mover tu ficha " + ultimoTiro + " casillas.");
+        }
     }
 
     private void btnRendirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
