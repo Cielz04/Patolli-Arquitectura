@@ -47,7 +47,7 @@ public class ControlMessage extends Observable implements Runnable {
 
     @Override
     public void run() {
-
+        verificarTablero();
         try {
             while (true) {
                 Socket clientSocket = server.accept();
@@ -290,49 +290,33 @@ public class ControlMessage extends Observable implements Runnable {
 
     // Método para manejar cuando un jugador se une a la sala
     private void manejarUnirseSala(Message mensaje) {
-        System.out.println("Entro unirseSala");
-        Jugador jugador = mensaje.getSender();
-
+        verificarTablero();
         
-        // Add null checks
-        if (jugador == null) {
-            System.err.println("Error: Jugador is null when joining room");
+        if (mensaje == null || mensaje.getSender() == null) {
+            System.err.println("Error: mensaje o remitente nulo en manejarUnirseSala");
             return;
         }
 
-        if (tableroServidor.isJuegoInicia()) {
-            notificarJugadorError(jugador, "El juego ya ha comenzado");
+        if (tableroServidor == null) {
+            System.err.println("Error: tableroServidor no inicializado");
             return;
         }
 
-        // Añadir el jugador al tablero
+        Jugador jugador = mensaje.getSender();
+        tableroServidor.agregarJugador(jugador);
 
-            System.out.println("Jugador " + jugador.getNombre() + " se unió al tablero.");
+        notificarTodos(new Message.Builder()
+                .messageType(MessageType.UNIRSE_SALA)
+                .body(new MessageBody("Jugador " + jugador.getNombre() + " se ha unido al juego", tableroServidor))
+                .build());
 
+    }
 
-//            ClientThread cliente = findClientForPlayer(jugador);
-
-//            if (cliente != null) {
-                // Enviar al cliente el estado actual del tablero
-//                enviarEstadoTablero(cliente);
-
-
-           Tablero tableroMensaje = new Tablero();
-           tableroMensaje.actualizarConMensaje(tableroServidor);
-                // Notificar a los demás jugadores
-                notificarTodos(new Message.Builder()
-                        .messageType(MessageType.UNIRSE_SALA)
-                        .body(new MessageBody("Jugador " + jugador.getNombre() + " se ha unido al juego"))
-                        .build());
-
-                notifyClient(new Message.Builder()
-                        .messageType(MessageType.UNIRSE_SALA)
-                        .body(new MessageBody("Jugador " + jugador.getNombre() + " se ha unido al juego", tableroServidor))
-                        .build());
-//            } else {
-//                System.err.println("No se encontró el cliente para el jugador: " + jugador.getNombre());
-//            }
-
+    private void verificarTablero() {
+        if (tableroServidor == null) {
+            tableroServidor = new Tablero();
+            System.out.println("TableroServidor fue reinicializado.");
+        }
     }
 
     private ClientThread findClientForPlayer(Jugador jugador) {
@@ -354,12 +338,14 @@ public class ControlMessage extends Observable implements Runnable {
 
     // Método para manejar la configuración del tablero (para servidor)
     private void manejarConfigurarTableroServidor(Message mensaje) {
-        // Obtener el tablero actualizado del mensaje
+        if (tableroServidor == null) {
+            System.err.println("Error: tableroServidor es null");
+            return;
+        }
+
+        // Continuar con la lógica
         Tablero tableroActualizado = mensaje.getContent().getEstadoTablero();
-
-        // Actualizar el tablero del servidor
         tableroServidor.actualizarConMensaje(tableroActualizado);
-
         if (tablerou == 1) {
             System.out.println(tableroServidor.getApuesta());
         }

@@ -238,32 +238,45 @@ public class Tablero implements Serializable{
     
     
     
-    
-    
-    
-    
-    
-    
-    public void actualizarConMensaje (Tablero tablero){
+        public void actualizarConMensaje(Tablero tablero) {
+        if (tablero == null) {
+            throw new IllegalArgumentException("El objeto Tablero no puede ser nulo.");
+        }
+
+        // Asegurándonos de que las propiedades del tablero no sean nulas
         this.apuesta = tablero.getApuesta();
         this.cantidadCasillasAspa = tablero.getCantidadCasillasAspa();
         this.cantidadFichas = tablero.getCantidadFichas();
         this.cantidadJugadores = tablero.getCantidadJugadores();
-        this.cantidadMontoJugadores = tablero.getCantidadMontoJugadores();
-        this.casillas = tablero.getCasillas();
-        this.fichasJugador1Posicion = tablero.getFichasJugador1Posicion();
-        this.fichasJugador2Posicion = tablero.getFichasJugador2Posicion();
-        this.fichasJugador3Posicion = tablero.getFichasJugador3Posicion();
-        this.fichasJugador4Posicion = tablero.getFichasJugador4Posicion();
+
+        // Verificamos si las listas son nulas antes de asignarlas
+        this.cantidadMontoJugadores = (tablero.getCantidadMontoJugadores() != null)
+                ? tablero.getCantidadMontoJugadores() : new LinkedList<>();
+
+        this.casillas = (tablero.getCasillas() != null) ? tablero.getCasillas() : new LinkedList<>();
+        this.fichasJugador1Posicion = (tablero.getFichasJugador1Posicion() != null)
+                ? tablero.getFichasJugador1Posicion() : new LinkedList<>();
+        this.fichasJugador2Posicion = (tablero.getFichasJugador2Posicion() != null)
+                ? tablero.getFichasJugador2Posicion() : new LinkedList<>();
+        this.fichasJugador3Posicion = (tablero.getFichasJugador3Posicion() != null)
+                ? tablero.getFichasJugador3Posicion() : new LinkedList<>();
+        this.fichasJugador4Posicion = (tablero.getFichasJugador4Posicion() != null)
+                ? tablero.getFichasJugador4Posicion() : new LinkedList<>();
+
         this.juegoInicia = tablero.isJuegoInicia();
         this.juegoTermino = tablero.isJuegoTermino();
         this.jugadorTurno = tablero.getJugadorTurno();
-        this.jugadores = tablero.getJugadores();
+
+        // Verificamos si los jugadores no son nulos
+        this.jugadores = (tablero.getJugadores() != null) ? tablero.getJugadores() : new LinkedList<>();
         this.salaEspera = tablero.isSalaEspera();
     }
-    
-    
-    
+
+    public boolean isVisible() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+
     
     
     

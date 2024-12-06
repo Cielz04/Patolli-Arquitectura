@@ -12,7 +12,7 @@ import tablero.Tablero;
 public class ClienteControlador implements IObserver {
 
     private Tablero tableroLocal;
-   private FrmTablero tablero;
+    private FrmTablero tablero;
     private Jugador jugador;
     private ClientThread hiloCliente;
     private boolean isHost;
@@ -25,14 +25,10 @@ public class ClienteControlador implements IObserver {
         this.isHost = host;
         
         try {
-            // Crear conexión con el servidor y configurar ClientThread
+           
             Socket socket = new Socket("localhost", 50064);
-            this.hiloCliente = new ClientThread(socket, jugador);
-
-            // Registrar ClienteControlador como observador del hiloCliente
-            hiloCliente.addObserver(this);
-
-            // Iniciar hilo para manejar mensajes del servidor
+            this.hiloCliente = new ClientThread(socket, jugador);           
+            hiloCliente.addObserver(this);          
             new Thread(hiloCliente).start();
 
         } catch (Exception e) {
@@ -76,32 +72,21 @@ public class ClienteControlador implements IObserver {
                 System.out.println("Mensaje no reconocido: " + mensaje.getMessageType());
         }
     }
-    
-    private void manejarUnirseSala (Message mensaje){
-         if (tablero.isVisible()) {
-            return;
-        }
-         tableroLocal.actualizarConMensaje(mensaje.getContent().getEstadoTablero());
-         tablero.inicializar();
-         tablero.setVisible(true);
+
+    private void manejarUnirseSala(Message mensaje) {
+      
     }
-    
 
     private void manejarActualizacionTablero(Message mensaje) {
-        
-        if (mensaje.getContent().getEstadoTablero() == null) {
-            System.err.println("El mensaje no contiene un tablero válido.");
-            return;
-        }
-        tableroLocal.actualizarConMensaje(mensaje.getContent().getEstadoTablero());
-        tablero.actualizarGUI(tableroLocal);
-        
-        // Actualiza el tablero local
-        Tablero tableroRecibido = mensaje.getContent().getEstadoTablero();
-        tableroLocal.actualizarConMensaje(tableroRecibido);
 
-        System.out.println("Tablero local actualizado.");
-        tablero.redibujarTablero(tableroLocal);
+        Tablero tableroRecibido = mensaje.getContent().getEstadoTablero();
+        if (tableroRecibido != null) {
+            tableroLocal = tableroRecibido; // Asegúrate de que el tablero recibido no sea nulo
+            tablero.actualizarGUI(tableroLocal);
+        } else {
+            System.err.println("El tablero recibido al unirse a la sala es nulo.");
+        }
+
     }
 
     public void enviarMensaje(Message mensaje) {
