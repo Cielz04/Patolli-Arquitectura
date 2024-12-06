@@ -94,7 +94,7 @@ public class FrmTablero extends javax.swing.JFrame {
     }
 
     public void setJugadorEnTurno(int jugadorEnTurno) {
-        this.jugadorEnTurno = jugadorEnTurno;
+        this.jugadorEnTurno = jugadorEnTurno+1;
     }
     
     
@@ -219,29 +219,7 @@ public class FrmTablero extends javax.swing.JFrame {
         this.tableroLocal.setFichasJugador3Posicion(nuevoTablero.getFichasJugador3Posicion());
         this.tableroLocal.setFichasJugador4Posicion(nuevoTablero.getFichasJugador4Posicion());
 
-        // Actualiza el turno del jugador
-        if (tableroLocal.getJugadorTurno() == 1) {
-            tableroLocal.setJugadorTurno(2);
-        }
-        if (tableroLocal.getJugadorTurno() == 2) {
-            if (tableroLocal.getCantidadJugadores() == 2) {
-                tableroLocal.setJugadorTurno(1);
-            } else {
-                tableroLocal.setJugadorTurno(3);
-            }
-
-        }
-        if (tableroLocal.getJugadorTurno() == 3) {
-            if (tableroLocal.getCantidadJugadores() == 3) {
-                tableroLocal.setJugadorTurno(1);
-            } else {
-                tableroLocal.setJugadorTurno(4);
-            }
-        }
-        if (tableroLocal.getJugadorTurno() == 4) {
-            tableroLocal.setJugadorTurno(1);
-        }
-
+        // Actualiza el turno del jugadOR
         if (jugadorEnTurno == numJugador) {
             btnLanzar.setEnabled(true);
 
@@ -391,7 +369,7 @@ public class FrmTablero extends javax.swing.JFrame {
         }
 
         if (jugadorEnTurno == 2) {
-            if (tableroLocal.getJugadores().size() != 2) {
+            if (tableroLocal.getCantidadJugadores() != 2) {
                 body.setJugadorTurno(3);
             } else {
                 body.setJugadorTurno(1);
@@ -399,7 +377,7 @@ public class FrmTablero extends javax.swing.JFrame {
         }
 
         if (jugadorEnTurno == 3) {
-            if (tableroLocal.getJugadores().size() != 3) {
+            if (tableroLocal.getCantidadJugadores() != 3) {
                 body.setJugadorTurno(4);
             } else {
                 body.setJugadorTurno(1);

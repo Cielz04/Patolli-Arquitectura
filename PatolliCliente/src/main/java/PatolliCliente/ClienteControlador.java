@@ -92,7 +92,7 @@ public class ClienteControlador implements IObserver {
         if (tableroLocal != null) {
         // Asegúrate de que el tablero recibido no sea nulo
             tablero.setVisible(false);
-            tablero.setJugadorEnTurno(mensaje.getContent().getJugadorTurno()+2);
+            tablero.setJugadorEnTurno(mensaje.getContent().getJugadorTurno());
             tablero.redibujarTablero(tableroLocal);
             tablero.setVisible(true);
         } else {
