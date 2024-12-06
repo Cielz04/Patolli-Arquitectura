@@ -33,6 +33,9 @@ public class Message implements Serializable {
     }
 
     public Jugador getSender() {
+        if (sender == null) {
+            System.err.println("El jugador no está configurado correctamente.");
+        }
         return sender;
     }
 
