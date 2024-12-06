@@ -249,7 +249,7 @@ public class FrmTablero extends javax.swing.JFrame {
             btnLanzar.setEnabled(false);
         }
         
-        System.out.println("Jugador en turno "+jugadorEnTurno);
+        System.out.println("Jugador en turno "+ jugadorEnTurno);
         System.out.println("Jugador que eres "+numJugador);
 
         actualizarPosicionFichas();
@@ -868,10 +868,7 @@ public class FrmTablero extends javax.swing.JFrame {
         } else {
             // Mensaje de depuración
             System.out.println("No es tu turno. Turno actual: " + jugadorEnTurno + ", Tú eres el jugador: " + numJugador);
-            if (jugadorEnTurno == 0) {
-                jugadorEnTurno = 1;
-                System.out.println("Error: El servidor no ha inicializado correctamente el turno.");
-            }
+            
         }
 
 //        }

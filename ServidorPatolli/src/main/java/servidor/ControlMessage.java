@@ -192,49 +192,43 @@ public class ControlMessage extends Observable implements Runnable {
     private void manejarPasarCambios(Message mensaje) {
         Tablero tableroActualizado = new Tablero();
         tableroActualizado.actualizarConMensaje(mensaje);
-        
+
         if (tableroActualizado == null) {
             System.err.println("El mensaje no contiene un tablero válido.");
             return;
         }
 
+        // Actualizar el turno del jugador
         if (tableroServidor.getJugadorTurno() == 0) {
-            tableroServidor.setJugadorTurno(1);
-
-        }
-
-        if (tableroServidor.getJugadorTurno() == 1) {
+            tableroServidor.setJugadorTurno(1); // Establecer el primer jugador
+        } else if (tableroServidor.getJugadorTurno() == 1) {
             tableroServidor.setJugadorTurno(2);
-
-        }
-
-        if (tableroServidor.getJugadorTurno() == 2) {
+        } else if (tableroServidor.getJugadorTurno() == 2) {
             tableroServidor.setJugadorTurno(3);
-
-        }
-        if (tableroServidor.getJugadorTurno() == 3) {
-            tableroServidor.setJugadorTurno(0);
-
+        } else if (tableroServidor.getJugadorTurno() == 3) {
+            tableroServidor.setJugadorTurno(0); // Vuelve al primer jugador
         }
 
-        tableroServidor.actualizarConMensaje(mensaje);
+        // Verificar turno antes de enviar el mensaje
+        System.out.println("Turno del Jugador: " + tableroServidor.getJugadorTurno());
+
+        // Notificar a todos los clientes conectados sobre los cambios en el tablero
         notificarTodos(new Message.Builder()
                 .messageType(MessageType.TABLERO_ACTUALIZADO)
-                .body(mensaje.getContent())
+                .body(new MessageBody("Actualización del tablero", tableroServidor))
                 .build());
-//        notifyObservers(new Message.Builder()
-//                .messageType(MessageType.TABLERO_ACTUALIZADO)
-//                .body(new MessageBody(tableroServidor))
-//                .build()
-//        );
     }
 
     private void enviarEstadoTablero(ClientThread cliente) {
         MessageBody body = new MessageBody("Estado del tablero actualizado", tableroServidor);
+
+        // Crear el mensaje para enviar
         Message mensaje = new Message.Builder()
                 .messageType(MessageType.TABLERO_ACTUALIZADO)
                 .body(body)
                 .build();
+
+        // Enviar el mensaje al cliente
         cliente.sendMessage(mensaje);
     }
 
@@ -357,38 +351,38 @@ public class ControlMessage extends Observable implements Runnable {
 
     // Método para manejar la configuración del tablero (para servidor)
     private void manejarConfigurarTableroServidor(Message mensaje) {
-        if (tableroServidor == null) {
-            System.err.println("Error: tableroServidor es null");
-            return;
-        }
+       if (tableroServidor == null) {
+        System.err.println("Error: tableroServidor es null");
+        return;
+    }
 
-        // Continuar con la lógica
-        tableroServidor.actualizarConMensaje(mensaje);
-        if (tablerou == 1) {
-            tableroServidor.agregarJugador(mensaje.getSender());
-            tableroServidor.setJugadorTurno(1);
-        }
+    // Continuar con la lógica
+    tableroServidor.actualizarConMensaje(mensaje);
+    if (tablerou == 1) {
+        tableroServidor.agregarJugador(mensaje.getSender());
+        tableroServidor.setJugadorTurno(1);  // Asegúrate de establecer el turno inicial
+    }
 
-        System.out.println(tableroServidor.getCantidadCasillasAspa());
+    // Imprimir el número de jugador y el turno antes de enviarlos
+    System.out.println("Jugador Turno: " + tableroServidor.getJugadorTurno());
+    System.out.println("Número de Jugador Asignado: " + mensaje.getSender().getNombre());
 
-        // Notificar a todos los clientes conectados sobre la nueva configuración
-        notificarTodos(new Message.Builder()
-                .messageType(MessageType.CONFIGURAR_TABLERO)
-                .body(new MessageBody("Tablero configurado en el servidor", tableroServidor))
-                .build());
+    // Notificar a todos los clientes conectados sobre la nueva configuración
+    notificarTodos(new Message.Builder()
+            .messageType(MessageType.CONFIGURAR_TABLERO)
+            .body(new MessageBody("Tablero configurado en el servidor", tableroServidor))
+            .build());
 
-        tablerou++;
-        System.out.println("Tablero del servidor actualizado con la configuración.");
-
-        System.out.println(tableroServidor.getApuesta());
+    tablerou++; // Incrementa el contador de jugadores conectados
+    System.out.println("Tablero del servidor actualizado con la configuración.");
     }
 
     // Método para notificar a todos los clientes conectados
     private void notificarTodos(Message mensaje) {
         for (ClientThread cliente : clientesConectados) {
-            System.out.println("Enviando mensaje a cliente: " + cliente.getJugador().getNombre());
-            cliente.sendMessage(mensaje);
-        }
+        System.out.println("Enviando mensaje a cliente: " + cliente.getJugador().getNombre());
+        cliente.sendMessage(mensaje);
+    }
     }
 
     private void notificarJugadorError(Jugador jugador, String mensajeError) {

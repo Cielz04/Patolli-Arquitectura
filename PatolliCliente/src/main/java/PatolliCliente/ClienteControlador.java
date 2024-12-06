@@ -51,15 +51,18 @@ public class ClienteControlador implements IObserver {
 
             case CONFIGURAR_TABLERO:
                 if (isHost) {
-                    System.out.println("Conexion con servidor exitosa!");
+                    System.out.println("Conexión con servidor exitosa!");
                 }
                 System.out.println("TABLERO DEL SERVIDOR ACTUALIZADO");
 
                 if (!tableroLocal.isSalaEspera()) {
-                    // Obtener el número de jugador del mensaje
-                    tablero.setNumJugador(1);
+                    // Obtener el número de jugador asignado desde el mensaje
+                    int numJugadorAsignado = mensaje.getContent().getNumJugador(); // Asumiendo que el servidor envía el número de jugador
+                    tablero.setNumJugadorDesdeServidor(numJugadorAsignado);  // Establece el número de jugador en el tablero
+
                     tablero.inicializar();
                     tablero.setVisible(true);
+
                 }
                 break;
             case UNIRSE_SALA:
@@ -87,12 +90,15 @@ public class ClienteControlador implements IObserver {
     }
 
     private void manejarActualizacionTablero(Message mensaje) {
-
         tableroLocal.actualizarConMensaje(mensaje);
         if (tableroLocal != null) {
-        // Asegúrate de que el tablero recibido no sea nulo
             tablero.setVisible(false);
-            tablero.setJugadorEnTurno(mensaje.getContent().getJugadorTurno()+2);
+
+            // Asegúrate de que el mensaje tenga el valor correcto de jugadorTurno
+            int jugadorTurno = mensaje.getContent().getJugadorTurno();
+            System.out.println("Jugador en turno recibido: " + jugadorTurno);
+
+            tablero.setJugadorEnTurno(jugadorTurno); // Actualiza el turno en el tablero
             tablero.redibujarTablero(tableroLocal);
             tablero.setVisible(true);
         } else {

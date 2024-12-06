@@ -11,6 +11,7 @@ public class Message implements Serializable {
     private Jugador sender;         
     private Jugador receiver;      
      private MessageBody body;
+     
     // Constructor actualizado
     public Message(MessageType messageType, MessageBody content, Jugador sender, Jugador receiver) {
         this.messageType = messageType;
