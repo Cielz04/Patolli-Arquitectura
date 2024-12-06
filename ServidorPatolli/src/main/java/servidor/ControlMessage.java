@@ -293,6 +293,7 @@ public class ControlMessage extends Observable implements Runnable {
         System.out.println("Entro unirseSala");
         Jugador jugador = mensaje.getSender();
 
+        
         // Add null checks
         if (jugador == null) {
             System.err.println("Error: Jugador is null when joining room");
@@ -305,16 +306,19 @@ public class ControlMessage extends Observable implements Runnable {
         }
 
         // Añadir el jugador al tablero
-        if (tableroServidor.agregarJugador(jugador)) {
+
             System.out.println("Jugador " + jugador.getNombre() + " se unió al tablero.");
 
-            // Find the client associated with this player
-            ClientThread cliente = findClientForPlayer(jugador);
 
-            if (cliente != null) {
+//            ClientThread cliente = findClientForPlayer(jugador);
+
+//            if (cliente != null) {
                 // Enviar al cliente el estado actual del tablero
-                enviarEstadoTablero(cliente);
+//                enviarEstadoTablero(cliente);
 
+
+           Tablero tableroMensaje = new Tablero();
+           tableroMensaje.actualizarConMensaje(tableroServidor);
                 // Notificar a los demás jugadores
                 notificarTodos(new Message.Builder()
                         .messageType(MessageType.UNIRSE_SALA)
@@ -323,15 +327,12 @@ public class ControlMessage extends Observable implements Runnable {
 
                 notifyClient(new Message.Builder()
                         .messageType(MessageType.UNIRSE_SALA)
-                        .body(new MessageBody("Jugador " + jugador.getNombre() + " se ha unido al juego"))
+                        .body(new MessageBody("Jugador " + jugador.getNombre() + " se ha unido al juego", tableroServidor))
                         .build());
-            } else {
-                System.err.println("No se encontró el cliente para el jugador: " + jugador.getNombre());
-            }
-        } else {
-            // Si no hay espacio en el tablero
-            notificarJugadorError(jugador, "No hay espacio para más jugadores");
-        }
+//            } else {
+//                System.err.println("No se encontró el cliente para el jugador: " + jugador.getNombre());
+//            }
+
     }
 
     private ClientThread findClientForPlayer(Jugador jugador) {

@@ -24,8 +24,6 @@ public class FrmUnirse extends javax.swing.JFrame {
      */
     public FrmUnirse() {
         initComponents();
-        Jugador jugador = new Jugador ("Jugador 2", Color.BLUE);
-        cliente = new ClienteControlador(jugador, false);
 
     }
 //    public FrmUnirse(FrmInicio frmInicio) {
@@ -44,7 +42,7 @@ public class FrmUnirse extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         btnAceptar = new javax.swing.JButton();
-        txtCodigoPartida = new javax.swing.JTextField();
+        txtNombreJugador = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -71,7 +69,7 @@ public class FrmUnirse extends javax.swing.JFrame {
                         .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(143, 143, 143)
-                        .addComponent(txtCodigoPartida, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtNombreJugador, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(185, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -80,7 +78,7 @@ public class FrmUnirse extends javax.swing.JFrame {
                 .addGap(53, 53, 53)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtCodigoPartida, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtNombreJugador, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(28, 28, 28)
                 .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(154, Short.MAX_VALUE))
@@ -91,26 +89,31 @@ public class FrmUnirse extends javax.swing.JFrame {
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
         try {
-            cliente.enviarMensaje(new Message.Builder()
-            .messageType(MessageType.CONECTARSE)
-            .body(new MessageBody ("CONECTANDO AL SERVIDOR"))
-            .build());
-            // Enviar la solicitud para unirse al servidor
-            cliente.enviarMensaje(new Message.Builder()
-                    .messageType(MessageType.UNIRSE_SALA) // Tipo de mensaje para unirse
-                    .sender(cliente.getJugador()) // El jugador que se une
-                    .body(new MessageBody("Solicitud para unirse al juego")) // Cuerpo del mensaje
-                    .build());
 
-            // Esperamos que el servidor nos envíe el tablero actualizado
-            // El servidor nos enviará un mensaje con el tablero actual
-            // Mostrar un mensaje o cambiar la pantalla mientras el cliente espera
-            JOptionPane.showMessageDialog(null, "Esperando confirmación del servidor...");
-            
+            if (!txtNombreJugador.getText().isEmpty()) {
+                
+                cliente = new ClienteControlador (new Jugador (txtNombreJugador.getText(), Color.GREEN), false);
+                
+                cliente.enviarMensaje(new Message.Builder()
+                        .messageType(MessageType.CONECTARSE)
+                        .body(new MessageBody("CONECTANDO AL SERVIDOR"))
+                        .build());
+                // Enviar la solicitud para unirse al servidor
+                cliente.enviarMensaje(new Message.Builder()
+                        .messageType(MessageType.UNIRSE_SALA) // Tipo de mensaje para unirse
+                        .sender(cliente.getJugador()) // El jugador que se une
+                        .body(new MessageBody("Solicitud para unirse al juego")) // Cuerpo del mensaje
+                        .build());
 
-            
-            
-            
+                // Esperamos que el servidor nos envíe el tablero actualizado
+                // El servidor nos enviará un mensaje con el tablero actual
+                // Mostrar un mensaje o cambiar la pantalla mientras el cliente espera
+                JOptionPane.showMessageDialog(null, "Esperando confirmación del servidor...");
+
+            } else {
+                JOptionPane.showMessageDialog(rootPane, "Ingresa un nombre", "DATOS INCOMPLETOS", JOptionPane.WARNING_MESSAGE);
+            }
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Error al solicitar unirse: " + ex.getMessage());
         }
@@ -154,6 +157,6 @@ public class FrmUnirse extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JTextField txtCodigoPartida;
+    private javax.swing.JTextField txtNombreJugador;
     // End of variables declaration//GEN-END:variables
 }
