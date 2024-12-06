@@ -110,12 +110,23 @@ public class FrmTablero extends javax.swing.JFrame {
         // Asigna números a las casillas (si es necesario)
         asignarNumeroCasillas();
 
+        
+        
         // Actualiza las fichas en sus posiciones correspondientes
-        actualizarPosicionFichas();
+        for (Integer posicion: tableroLocal.getFichasJugador1Posicion()) {
+            agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador1);
+        }
+        for (Integer posicion: tableroLocal.getFichasJugador2Posicion()) {
+            agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador2);
+        }
+        for (Integer posicion: tableroLocal.getFichasJugador3Posicion()) {
+            agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador3);
+        }
+        for (Integer posicion: tableroLocal.getFichasJugador4Posicion()) {
+            agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador4);
+        }
 
-        // Finalmente, repinta el JFrame completo
-        revalidate();
-        repaint();
+
 
     }
 
@@ -197,6 +208,8 @@ public class FrmTablero extends javax.swing.JFrame {
         if (tableroLocal.getJugadorTurno() == 4) {
             tableroLocal.setJugadorTurno(1);
         }
+        
+        actualizarPosicionFichas();
 
         // Redibujar el tablero, actualizando las casillas, fichas, etc.
         revalidate();
@@ -226,10 +239,17 @@ public class FrmTablero extends javax.swing.JFrame {
         } else {
             btnLanzar.setEnabled(false);
         }
-        tableroLocal.getFichasJugador1Posicion().add(0);
 
-        Casilla casilla = tableroLocal.getCasillas().get(0);
-        agregarFicha(casilla, "/Utilerias/ficha_roja.png");
+        
+        agregarFicha(tableroLocal.getCasillas().get(0), urlFichaJugador1);
+        agregarFicha(tableroLocal.getCasillas().get(17), urlFichaJugador3);
+        agregarFicha(tableroLocal.getCasillas().get(34), urlFichaJugador2);
+        agregarFicha(tableroLocal.getCasillas().get(51), urlFichaJugador4);
+        
+        tableroLocal.getFichasJugador1Posicion().add(0);
+        tableroLocal.getFichasJugador3Posicion().add(17);
+        tableroLocal.getFichasJugador2Posicion().add(34);
+        tableroLocal.getFichasJugador4Posicion().add(51);
 
         inicializar = true;
 
@@ -341,24 +361,25 @@ public class FrmTablero extends javax.swing.JFrame {
             }
         }
 
-//        body.setJugadorTurno(jugadorEnTurno);
-//        body.setApuesta(tableroLocal.getApuesta());
-//        body.setCantidadJugadores(tableroLocal.getCantidadJugadores());
-//        body.setCantidadMontoJugadores(tableroLocal.getCantidadMontoJugadores());
-//        body.setFichasJugador1Posicion(tableroLocal.getFichasJugador1Posicion());
-//        body.setFichasJugador2Posicion(tableroLocal.getFichasJugador2Posicion());
-//        body.setFichasJugador3Posicion(tableroLocal.getFichasJugador3Posicion());
-//        body.setFichasJugador4Posicion(tableroLocal.getFichasJugador4Posicion());
-//
-//        tableroLocal.getFichasJugador1Posicion().add(nuevaPosicion);
-//
-//        Message mensaje = new Message.Builder()
-//                .messageType(MessageType.TABLERO_ACTUALIZADO)
-//                .body(body)
-//                .sender(clienteControlador.getJugador())
-//                .build();
-//
-//        clienteControlador.enviarMensaje(mensaje);
+        body.setJugadorTurno(jugadorEnTurno);
+        body.setApuesta(tableroLocal.getApuesta());
+        body.setCantidadJugadores(tableroLocal.getCantidadJugadores());
+        body.setCantidadMontoJugadores(tableroLocal.getCantidadMontoJugadores());
+        body.setFichasJugador1Posicion(tableroLocal.getFichasJugador1Posicion());
+        body.setFichasJugador2Posicion(tableroLocal.getFichasJugador2Posicion());
+        body.setFichasJugador3Posicion(tableroLocal.getFichasJugador3Posicion());
+        body.setFichasJugador4Posicion(tableroLocal.getFichasJugador4Posicion());
+        body.getFichasJugador2Posicion().add(nuevaPosicion);
+
+        tableroLocal.getFichasJugador1Posicion().add(nuevaPosicion);
+
+        Message mensaje = new Message.Builder()
+                .messageType(MessageType.TABLERO_ACTUALIZADO)
+                .body(body)
+                .sender(clienteControlador.getJugador())
+                .build();
+
+        clienteControlador.enviarMensaje(mensaje);
     }
 
     /**

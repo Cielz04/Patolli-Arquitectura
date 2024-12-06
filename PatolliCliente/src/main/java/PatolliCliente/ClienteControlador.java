@@ -91,7 +91,9 @@ public class ClienteControlador implements IObserver {
         tableroLocal.actualizarConMensaje(mensaje);
         if (tableroLocal != null) {
         // Asegúrate de que el tablero recibido no sea nulo
-            tablero.actualizarGUI(tableroLocal);
+            tablero.setVisible(false);
+            tablero.redibujarTablero(tableroLocal);
+            tablero.setVisible(true);
         } else {
             System.err.println("El tablero recibido al unirse a la sala es nulo.");
         }

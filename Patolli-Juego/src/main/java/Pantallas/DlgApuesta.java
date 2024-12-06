@@ -255,6 +255,7 @@ public class DlgApuesta extends javax.swing.JDialog {
             
             MessageBody body = new MessageBody ();
             
+            body.setApuesta(100);
             body.setCantidadJugadores(canJugadores);
             body.setSalaEspera(false);
             body.setCantidadMontoJugadores(montosPorJugador);
