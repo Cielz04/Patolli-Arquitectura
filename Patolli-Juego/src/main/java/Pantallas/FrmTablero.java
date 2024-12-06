@@ -89,6 +89,16 @@ public class FrmTablero extends javax.swing.JFrame {
         return true;
     }
 
+    public int getJugadorEnTurno() {
+        return jugadorEnTurno;
+    }
+
+    public void setJugadorEnTurno(int jugadorEnTurno) {
+        this.jugadorEnTurno = jugadorEnTurno;
+    }
+    
+    
+
     private void actualizarTurno() {
 
         int totalJugadores = tableroLocal.getCantidadJugadores();
