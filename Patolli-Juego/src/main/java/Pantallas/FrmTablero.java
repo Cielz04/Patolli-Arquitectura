@@ -269,11 +269,21 @@ public class FrmTablero extends javax.swing.JFrame {
         lblCania4.setText("-");
         lblCania5.setText("-");
 
+        MessageBody body = new MessageBody();
+        
+        body.setApuesta(tableroLocal.getApuesta());
+        body.setCantidadJugadores(tableroLocal.getCantidadJugadores());
+        body.setCantidadMontoJugadores(tableroLocal.getCantidadMontoJugadores());
+        body.setFichasJugador1Posicion(tableroLocal.getFichasJugador1Posicion());
+        body.setFichasJugador2Posicion(tableroLocal.getFichasJugador2Posicion());
+        body.setFichasJugador3Posicion(tableroLocal.getFichasJugador3Posicion());
+        body.setFichasJugador4Posicion(tableroLocal.getFichasJugador4Posicion());
+        
         tableroLocal.getFichasJugador1Posicion().add(nuevaPosicion);
 
         Message mensaje = new Message.Builder()
                 .messageType(MessageType.TABLERO_ACTUALIZADO)
-                .body(new MessageBody(tableroLocal))
+                .body(body)
                 .sender(clienteControlador.getJugador())
                 .build();
 
