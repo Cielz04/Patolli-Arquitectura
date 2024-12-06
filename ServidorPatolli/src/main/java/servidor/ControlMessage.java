@@ -26,6 +26,7 @@ public class ControlMessage extends Observable implements Runnable {
     private final Thread serverThread;
     private final ReentrantLock lock = new ReentrantLock();
     private final List<ClientThread> clientesConectados;
+    private int tablerou = 0;
 
     public ControlMessage() {
         serverThread = new Thread(this);
@@ -56,7 +57,6 @@ public class ControlMessage extends Observable implements Runnable {
                 ClientThread cliente = new ClientThread(clientSocket, jugadorNuevo());
                 this.subscribe(cliente);
                 agregarCliente(cliente);
-
 
                 // Escuchar mensajes de cada cliente en el hilo del servidor
                 new Thread(() -> escucharCliente(cliente)).start();
@@ -97,20 +97,23 @@ public class ControlMessage extends Observable implements Runnable {
     }
 
     private void escucharCliente(ClientThread cliente) {
-    try {
-        while (true) {
-            Message mensaje = (Message) cliente.getInputStream().readObject();
-            if (mensaje != null) {
-                procesarMensaje(mensaje); // Procesar mensaje en el servidor
+        try {
+            while (true) {
+
+                Message mensaje = (Message) cliente.getInputStream().readObject();
+                if (tablerou == 1) {
+                    System.out.println("");
+                }
+                if (mensaje != null) {
+                    procesarMensaje(mensaje); // Procesar mensaje en el servidor
+                }
             }
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error al leer mensaje del cliente: " + e.getMessage());
+            eliminarCliente(cliente); // Desconectar al cliente en caso de error
         }
-    } catch (IOException | ClassNotFoundException e) {
-        System.err.println("Error al leer mensaje del cliente: " + e.getMessage());
-        eliminarCliente(cliente); // Desconectar al cliente en caso de error
     }
-}
-    
-    
+
     private void cerrarServidor() {
         try {
             if (server != null) {
@@ -120,9 +123,6 @@ public class ControlMessage extends Observable implements Runnable {
             System.err.println("Error al cerrar el servidor: " + e.getMessage());
         }
     }
-    
-    
-    
 
     public void procesarMensaje(Message mensaje) {
         lock.lock();
@@ -196,6 +196,11 @@ public class ControlMessage extends Observable implements Runnable {
                 .messageType(MessageType.TABLERO_ACTUALIZADO)
                 .body(new MessageBody("Tablero actualizado", tableroServidor))
                 .build());
+        notifyObservers(new Message.Builder()
+                .messageType(MessageType.TABLERO_ACTUALIZADO)
+                .body(new MessageBody("Tablero del juego actualizado", tableroServidor))
+                .build()
+        );
     }
 
     private void enviarEstadoTablero(ClientThread cliente) {
@@ -300,6 +305,13 @@ public class ControlMessage extends Observable implements Runnable {
                     .messageType(MessageType.UNIRSE_SALA)
                     .body(new MessageBody("Jugador " + jugador.getNombre() + " se ha unido al juego"))
                     .build());
+
+            notifyClient(new Message.Builder()
+                    .messageType(MessageType.UNIRSE_SALA)
+                    .body(new MessageBody("Jugador " + jugador.getNombre() + " se ha unido al juego"))
+                    .build());
+          
+            
         } else {
             // Si no hay espacio en el tablero
             notificarJugadorError(jugador, "No hay espacio para más jugadores");
@@ -321,11 +333,11 @@ public class ControlMessage extends Observable implements Runnable {
 
         // Actualizar el tablero del servidor
         tableroServidor.actualizarConMensaje(tableroActualizado);
-        
-        if (tableroServidor.getCantidadMontoJugadores().size()!=0){
-            System.out.println(tableroServidor.getCantidadMontoJugadores().get(1));
+
+        if (tablerou == 1) {
+            System.out.println(tableroServidor.getApuesta());
         }
-        
+
         System.out.println(tableroServidor.getCantidadCasillasAspa());
 
         // Notificar a todos los clientes conectados sobre la nueva configuración
@@ -334,8 +346,9 @@ public class ControlMessage extends Observable implements Runnable {
                 .body(new MessageBody("Tablero configurado en el servidor", tableroServidor))
                 .build());
 
+        tablerou++;
         System.out.println("Tablero del servidor actualizado con la configuración.");
-        
+
         System.out.println(tableroServidor.getApuesta());
     }
 
@@ -362,6 +375,13 @@ public class ControlMessage extends Observable implements Runnable {
 
     @Override
     public void notifyObservers(Object obj) {
+        for (ClientThread cliente : clientesConectados) {
+            cliente.onUpdate((Message) obj);
+        }
+    }
+
+    public void notifyClient(Object obj) {
+        Message mensaje = (Message) obj;
         for (ClientThread cliente : clientesConectados) {
             cliente.onUpdate((Message) obj);
         }

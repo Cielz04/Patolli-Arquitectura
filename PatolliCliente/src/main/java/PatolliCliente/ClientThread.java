@@ -121,14 +121,30 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
 //        }
 //    }
 
+    
     public void sendMessage(Message mensaje) {
-        try {
-            out.writeObject(mensaje);
-            out.flush();
-        } catch (Exception e) {
-            System.err.println("Error al enviar mensaje: " + e.getMessage());
-        }
+    if (!connected) {
+        System.err.println("El cliente no está conectado. No se puede enviar el mensaje.");
+        return;
     }
+    try {
+        out.writeObject(mensaje);
+        out.flush();
+        System.out.println("Mensaje enviado al servidor: " + mensaje.getContent().getMensaje());
+    } catch (IOException e) {
+        System.err.println("Error al enviar mensaje: " + e.getMessage());
+        connected = false;
+    }
+}
+    
+//    public void sendMessage(Message mensaje) {
+//        try {
+//            out.writeObject(mensaje);
+//            out.flush();
+//        } catch (Exception e) {
+//            System.err.println("Error al enviar mensaje: " + e.getMessage());
+//        }
+//    }
 
     /**
      * Desconecta el cliente, cerrando flujos y el socket.

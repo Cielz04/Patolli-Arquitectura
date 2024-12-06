@@ -66,7 +66,7 @@ public class ClienteControlador implements IObserver {
                 }
                 break;
             case UNIRSE_SALA:
-                
+                manejarUnirseSala(mensaje);
                 break;
             case ERROR:
                 System.err.println("Error recibido: " + mensaje.getContent().getMensaje());
@@ -77,16 +77,25 @@ public class ClienteControlador implements IObserver {
         }
     }
     
-    private void manejarUnirseSala (){
-        
+    private void manejarUnirseSala (Message mensaje){
+         if (tablero.isVisible()) {
+            return;
+        }
+         tableroLocal.actualizarConMensaje(mensaje.getContent().getEstadoTablero());
+         tablero.inicializar();
+         tablero.setVisible(true);
     }
     
 
     private void manejarActualizacionTablero(Message mensaje) {
+        
         if (mensaje.getContent().getEstadoTablero() == null) {
             System.err.println("El mensaje no contiene un tablero válido.");
             return;
         }
+        tableroLocal.actualizarConMensaje(mensaje.getContent().getEstadoTablero());
+        tablero.actualizarGUI(tableroLocal);
+        
         // Actualiza el tablero local
         Tablero tableroRecibido = mensaje.getContent().getEstadoTablero();
         tableroLocal.actualizarConMensaje(tableroRecibido);
