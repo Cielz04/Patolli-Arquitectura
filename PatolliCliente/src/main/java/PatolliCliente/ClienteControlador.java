@@ -55,11 +55,13 @@ public class ClienteControlador implements IObserver {
                 }
                 System.out.println("TABLERO DEL SERVIDOR ACTUALIZADO");
 
-                if ((tableroLocal.isSalaEspera() == false)) {
-                    tablero.setNumJugador(0);
+                if (!tableroLocal.isSalaEspera()) {
+                    // Obtener el número de jugador del mensaje
+                    int numJugadorAsignado = mensaje.getContent().getNumJugador();
+                    tablero.setNumJugadorDesdeServidor(numJugadorAsignado);
+
                     tablero.inicializar();
                     tablero.setVisible(true);
-                    
                 }
                 break;
             case UNIRSE_SALA:
@@ -75,15 +77,15 @@ public class ClienteControlador implements IObserver {
     }
 
     private void manejarUnirseSala(Message mensaje) {
-        
         tableroLocal.actualizarMenosCasillas(mensaje.getContent().getTablero());
-        if (tableroLocal!=null && tablero.isInicializar()==false){
-            tablero.setNumJugador(tableroLocal.getJugadores().size());
+
+        if (tableroLocal != null && !tablero.isInicializar()) {
+            int numJugadorAsignado = tableroLocal.getJugadores().size(); // Asigna según los jugadores
+            tablero.setNumJugadorDesdeServidor(numJugadorAsignado); // Actualiza en FrmTablero
             tablero.inicializar();
             tablero.setVisible(true);
-            
         }
-        
+
     }
 
     private void manejarActualizacionTablero(Message mensaje) {

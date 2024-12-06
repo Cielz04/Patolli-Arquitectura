@@ -27,9 +27,12 @@ public class MessageBody implements Serializable{
     private int cantidadCasillasAspa;
     private List <Jugador> jugadores;
     private boolean salaEspera = true;
-    
+    private int numJugador; 
     private Tablero tablero;
 //    private Tablero estadoTablero;
+
+    
+    private MessageBody body;
 
     public MessageBody(Tablero tablero) {
         this.tablero = tablero;
@@ -40,13 +43,24 @@ public class MessageBody implements Serializable{
         this.tablero = tablero;
     }
 
-    
-    
-    
-    
     public MessageBody() {
     }
 
+   public int getNumJugador() {
+        return numJugador;
+    }
+
+    // Setter para numJugador
+    public void setNumJugador(int numJugador) {
+        this.numJugador = numJugador;
+    }
+   
+    
+
+    // Método getBody() que retorna el objeto MessageBody
+    public MessageBody getBody() {
+        return body;
+    }
 //    public MessageBody(String mensaje, Tablero estadoTablero) {
 //        this.mensaje = mensaje;
 ////        this.estadoTablero = estadoTablero;
@@ -67,6 +81,8 @@ public class MessageBody implements Serializable{
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
     }
+    
+
 
 //    public Tablero getEstadoTablero() {
 //        return estadoTablero;

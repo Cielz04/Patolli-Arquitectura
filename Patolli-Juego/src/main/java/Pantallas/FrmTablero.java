@@ -41,7 +41,7 @@ public class FrmTablero extends javax.swing.JFrame {
     private boolean numerarCasillas;
     private int numeroCasilla;
     private Tablero tableroLocal;
-    private int jugadorEnTurno = 1;
+    private int jugadorEnTurno;
     private boolean inicializar = false;
 
     private String urlFichaJugador1 = "/Utilerias/ficha_roja.png";
@@ -54,8 +54,9 @@ public class FrmTablero extends javax.swing.JFrame {
         casillasTablero = new LinkedList<>();
         this.tableroLocal = tablero;
         this.clienteControlador = clienteControlador;
-        this.numJugador = numJugadorInicial; // Inicializar el número del jugador
+        this.numJugador = numJugadorInicial; 
 
+        
         initComponents();
     }
 
@@ -66,12 +67,18 @@ public class FrmTablero extends javax.swing.JFrame {
     public void setNumJugador(int numJugador) {
         this.numJugador = numJugador;
     }
-
+    
+   
     public void recibirActualizacionTablero(Tablero tableroActualizado) {
         this.tableroLocal = tableroActualizado;
         actualizarGUI(tableroActualizado);
     }
 
+    public void setNumJugadorDesdeServidor(int jugador) {
+       this.numJugador = jugador;   
+        System.out.println("El cliente es el jugador: " + numJugador);
+    }
+    
     private boolean validarMovimiento(Casilla casilla, int dado) {
         if (!tableroLocal.getCasillas().contains(casilla)) {
             System.out.println("La casilla no pertenece al tablero.");
@@ -83,7 +90,9 @@ public class FrmTablero extends javax.swing.JFrame {
         }
         return true;
     }
-    private void actualizarTurno() {
+    
+    private void actualizarTurno() {  
+        
     int totalJugadores = tableroLocal.getCantidadJugadores();
     jugadorEnTurno = (jugadorEnTurno % totalJugadores) + 1;
     tableroLocal.setJugadorTurno(jugadorEnTurno);
@@ -251,15 +260,15 @@ public class FrmTablero extends javax.swing.JFrame {
 
         asignarNumeroCasillas();
         // Ejemplo de uso
-
-        if (jugadorEnTurno == 1) {
-            btnLanzar.setEnabled(true);
-
-        } else {
-            btnLanzar.setEnabled(false);
-        }
-
-        
+//
+//        if (jugadorEnTurno == 1) {
+//            btnLanzar.setEnabled(true);
+//
+//        } else {
+//            btnLanzar.setEnabled(false);
+//        }
+//
+//        
         agregarFicha(tableroLocal.getCasillas().get(0), urlFichaJugador1);
         agregarFicha(tableroLocal.getCasillas().get(17), urlFichaJugador3);
         agregarFicha(tableroLocal.getCasillas().get(34), urlFichaJugador2);
@@ -306,7 +315,7 @@ public class FrmTablero extends javax.swing.JFrame {
         Casilla nuevaCasilla = listaCasillas.get(nuevaPosicion);
 
         // Validar si la nueva casilla está ocupada
-        if (nuevaCasilla.isOcupada()) {  // Verificamos si la casilla destino está ocupada
+        if (!nuevaCasilla.isOcupada()) {  // Verificamos si la casilla destino está ocupada
             System.out.println("La casilla destino ya está ocupada.");
             return;
         }
@@ -528,15 +537,18 @@ public class FrmTablero extends javax.swing.JFrame {
     }
 
     public void manejarEstadoTablero(Message mensaje) {
-       if (mensaje.getMessageType() == MessageType.TABLERO_ACTUALIZADO) {
-        MessageBody body = (MessageBody) mensaje.getContent();
+        if (mensaje.getMessageType() == MessageType.TABLERO_ACTUALIZADO) {
+            MessageBody body = (MessageBody) mensaje.getContent();
 
-        // Actualizar el turno desde el mensaje del servidor
-        this.jugadorEnTurno = body.getJugadorTurno();
+            // Verifica y actualiza el turno del jugador
+            this.jugadorEnTurno = body.getJugadorTurno();
+            System.out.println("Turno recibido del servidor: " + jugadorEnTurno);
 
-        // Redibujar el tablero
-        redibujarTablero(tableroLocal);
-    }
+            // Redibuja el tablero después de actualizar
+            redibujarTablero(tableroLocal);
+        } else {
+            System.out.println("Tipo de mensaje no reconocido: " + mensaje.getMessageType());
+        }
     }
 
     public boolean isInicializar() {
@@ -821,20 +833,27 @@ public class FrmTablero extends javax.swing.JFrame {
     private void btnLanzarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanzarActionPerformed
 
 //        if () {
-        if (jugadorEnTurno == numJugador) {
-            int[] canias = new int[5];
-            int ultimoTiro = 0;
-            for (int i = 0; i < 5; i++) {
-                canias[i] = (int) (Math.random() * 2);
-                if (canias[i] == 1) {
-                    ultimoTiro++;
-                }
+         if (jugadorEnTurno == numJugador) {
+        // Lógica para lanzar el dado
+        int[] canias = new int[5];
+        int ultimoTiro = 0;
+        
+        for (int i = 0; i < 5; i++) {
+            canias[i] = (int) (Math.random() * 2);
+            if (canias[i] == 1) {
+                ultimoTiro++;
             }
-            escribirCanias(canias);
-            procesarResultado(ultimoTiro);
-        } else {
-            System.out.println("No es tu turno. Turno actual: " + jugadorEnTurno + ", Tú eres el jugador: " + numJugador);
         }
+        escribirCanias(canias);
+        procesarResultado(ultimoTiro);
+    } else {
+        // Mensaje de depuración
+        System.out.println("No es tu turno. Turno actual: " + jugadorEnTurno + ", Tú eres el jugador: " + numJugador);
+        if (jugadorEnTurno == 0) {
+            jugadorEnTurno = 1;
+            System.out.println("Error: El servidor no ha inicializado correctamente el turno.");
+        }
+    }
 
 //        }
     }//GEN-LAST:event_btnLanzarActionPerformed
