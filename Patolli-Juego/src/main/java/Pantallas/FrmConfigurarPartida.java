@@ -297,12 +297,17 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
             // Establecer la configuración en el tablero local del cliente
             cliente.getTableroLocal().setCantidadCasillasAspa(tamanio);
             cliente.getTableroLocal().setCantidadFichas(fichas);
+            
+            MessageBody body = new MessageBody();
+            
+            body.setCantidadCasillasAspa(tamanio);
+            body.setCantidadFichas(fichas);
 
             // Enviar la configuración del tablero al servidor
             Message mensajeConfiguracion = new Message.Builder()
                     .messageType(MessageType.CONFIGURAR_TABLERO) // Tipo de mensaje para configurar el tablero
                     .sender(cliente.getJugador()) // Jugador que envía la solicitud
-                    .body(new MessageBody("Configuración enviada", cliente.getTableroLocal())) // Contiene el tablero local con la nueva configuración
+                    .body(body) // Contiene el tablero local con la nueva configuración
                     .build();
 
             cliente.enviarMensaje(mensajeConfiguracion);

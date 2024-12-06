@@ -1,7 +1,5 @@
 package Pantallas;
 
-
-
 import PatolliCliente.ClienteControlador;
 import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
@@ -28,8 +26,7 @@ import tablero.Tablero;
  */
 public class FrmTablero extends javax.swing.JFrame {
 
-   private static FrmTablero tableroS;  // Instancia estática de FrmTablero
-    
+    private static FrmTablero tableroS;  // Instancia estática de FrmTablero
 
     private List<Casilla> fichaJugador1;
     private List<Casilla> fichaJugador2;
@@ -37,7 +34,7 @@ public class FrmTablero extends javax.swing.JFrame {
     private List<Casilla> fichaJugador4;
 
     private int ultimoTiro = 0;
-    
+
     private ClienteControlador clienteControlador;
 
     private List<Casilla> casillasTablero;
@@ -45,14 +42,11 @@ public class FrmTablero extends javax.swing.JFrame {
     private int numeroCasilla;
     private Tablero tableroLocal;
 
-    
     private String urlFichaJugador1 = "/Utilerias/ficha_roja.png";
     private String urlFichaJugador2 = "/Utilerias/ficha_verde.png";
     private String urlFichaJugador3 = "/Utilerias/ficha_amarilla.png";
     private String urlFichaJugador4 = "/Utilerias/ficha_morada.png";
 
-    
-    
     // Constructor privado
     public FrmTablero(Tablero tablero, ClienteControlador clienteControlador) {
         casillasTablero = new LinkedList<>();
@@ -60,60 +54,80 @@ public class FrmTablero extends javax.swing.JFrame {
         this.clienteControlador = clienteControlador;
         initComponents();
     }
-    
-    public void actualizarGUI(Tablero tableroActualizado){
-        this.tableroLocal = tableroActualizado;
-        
-        System.out.println("ENTRO MÉTODO ACTUALIZAR GUI");
-        
-        lblApuestaGlobal.setText(String.valueOf(tableroLocal.getApuesta()));
-        
-        
-        
-    }
-    
-    private void actualizarPosicionFichas (){
-        
-        if (tableroLocal.getFichasJugador1Posicion().size()!=0){
-            
-            for (Integer posicion: tableroLocal.getFichasJugador1Posicion()) {
-                
-                agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador1);
-                
-            }
-            
-        }
-        if (tableroLocal.getFichasJugador2Posicion().size()!=0){
-            
-            for (Integer posicion: tableroLocal.getFichasJugador2Posicion()) {
-                agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador2);
-            }
-            
-        }
-        if (tableroLocal.getFichasJugador3Posicion().size()!=0){
-            
-            for (Integer posicion: tableroLocal.getFichasJugador3Posicion()) {
-                agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador3);
-            }
-            
-        }
-        if (tableroLocal.getFichasJugador4Posicion().size()!=0){
 
-            for (Integer posicion: tableroLocal.getFichasJugador4Posicion()) {
-                agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador4);
-            }
-         
-            for (Casilla casilla: tableroLocal.getCasillas()) {
-                casilla.revalidate();
-                casilla.repaint();
-            }
+    public void actualizarGUI(Tablero tableroActualizado) {
+
+        // Limpia los paneles
+        tableroArriba.removeAll();
+        tableroDerecha.removeAll();
+        tableroIzq.removeAll();
+        tableroAbajo.removeAll();
+        tableroCentro.removeAll();
+
+        // Actualiza los datos del tablero local
+        this.tableroLocal.actualizarMenosCasillas(tableroActualizado);
+
+        // Revalida y repinta los paneles después de limpiar
+        tableroArriba.revalidate();
+        tableroArriba.repaint();
+        tableroDerecha.revalidate();
+        tableroDerecha.repaint();
+        tableroIzq.revalidate();
+        tableroIzq.repaint();
+        tableroAbajo.revalidate();
+        tableroAbajo.repaint();
+        tableroCentro.revalidate();
+        tableroCentro.repaint();
+
+        // Inicializa las aspas y asigna números a las casillas
+        inicializarAspa(tableroArriba, tableroLocal.getCantidadCasillasAspa(), 2, false);
+        inicializarAspa(tableroAbajo, tableroLocal.getCantidadCasillasAspa(), 2, true);
+        inicializarAspa(tableroDerecha, 2, tableroLocal.getCantidadCasillasAspa(), true);
+        inicializarAspa(tableroIzq, 2, tableroLocal.getCantidadCasillasAspa(), false);
+        inicializarAspa(tableroCentro, 2, 2, true);
+
+        // Asigna números a las casillas (si es necesario)
+        asignarNumeroCasillas();
+
+        // Actualiza las fichas en sus posiciones correspondientes
+        actualizarPosicionFichas();
+
+        // Finalmente, repinta el JFrame completo
+        revalidate();
+        repaint();
+
+    }
+
+    private void actualizarPosicionFichas() {
+
+        // Limpia las fichas anteriores
+        for (Casilla casilla : tableroLocal.getCasillas()) {
+            casilla.removeAll(); // Elimina cualquier componente previo
+            casilla.revalidate();
+            casilla.repaint();
+        }
+
+        // Agrega las fichas para cada jugador
+        for (Integer posicion : tableroLocal.getFichasJugador1Posicion()) {
+            agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador1);
+        }
+        for (Integer posicion : tableroLocal.getFichasJugador2Posicion()) {
+            agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador2);
+        }
+        for (Integer posicion : tableroLocal.getFichasJugador3Posicion()) {
+            agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador3);
+        }
+        for (Integer posicion : tableroLocal.getFichasJugador4Posicion()) {
+            agregarFicha(tableroLocal.getCasillas().get(posicion), urlFichaJugador4);
+        }
+
+        // Repinta todas las casillas para asegurar que se actualicen visualmente
+        for (Casilla casilla : tableroLocal.getCasillas()) {
             
         }
-        
-        
+
     }
-    
-    
+
     // Método estático para obtener la instancia única de FrmTablero
     public static FrmTablero getInstance(Tablero tablero, ClienteControlador clienteControlador) {
         if (tableroS == null) {
@@ -128,41 +142,38 @@ public class FrmTablero extends javax.swing.JFrame {
         casillasTablero = new ArrayList<>();
         // Aquí agregas la lógica para crear y añadir casillas a la lista
     }
-    
-    
 
     // Este método actualizará el estado visual del tablero
     public void redibujarTablero(Tablero nuevoTablero) {
         // Actualiza las casillas del tablero
         this.casillasTablero = nuevoTablero.getCasillas();
-        
+
         // Actualiza las posiciones de las fichas de los jugadores
-        this.tableroLocal.setFichasJugador1Posicion(nuevoTablero.getFichasJugador1Posicion()) ;
-        this.tableroLocal.setFichasJugador2Posicion(nuevoTablero.getFichasJugador2Posicion()) ;
-        this.tableroLocal.setFichasJugador3Posicion(nuevoTablero.getFichasJugador3Posicion()) ;
-        this.tableroLocal.setFichasJugador4Posicion(nuevoTablero.getFichasJugador4Posicion()) ;
-       
+        this.tableroLocal.setFichasJugador1Posicion(nuevoTablero.getFichasJugador1Posicion());
+        this.tableroLocal.setFichasJugador2Posicion(nuevoTablero.getFichasJugador2Posicion());
+        this.tableroLocal.setFichasJugador3Posicion(nuevoTablero.getFichasJugador3Posicion());
+        this.tableroLocal.setFichasJugador4Posicion(nuevoTablero.getFichasJugador4Posicion());
 
         // Actualiza el turno del jugador
-        if (tableroLocal.getJugadorTurno()==1){
+        if (tableroLocal.getJugadorTurno() == 1) {
             tableroLocal.setJugadorTurno(2);
         }
-        if (tableroLocal.getJugadorTurno()==2){
-            if (tableroLocal.getCantidadJugadores()==2) {
+        if (tableroLocal.getJugadorTurno() == 2) {
+            if (tableroLocal.getCantidadJugadores() == 2) {
                 tableroLocal.setJugadorTurno(1);
-            }else{
-                tableroLocal.setJugadorTurno(3);   
+            } else {
+                tableroLocal.setJugadorTurno(3);
             }
-            
+
         }
-        if (tableroLocal.getJugadorTurno()==3){
-            if (tableroLocal.getCantidadJugadores()==3) {
+        if (tableroLocal.getJugadorTurno() == 3) {
+            if (tableroLocal.getCantidadJugadores() == 3) {
                 tableroLocal.setJugadorTurno(1);
-            }else{
+            } else {
                 tableroLocal.setJugadorTurno(4);
             }
         }
-        if (tableroLocal.getJugadorTurno()==4){
+        if (tableroLocal.getJugadorTurno() == 4) {
             tableroLocal.setJugadorTurno(1);
         }
 
@@ -183,10 +194,12 @@ public class FrmTablero extends javax.swing.JFrame {
 
         inicializarAspa(tableroCentro, 2, 2, true);
 
-        lblApuestaGlobal.setText("APUESTA GLOBAL: "+ String.valueOf(tableroLocal.getApuesta()));
-        
+        lblApuestaGlobal.setText("APUESTA GLOBAL: " + String.valueOf(tableroLocal.getApuesta()));
+
         asignarNumeroCasillas();
         // Ejemplo de uso
+        tableroLocal.getFichasJugador1Posicion().add(0);
+
         Casilla casilla = tableroLocal.getCasillas().get(0);
         agregarFicha(casilla, "/Utilerias/ficha_roja.png");
 
@@ -231,13 +244,14 @@ public class FrmTablero extends javax.swing.JFrame {
 
         // Quitar la ficha de la casilla original (si tiene un icono)
         casilla.setIcon(null);
+        casilla.revalidate();
+        casilla.repaint();
         System.out.println("");
 
         // Agregar la ficha a la nueva casilla
-        
-        
-        
         agregarFicha(nuevaCasilla, urlFichaJugador1);
+
+        tableroLocal.getFichasJugador1Posicion().add(nuevaPosicion);
 
         // Asegurarse de que la casilla destino se repinte
         casilla.repaint();
@@ -250,15 +264,15 @@ public class FrmTablero extends javax.swing.JFrame {
         lblCania3.setText("-");
         lblCania4.setText("-");
         lblCania5.setText("-");
-        
+
         tableroLocal.getFichasJugador1Posicion().add(nuevaPosicion);
-        
+
         Message mensaje = new Message.Builder()
                 .messageType(MessageType.TABLERO_ACTUALIZADO)
                 .body(new MessageBody(tableroLocal))
                 .sender(clienteControlador.getJugador())
                 .build();
-                
+
         clienteControlador.enviarMensaje(mensaje);
     }
 
@@ -373,31 +387,17 @@ public class FrmTablero extends javax.swing.JFrame {
         try {
             // Cargar y escalar la imagen
             ImageIcon icono = new ImageIcon(getClass().getResource(rutaImagen));
-            Image imagenOriginal = icono.getImage();
-            int nuevoAncho = 70;
-            int nuevoAlto = 100;
-            Image imagenEscalada = imagenOriginal.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+            Image imagenEscalada = icono.getImage().getScaledInstance(70, 100, Image.SCALE_SMOOTH);
+            icono = new ImageIcon(imagenEscalada);
 
-            // Crear la casilla con la ficha
-            Casilla ficha = new Casilla(new ImageIcon(imagenEscalada));
-            ficha.setHorizontalAlignment(JLabel.CENTER);
-            ficha.setVerticalAlignment(JLabel.CENTER);
-
-            // Configurar la casilla base para contener la ficha
+            // Configurar la casilla para contener la ficha
             casillaBase.setLayout(new BorderLayout());
-            casillaBase.add(ficha, BorderLayout.CENTER);
+            casillaBase.removeAll(); // Limpia cualquier componente previo
+            casillaBase.setIcon(icono);
             casillaBase.revalidate();
             casillaBase.repaint();
-            casillaBase.setIcon(icono);
-
-            // Actualizar el tablero
-            
-            int index = tableroLocal.getCasillas().indexOf(casillaBase);
-            tableroLocal.getCasillas().set(index, casillaBase);
-
         } catch (NullPointerException e) {
-            System.err.println("No se pudo cargar la imagen: " + rutaImagen);
-            e.printStackTrace();
+            System.err.println("Error al cargar la imagen: " + rutaImagen);
         }
 
     }
@@ -407,15 +407,13 @@ public class FrmTablero extends javax.swing.JFrame {
             MessageBody body = (MessageBody) mensaje.getContent();
 
             // Obtener el estado del tablero desde el mensaje recibido
-            Tablero tableroRecibido = body.getEstadoTablero();
+//            Tablero tableroRecibido = body.getEstadoTablero();
 
             // Actualizar el tablero en ControlPatolli
 //            clienteControlador.setTableroLocal(tableroLocal);
-
             // Actualizar parámetros locales
 //            this.canCasillasAspa = tableroRecibido.getCantidadCasillasAspa();
 //            this.casillasTablero = tableroRecibido.getCasillas();
-
             // Inicializar el tablero visualmente
             redibujarTablero(tableroLocal);
         }
@@ -608,14 +606,14 @@ public class FrmTablero extends javax.swing.JFrame {
                             .addComponent(btnLanzar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap(294, Short.MAX_VALUE)
                         .addComponent(tableroIzq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 196, Short.MAX_VALUE)
-                        .addComponent(lblApuestaGlobal, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(155, 155, 155)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblApuestaGlobal, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(11, 11, 11)))
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(6, 6, 6)

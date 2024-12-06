@@ -1,7 +1,6 @@
 package servidor;
 
 import PatolliCliente.ClientThread;
-import com.chat.tcpcommons.IObserver;
 import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
@@ -16,7 +15,6 @@ import tablero.Tablero;
 import entidades.Jugador;
 import java.awt.Color;
 
-import java.util.Observer;
 
 public class ControlMessage extends Observable implements Runnable {
 
@@ -192,20 +190,22 @@ public class ControlMessage extends Observable implements Runnable {
     }
 
     private void manejarPasarCambios(Message mensaje) {
-        Tablero tableroActualizado = mensaje.getContent().getEstadoTablero();
+        Tablero tableroActualizado = new Tablero();
+        tableroActualizado.actualizarConMensaje(mensaje);
+        
         if (tableroActualizado == null) {
             System.err.println("El mensaje no contiene un tablero válido.");
             return;
         }
 
-        tableroServidor.actualizarConMensaje(tableroActualizado);
+        tableroServidor.actualizarConMensaje(mensaje);
         notificarTodos(new Message.Builder()
                 .messageType(MessageType.TABLERO_ACTUALIZADO)
-                .body(new MessageBody("Tablero actualizado", tableroServidor))
+                .body(new MessageBody(tableroServidor))
                 .build());
         notifyObservers(new Message.Builder()
                 .messageType(MessageType.TABLERO_ACTUALIZADO)
-                .body(new MessageBody("Tablero del juego actualizado", tableroServidor))
+                .body(new MessageBody(tableroServidor))
                 .build()
         );
     }
@@ -344,8 +344,7 @@ public class ControlMessage extends Observable implements Runnable {
         }
 
         // Continuar con la lógica
-        Tablero tableroActualizado = mensaje.getContent().getEstadoTablero();
-        tableroServidor.actualizarConMensaje(tableroActualizado);
+        tableroServidor.actualizarConMensaje(mensaje);
         if (tablerou == 1) {
             System.out.println(tableroServidor.getApuesta());
         }

@@ -11,7 +11,7 @@ import servidor.PatolliServer;
 public class ServidorPatolli {
 
     public static void main(String[] args) {
-        IPatolliServer servidor=new PatolliServer();
+        IPatolliServer servidor = new PatolliServer();
         servidor.initServidor();
     }
 

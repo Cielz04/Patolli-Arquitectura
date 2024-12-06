@@ -16,19 +16,18 @@ public class ClienteControlador implements IObserver {
     private Jugador jugador;
     private ClientThread hiloCliente;
     private boolean isHost;
-    
 
     public ClienteControlador(Jugador jugador, boolean host) {
         this.jugador = jugador;
         this.tableroLocal = new Tablero();
         this.tablero = FrmTablero.getInstance(tableroLocal, this);
         this.isHost = host;
-        
+
         try {
-           
+
             Socket socket = new Socket("localhost", 50064);
-            this.hiloCliente = new ClientThread(socket, jugador);           
-            hiloCliente.addObserver(this);          
+            this.hiloCliente = new ClientThread(socket, jugador);
+            hiloCliente.addObserver(this);
             new Thread(hiloCliente).start();
 
         } catch (Exception e) {
@@ -49,14 +48,14 @@ public class ClienteControlador implements IObserver {
             case TABLERO_ACTUALIZADO:
                 manejarActualizacionTablero(mensaje);
                 break;
-                
+
             case CONFIGURAR_TABLERO:
-                if (isHost){
+                if (isHost) {
                     System.out.println("Conexion con servidor exitosa!");
                 }
                 System.out.println("TABLERO DEL SERVIDOR ACTUALIZADO");
 
-                if ((tableroLocal.isSalaEspera()== false)){
+                if ((tableroLocal.isSalaEspera() == false)) {
                     tablero.inicializar();
                     tablero.setVisible(true);
                 }
@@ -74,14 +73,20 @@ public class ClienteControlador implements IObserver {
     }
 
     private void manejarUnirseSala(Message mensaje) {
-      
+        
+        tableroLocal.actualizarMenosCasillas(mensaje.getContent().getTablero());
+        if (tableroLocal!=null && !(tablero.isVisible())){
+            tablero.inicializar();
+            tablero.setVisible(true);
+        }
+        
     }
 
     private void manejarActualizacionTablero(Message mensaje) {
 
-        Tablero tableroRecibido = mensaje.getContent().getEstadoTablero();
-        if (tableroRecibido != null) {
-            tableroLocal = tableroRecibido; // Asegúrate de que el tablero recibido no sea nulo
+        tableroLocal.actualizarConMensaje(mensaje);
+        if (tableroLocal != null) {
+        // Asegúrate de que el tablero recibido no sea nulo
             tablero.actualizarGUI(tableroLocal);
         } else {
             System.err.println("El tablero recibido al unirse a la sala es nulo.");

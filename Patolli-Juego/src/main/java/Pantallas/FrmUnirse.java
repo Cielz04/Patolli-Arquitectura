@@ -109,6 +109,7 @@ public class FrmUnirse extends javax.swing.JFrame {
                 // El servidor nos enviará un mensaje con el tablero actual
                 // Mostrar un mensaje o cambiar la pantalla mientras el cliente espera
                 JOptionPane.showMessageDialog(null, "Esperando confirmación del servidor...");
+                dispose();
 
             } else {
                 JOptionPane.showMessageDialog(rootPane, "Ingresa un nombre", "DATOS INCOMPLETOS", JOptionPane.WARNING_MESSAGE);
