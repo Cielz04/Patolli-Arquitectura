@@ -65,6 +65,11 @@ public class FrmTablero extends javax.swing.JFrame {
         this.numJugador = numJugador;
     }
 
+    public void recibirActualizacionTablero(Tablero tableroActualizado) {
+        this.tableroLocal = tableroActualizado;
+        actualizarGUI(tableroActualizado);
+    }
+
     public void actualizarGUI(Tablero tableroActualizado) {
 
         // Limpia los paneles
@@ -80,9 +85,9 @@ public class FrmTablero extends javax.swing.JFrame {
         if (tableroLocal.getJugadorTurno() == numJugador) {
             btnLanzar.setEnabled(true);
         } else {
-            btnLanzar.setEnabled(false);
-
+            btnLanzar.setEnabled(false); 
         }
+
         // Revalida y repinta los paneles después de limpiar
         tableroArriba.revalidate();
         tableroArriba.repaint();
