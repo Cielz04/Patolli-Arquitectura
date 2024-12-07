@@ -339,7 +339,6 @@ public class FrmTablero extends javax.swing.JFrame {
             Integer indiceFicha = tableroLocal.getFichasJugador3Posicion().indexOf(indiceActual);
             agregarFicha(nuevaCasilla, urlFichaJugador3);
             tableroLocal.getFichasJugador3Posicion().add(nuevaPosicion);
-            tableroLocal.getFichasJugador3Posicion().remove(indiceActual);
             tableroLocal.getFichasJugador3Posicion().remove(indiceFicha);
         }
         if (jugadorEnTurno == 4) {

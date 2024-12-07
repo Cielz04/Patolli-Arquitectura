@@ -75,7 +75,7 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
         }
     }
         
-    private void cerrarConexion() {
+    private void cerrarConexion() {         
         try {
             if (in != null) {
                 in.close();
