@@ -1,282 +1,781 @@
 package servidor;
 
-import com.chat.tcpcommons.ClientThread;
-import com.chat.tcpcommons.IObserver;
+import PatolliCliente.ClientThread;
 import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
 import com.chat.tcpcommons.Observable;
-import com.chat.tcpcommons.TemplateConnection;
-import com.chat.tcpcommons.logging.IChatLogger;
-import com.chat.tcpcommons.logging.LoggerFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
+import tablero.Tablero;
+import entidades.Jugador;
+import java.awt.Color;
 
-/**
- *
- * @author Hector Espinoza
- */
-public class ControlMessage extends Observable implements TemplateConnection, Runnable, IObserver{
-    
+
+public class ControlMessage extends Observable implements Runnable {
+
     private ServerSocket server;
-    public final Map<String, List<ClientThread>> rooms;
-    private final String SALA_DE_ESPERA = "sala de espera";
+    private Tablero tableroServidor;
     private final int PORT = 50064;
     private final Thread serverThread;
     private final ReentrantLock lock = new ReentrantLock();
-
-    private final IChatLogger logger = LoggerFactory.getLogger(ControlMessage.class);
+    private final List<ClientThread> clientesConectados;
+    private int tablerou = 0;
 
     public ControlMessage() {
         serverThread = new Thread(this);
-        rooms = new HashMap<>();
-        rooms.put(SALA_DE_ESPERA, new ArrayList<>()); // Inicializa la lista para la sala de espera
+        tableroServidor = new Tablero();
+        clientesConectados = new ArrayList<>();
+        tableroServidor.setJuegoInicia(false);
     }
 
     public void init() {
         try {
             server = new ServerSocket(PORT);
+            System.out.println("Servidor iniciado en el puerto: " + PORT);
             serverThread.start();
         } catch (IOException ex) {
-            logger.error(String.format("Error al iniciar el servidor: %s", ex.getMessage()));
+            System.err.println("Error al iniciar el servidor: " + ex.getMessage());
         }
     }
 
     @Override
     public void run() {
+        verificarTablero();
         try {
             while (true) {
                 Socket clientSocket = server.accept();
+                System.out.println("Cliente conectado desde: " + clientSocket.getInetAddress());
 
-                // Crear y configurar el cliente
-                ClientThread client = new ClientThread(clientSocket);
-                //client.getUser().setNombre(nombreUsuario);
+                // Crear y registrar cliente
+                ClientThread cliente = new ClientThread(clientSocket, jugadorNuevo());
+                this.subscribe(cliente);
+                agregarCliente(cliente);
 
-                // Iniciar el hilo del cliente
-                Thread connectionThread = new Thread(client);
-                connectionThread.start();
-
-                // Agregar el cliente a la sala de espera
-                rooms.get(SALA_DE_ESPERA).add(client);
-                client.subscribe(this);
+                // Escuchar mensajes de cada cliente en el hilo del servidor
+                new Thread(() -> escucharCliente(cliente)).start();
             }
-        } catch (IOException ex) {
-            logger.error(String.format("Error al iniciar la conexion al servidor: %s", ex.getMessage()));
+        } catch (IOException e) {
+            System.err.println("Error aceptando conexiones: " + e.getMessage());
+        } finally {
+            cerrarServidor();
         }
+
+//        try {
+//            while (true) {
+//                Socket clientSocket = server.accept();
+//                System.out.println("Cliente conectado desde: " + clientSocket.getInetAddress());
+//
+//                // Crear un nuevo cliente y registrarlo
+//                ClientThread client = new ClientThread(clientSocket, jugadorNuevo());
+//                this.subscribe((IObserver) client);
+//                agregarCliente(client);
+//                new Thread(client).start();
+//                MessageBody body = new MessageBody("Cliente Conectado");
+//                Message mensaje = new Message.Builder()
+//                        .messageType(MessageType.CONECTARSE)
+//                        .body(body)
+//                        .build();
+//                
+//                if (clientesConectados.size()!=0){
+//                    
+//                }
+//
+//                notificarTodos(mensaje);
+//            }
+//        } catch (IOException e) {
+//            System.err.println("Error aceptando conexiones: " + e.getMessage());
+//        } finally {
+//            cerrarServidor();
+//        }
     }
 
-    @Override
-    public void onConectarse(Message message) {
-        lock.lock();
+    private void escucharCliente(ClientThread cliente) {
         try {
-            if (message != null && message.getSender() != null) {
-                ClientThread clienteDisponible = rooms.get(SALA_DE_ESPERA).stream()
-                        .filter(c -> c.getJugador().getNombre() == null)
-                        .findFirst()
-                        .orElse(null);
+            while (true) {
 
-                if (clienteDisponible != null) {
-                    clienteDisponible.setJugador(message.getSender());
-                    System.out.println("Cliente en la sala de espera: " + message.getSender().getNombre());
-                } else {
-                    System.out.println("No hay espacio disponible para asignar el usuario en la sala de espera.");
+                Message mensaje = (Message) cliente.getInputStream().readObject();
+                if (tablerou == 1) {
+                    System.out.println("");
                 }
-            } else {
-                System.out.println("El Message o el que envía es null");
+                if (mensaje != null) {
+                    procesarMensaje(mensaje); // Procesar mensaje en el servidor
+                }
             }
-        } finally {
-            lock.unlock();
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error al leer mensaje del cliente: " + e.getMessage());
+            eliminarCliente(cliente); // Desconectar al cliente en caso de error
         }
     }
 
-    @Override
-    public void onDisconnect(Message message) {
+    private void cerrarServidor() {
+        try {
+            if (server != null) {
+                server.close();
+            }
+        } catch (IOException e) {
+            System.err.println("Error al cerrar el servidor: " + e.getMessage());
+        }
+    }
+
+    public void procesarMensaje(Message mensaje) {
         lock.lock();
         try {
-            String codigoSala = message.getContent().getCodigoSala();
-            var user = rooms.get(codigoSala).stream().filter(c -> c.getJugador().equals(message.getSender())).findFirst().orElse(null);
-            if (user != null) {
-                rooms.get(codigoSala).remove(user);
-                user.disconnect();
-                notifyObservers(message);
+            switch (mensaje.getMessageType()) {
+                case CONECTARSE ->
+                    manejarConectarse(mensaje);
+                case DESCONECTARSE ->
+                    manejarDesconectarse(mensaje);
+                case UNIRSE_SALA ->
+                    manejarUnirseSala(mensaje);
+                case CONFIGURAR_TABLERO ->
+                    manejarConfigurarTableroServidor(mensaje);
+                case TABLERO_ACTUALIZADO ->
+                    manejarPasarCambios(mensaje);
+                case ERROR ->
+                    manejarError(mensaje);
+                default ->
+                    System.out.println("Tipo de mensaje no reconocido: " + mensaje.getMessageType());
             }
         } finally {
             lock.unlock();
         }
     }
 
-    @Override
-    public void onUpdate(Object obj) {
-        proccessMessage((Message) obj);
+    private void agregarCliente(ClientThread cliente) {
+        lock.lock();
+        try {
+            clientesConectados.add(cliente);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void manejarConectarse(Message mensaje) {
+        Jugador jugador = mensaje.getSender();
+
+        // Add null check for jugador
+        if (jugador == null) {
+            System.err.println("Error: Jugador is null");
+            return;
+        }
+
+        if (esClienteRegistrado(jugador)) {
+            enviarError(mensaje, "El jugador ya está conectado");
+            return;
+        }
+
+        if (tableroServidor.isJuegoInicia()) {
+            enviarError(mensaje, "El juego ya ha comenzado");
+            return;
+        }
+
+        ClientThread cliente = obtenerClientePorJugador(jugador);
+        if (cliente == null) {
+            System.err.println("Cliente no encontrado para el jugador: " + jugador.getNombre());
+            return;
+        }
+
+        tableroServidor.agregarJugador(jugador);
+        enviarEstadoTablero(cliente);
+
+        notificarTodos(new Message.Builder()
+                .messageType(MessageType.UNIRSE_SALA)
+                .body(new MessageBody("Jugador conectado: " + jugador.getNombre()))
+                .build());
+    }
+
+    private void manejarPasarCambios(Message mensaje) {
+        Tablero tableroActualizado = new Tablero();
+        tableroActualizado.actualizarConMensaje(mensaje);
+        
+        if (tableroActualizado == null) {
+            System.err.println("El mensaje no contiene un tablero válido.");
+            return;
+        }
+
+        if (tableroServidor.getJugadorTurno() == 0) {
+            tableroServidor.setJugadorTurno(1);
+
+        }
+
+        if (tableroServidor.getJugadorTurno() == 1) {
+            tableroServidor.setJugadorTurno(2);
+
+        }
+
+        if (tableroServidor.getJugadorTurno() == 2) {
+            tableroServidor.setJugadorTurno(3);
+
+        }
+        if (tableroServidor.getJugadorTurno() == 3) {
+            tableroServidor.setJugadorTurno(0);
+
+        }
+
+        tableroServidor.actualizarConMensaje(mensaje);
+        notificarTodos(new Message.Builder()
+                .messageType(MessageType.TABLERO_ACTUALIZADO)
+                .body(mensaje.getContent())
+                .build());
+//        notifyObservers(new Message.Builder()
+//                .messageType(MessageType.TABLERO_ACTUALIZADO)
+//                .body(new MessageBody(tableroServidor))
+//                .build()
+//        );
+    }
+
+    private void enviarEstadoTablero(ClientThread cliente) {
+        MessageBody body = new MessageBody("Estado del tablero actualizado", tableroServidor);
+        Message mensaje = new Message.Builder()
+                .messageType(MessageType.TABLERO_ACTUALIZADO)
+                .body(body)
+                .build();
+        cliente.sendMessage(mensaje);
+    }
+
+    private void manejarDesconectarse(Message mensaje) {
+        Jugador jugador = mensaje.getSender();
+        ClientThread cliente = obtenerClientePorJugador(jugador);
+        if (cliente == null) {
+            System.err.println("El cliente no está registrado: " + jugador.getNombre());
+            return;
+        }
+
+        eliminarCliente(cliente);
+        notificarTodos(new Message.Builder()
+                .messageType(MessageType.DESCONECTARSE)
+                .body(new MessageBody("Jugador desconectado: " + jugador.getNombre()))
+                .build());
+    }
+
+    private void eliminarCliente(ClientThread cliente) {
+        lock.lock();
+        try {
+            clientesConectados.remove(cliente);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private boolean esClienteRegistrado(Jugador jugador) {
+        for (ClientThread cliente : clientesConectados) {
+            if (cliente.getJugador() != null && cliente.getJugador().equals(jugador)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private ClientThread obtenerClientePorJugador(Jugador jugador) {
+        for (ClientThread cliente : clientesConectados) {
+            if (cliente.getJugador() != null && cliente.getJugador().equals(jugador)) {
+                return cliente;
+            }
+        }
+        return null;
+    }
+
+    private void enviarError(Message mensaje, String error) {
+        ClientThread cliente = obtenerClientePorJugador(mensaje.getSender());
+        if (cliente != null) {
+            cliente.sendMessage(new Message.Builder()
+                    .messageType(MessageType.ERROR)
+                    .body(new MessageBody(error))
+                    .build());
+        }
+    }
+
+    private Jugador jugadorNuevo() {
+        int numeroJugador = tableroServidor.getJugadores().size() + 1;
+        Color color = switch (numeroJugador) {
+            case 1 ->
+                Color.RED;
+            case 2 ->
+                Color.BLUE;
+            case 3 ->
+                Color.GREEN;
+            case 4 ->
+                Color.YELLOW;
+            default ->
+                Color.BLACK;
+        };
+        return new Jugador("Jugador " + numeroJugador, color);
+    }
+
+    // Método para manejar cuando un jugador se une a la sala
+    private void manejarUnirseSala(Message mensaje) {
+        verificarTablero();
+        
+        if (mensaje == null || mensaje.getSender() == null) {
+            System.err.println("Error: mensaje o remitente nulo en manejarUnirseSala");
+            return;
+        }
+
+        if (tableroServidor == null) {
+            System.err.println("Error: tableroServidor no inicializado");
+            return;
+        }
+
+        Jugador jugador = mensaje.getSender();
+        tableroServidor.agregarJugador(jugador);
+
+        notificarTodos(new Message.Builder()
+                .messageType(MessageType.UNIRSE_SALA)
+                .body(new MessageBody("Jugador " + jugador.getNombre() + " se ha unido al juego", tableroServidor))
+                .build());
+
+    }
+
+    private void verificarTablero() {
+        if (tableroServidor == null) {
+            tableroServidor = new Tablero();
+            System.out.println("TableroServidor fue reinicializado.");
+        }
+    }
+
+    private ClientThread findClientForPlayer(Jugador jugador) {
+        if (jugador == null || jugador.getNombre() == null) {
+        System.err.println("Error: Cannot find client for null player");
+        return null;
+    }
+
+    return obtenerClientePorJugador(jugador);
+    }
+
+    private void manejarError(Message mensaje) {
+        String mensajeError = mensaje.getContent().getMensaje();
+        Jugador jugador = mensaje.getSender();
+
+        System.err.println("Error recibido del jugador " + jugador.getNombre() + ": " + mensajeError);
+
+    }
+
+    // Método para manejar la configuración del tablero (para servidor)
+    private void manejarConfigurarTableroServidor(Message mensaje) {
+        if (tableroServidor == null) {
+            System.err.println("Error: tableroServidor es null");
+            return;
+        }
+
+        // Continuar con la lógica
+        tableroServidor.actualizarConMensaje(mensaje);
+        if (tablerou == 1) {
+            tableroServidor.agregarJugador(mensaje.getSender());
+            tableroServidor.setJugadorTurno(1);
+        }
+
+        System.out.println(tableroServidor.getCantidadCasillasAspa());
+
+        // Notificar a todos los clientes conectados sobre la nueva configuración
+        notificarTodos(new Message.Builder()
+                .messageType(MessageType.CONFIGURAR_TABLERO)
+                .body(new MessageBody("Tablero configurado en el servidor", tableroServidor))
+                .build());
+
+        tablerou++;
+        System.out.println("Tablero del servidor actualizado con la configuración.");
+
+        System.out.println(tableroServidor.getApuesta());
+    }
+
+    // Método para notificar a todos los clientes conectados
+    private void notificarTodos(Message mensaje) {
+        for (ClientThread cliente : clientesConectados) {
+            System.out.println("Enviando mensaje a cliente: " + cliente.getJugador().getNombre());
+            cliente.sendMessage(mensaje);
+        }
+    }
+
+    private void notificarJugadorError(Jugador jugador, String mensajeError) {
+        ClientThread cliente = obtenerClientePorJugador(jugador);
+
+        if (cliente != null) {
+            cliente.sendMessage(new Message.Builder()
+                    .messageType(MessageType.ERROR)
+                    .body(new MessageBody(mensajeError))
+                    .build());
+        } else {
+            System.err.println("No se pudo enviar el error, cliente no encontrado para el jugador: " + jugador.getNombre());
+        }
     }
 
     @Override
     public void notifyObservers(Object obj) {
-        observers.forEach(o -> o.onUpdate(obj));
-    }
-
-    @Override
-    public void onCrearSala(Message message) {
-        lock.lock();
-        try {
-            String codigoSala = "000";
-
-            if (codigoSala == null || codigoSala.isEmpty()) {
-                System.out.println("El código de la sala no puede estar vacío.");
-                return;
-            }
-
-            if (rooms.containsKey(codigoSala)) {
-                System.out.println("La sala " + codigoSala + " ya existe.");
-            } else {
-                rooms.put(codigoSala, new ArrayList<>());
-                System.out.println("Sala " + codigoSala + " creada exitosamente.");
-                onConectarse(message);
-                onUnirseSala(message); // Unir al cliente a la nueva sala
-            }
-        } finally {
-            lock.unlock();
+        for (ClientThread cliente : clientesConectados) {
+            cliente.onUpdate((Message) obj);
         }
     }
 
-    @Override
-    public void onUnirseSala(Message message) {
-        lock.lock();
-        try {
-            String codigoSala = message.getContent().getCodigoSala();
-
-            var user = rooms.get(SALA_DE_ESPERA).stream()
-                    .filter(c -> c.getJugador().equals(message.getSender()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (user == null) {
-                System.out.println("El cliente no está en la sala de espera.");
-                return;
-            }
-
-            if (codigoSala == null || !rooms.containsKey(codigoSala)) {
-                System.out.println("La sala " + codigoSala + " no existe.");
-                //Message para el jugador que no se pudo unir
-                MessageBody cuerpoNegativo = new MessageBody();
-                cuerpoNegativo.setRazonDesconexion("La sala " + codigoSala + " no existe.");
-                MessageType tipoRespuesta = MessageType.DESCONECTARSE;
-                Message MessageNegativo = new Message.Builder()
-                        .body(cuerpoNegativo)
-                        .messageType(tipoRespuesta)
-                        .build();
-                rooms.get(SALA_DE_ESPERA).remove(user);
-                user.sendMessage(MessageNegativo);
-                user.disconnect();
-                return;
-            }
-
-            // Mover al cliente a la nueva sala
-            rooms.get(SALA_DE_ESPERA).remove(user);
-            rooms.get(codigoSala).add(user);
-            System.out.println("El cliente " + message.getSender().getNombre() + " se unió a la sala " + codigoSala);
-//            message.setContent(rooms.get(codigoSala).get(0));
-
-            if (rooms.get(codigoSala).size() == 0) {
-                System.out.println("No sala");
-            } else {
-                System.out.println("Si sala");
-            }
-
-            for (int i = 0; i < rooms.get(codigoSala).size(); i++) {
-                System.out.println(rooms.get(codigoSala).get(i).getJugador().getNombre());
-            }
-
-            //Message para los jugador que ya estaban en la sala
-            MessageBody cuerpoOtrosJugadores = new MessageBody();
-            MessageType tipoOtrosJugadores = MessageType.UNIRSE_SALA;
-            Message MessageOtrosJugadores = new Message.Builder()
-                    .body(cuerpoOtrosJugadores)
-                    .messageType(tipoOtrosJugadores)
-                    .build();
-
-            //Message para el jugador que se unio
-            MessageBody cuerpoRespuesta = new MessageBody();
-            cuerpoRespuesta.setJugadores(rooms.get(codigoSala).size());
-            cuerpoRespuesta.setExisteSala(true);
-            MessageType tipoRespuesta = MessageType.PASAR_JUGADORES;
-            Message MessageRespuesta = new Message.Builder()
-                    .body(cuerpoRespuesta)
-                    .messageType(tipoRespuesta)
-                    .build();
-
-            rooms.get(codigoSala).forEach(cliente -> {
-                if (!cliente.equals(user)) {
-                    cliente.sendMessage(MessageOtrosJugadores);
-                }
-            });
-
-            for (int i = 0; i < rooms.get(codigoSala).size(); i++) {
-                rooms.get(codigoSala).get(i).sendMessage(MessageOtrosJugadores);
-            }
-
-
-        } finally {
-            lock.unlock();
-
+    public void notifyClient(Object obj) {
+        Message mensaje = (Message) obj;
+        for (ClientThread cliente : clientesConectados) {
+            cliente.onUpdate((Message) obj);
         }
     }
-    
-    @Override
-    public void onPasarOpciones(Message mensaje) {
-        lock.lock();
-        try {
-            String codigoSala = mensaje.getContent().getCodigoSala();
 
-            if (codigoSala == null) {
-                System.out.println("El cliente no está en ninguna sala.");
-                return;
-            }
-
-            // Enviar el mensaje a los demás jugadores en la sala
-            List<ClientThread> clientesEnSala = rooms.get(codigoSala);
-            clientesEnSala.forEach(cliente -> {
-                if (!cliente.getJugador().equals(mensaje.getSender())) {
-                    cliente.sendMessage(mensaje);
-                }
-            });
-
-            System.out.println("Mensaje enviado a los demás jugadores en la sala: " + codigoSala);
-
-        } finally {
-            lock.unlock();
-        }
-    }
-    
-    @Override
-    public void onPasarJugadores(Message mensaje) {
-
-    }
-
-    @Override
-    public void onPasarCambios(Message mensaje) {
-        String codigoSala = mensaje.getContent().getCodigoSala();
-
-        if (codigoSala == null) {
-            System.out.println("El cliente no está en ninguna sala.");
-            return;
-        }
-
-        // Enviar el mensaje a los demás jugadores en la sala
-        List<ClientThread> clientesEnSala = rooms.get(codigoSala);
-        clientesEnSala.forEach(cliente -> {
-            if (!cliente.getJugador().equals(mensaje.getSender())) {
-                cliente.sendMessage(mensaje);
-            }
-        });
-
-        System.out.println("Mensaje enviado a los demás jugadores en la sala: " + codigoSala);
-    }
-    
 }
+
+//
+//package servidor;
+//
+//import PatolliCliente.ClientThread;
+//import com.chat.tcpcommons.Message;
+//import com.chat.tcpcommons.MessageBody;
+//import com.chat.tcpcommons.MessageType;
+//import static com.chat.tcpcommons.MessageType.UNIRSE_SALA;
+//import java.io.IOException;
+//import java.net.ServerSocket;
+//import java.net.Socket;
+//import java.util.ArrayList;
+//import java.util.List;
+//import java.util.concurrent.locks.ReentrantLock;
+//import tablero.Tablero;
+//import entidades.Jugador;
+//import java.awt.Color;
+//
+///**
+// * Clase que gestiona las conexiones de clientes y la lógica del juego en el
+// * servidor.
+// *
+// * @author Hector Espinoza
+// */
+//public class ControlMessage implements Runnable {
+//
+//    private ServerSocket server;
+//    private final Tablero tableroServidor; // Único tablero de la partida
+//    private final int PORT = 50064;
+//    private final Thread serverThread;
+//    private final ReentrantLock lock = new ReentrantLock();
+//    private final List<ClientThread> clientesConectados; // Lista de clientes conectados
+//
+//    public ControlMessage() {
+//        serverThread = new Thread(this);
+//        tableroServidor = new Tablero();
+//        clientesConectados = new ArrayList<>();
+//        tableroServidor.setJuegoInicia(false); // Por defecto, el juego no ha iniciado
+//    }
+//
+//    // Método para iniciar el servidor
+//    public void init() {
+//        try {
+//            server = new ServerSocket(PORT);
+//            System.out.println("Servidor iniciado en el puerto: " + PORT);
+//            serverThread.start();
+//        } catch (IOException ex) {
+//            System.err.println("Error al iniciar el servidor: " + ex.getMessage());
+//        }
+//    }
+//
+//    @Override
+//    public void run() {
+//        try {
+//            // Aceptar conexiones entrantes
+//            while (true) {
+//                Socket clientSocket = server.accept();
+//                System.out.println("Cliente conectado desde: " + clientSocket.getInetAddress());
+//
+//                // Crear un nuevo hilo para manejar este cliente
+//                ClientThread client = new ClientThread(clientSocket, jugadorNuevo());
+//                agregarCliente(client); // Agregar cliente a la lista
+//                new Thread(client).start();
+//            }
+//        } catch (IOException e) {
+//            System.err.println("Error aceptando conexiones: " + e.getMessage());
+//        } finally {
+//            try {
+//                if (server != null) {
+//                    server.close(); // Cierra el servidor si se detiene
+//                }
+//            } catch (IOException e) {
+//                System.err.println("Error al cerrar el servidor: " + e.getMessage());
+//            }
+//        }
+//    }
+//
+//    // Método para procesar los mensajes recibidos
+//    public void procesarMensaje(Message mensaje) {
+//        lock.lock();
+//        try {
+//            switch (mensaje.getMessageType()) {
+//                case CONECTARSE ->
+//                    manejarConectarse(mensaje);
+//                case DESCONECTARSE ->
+//                    manejarDesconectarse(mensaje);
+//                case UNIRSE_SALA ->
+//                    manejarUnirseSala(mensaje);
+//                case CONFIGURAR_TABLERO ->
+//                    manejarConfigurarTableroServidor(mensaje);
+//                case TABLERO_ACTUALIZADO -> {
+//                    System.out.println("Mensaje TABLERO_ACTUALIZADO recibido.");
+//                    manejarPasarCambios(mensaje);
+//                }
+//                case ERROR ->
+//                    manejarError(mensaje);
+//                default ->
+//                    System.out.println("Tipo de mensaje no reconocido: " + mensaje.getMessageType());
+//            }
+//        } finally {
+//            lock.unlock();
+//        }
+//    }
+//
+//    private void agregarCliente(ClientThread cliente) {
+//        clientesConectados.add(cliente);
+//    }
+//
+//    private void manejarConectarse(Message mensaje) {
+//        Jugador jugador = mensaje.getSender();
+//        ClientThread cliente = obtenerClientePorJugador(jugador);
+//
+//        if (esClienteRegistrado(jugador)) {
+//            System.out.println("El jugador ya está registrado: " + jugador.getNombre());
+//            cliente.sendMessage(new Message.Builder()
+//                    .messageType(MessageType.ERROR)
+//                    .body(new MessageBody("El jugador ya está conectado"))
+//                    .build());
+//            return;
+//        }
+//
+//        if (tableroServidor.isJuegoInicia()) {
+//            cliente.sendMessage(new Message.Builder()
+//                    .messageType(MessageType.ERROR)
+//                    .body(new MessageBody("El juego ya ha comenzado"))
+//                    .build());
+//            return;
+//        }
+//
+//        if (tableroServidor.agregarJugador(jugador)) {
+//            System.out.println("Jugador " + jugador.getNombre() + " se ha conectado.");
+//
+//            // Añadir el cliente a la lista de clientes conectados
+//            agregarCliente(cliente);
+//
+//            // Enviar el estado del tablero al nuevo cliente
+//            enviarEstadoTablero(cliente);
+//
+//            // Notificar a todos los jugadores conectados sobre el nuevo jugador
+//            notificarTodos(new Message.Builder()
+//                    .messageType(MessageType.UNIRSE_SALA)
+//                    .body(new MessageBody("Jugador conectado: " + jugador.getNombre()))
+//                    .build());
+//        } else {
+//            cliente.sendMessage(new Message.Builder()
+//                    .messageType(MessageType.ERROR)
+//                    .body(new MessageBody("No hay espacio para más jugadores"))
+//                    .build());
+//        }
+//    }
+//
+//    private boolean esClienteRegistrado(Jugador jugador) {
+//        System.out.println("Entro a verificar cliente");
+//        for (ClientThread cliente : clientesConectados) {
+//            if (cliente.getJugador() != null && cliente.getJugador().equals(jugador)) {
+//                return true; // El cliente ya está registrado
+//            }
+//        }
+//        return false; // El cliente no está registrado
+//    }
+//
+//    // Verifica si el jugador ya está conectado al juego
+//    private ClientThread jugadorYaConectado(Jugador jugador) {
+//        for (ClientThread cliente : clientesConectados) {
+//            if (cliente.getJugador() != null && cliente.getJugador().equals(jugador)) {
+//                return cliente;  // El jugador ya está conectado
+//            }
+//        }
+//        return null;  // El jugador no está conectado
+//    }
+//
+//    // Método para manejar cuando un jugador se une a la sala
+//    private void manejarUnirseSala(Message mensaje) {
+//        System.out.println("Entro unirseSala");
+//        Jugador jugador = mensaje.getSender();
+//
+//        if (tableroServidor.isJuegoInicia()) {
+//            // Notificar al jugador que no puede unirse si el juego ya ha comenzado
+//            notificarJugadorError(jugador, "El juego ya ha comenzado");
+//            return;
+//        }
+//
+//        // Añadir el jugador al tablero
+//        if (tableroServidor.agregarJugador(jugador)) {
+//            System.out.println("Jugador " + jugador.getNombre() + " se unió al tablero.");
+//
+//            // Enviar al cliente el estado actual del tablero
+//            ClientThread cliente = obtenerClientePorJugador(jugador);
+//            enviarEstadoTablero(cliente);  // Enviar el tablero actualizado al cliente
+//
+//            // Notificar a los demás jugadores que un nuevo jugador se ha unido
+//            notificarTodos(new Message.Builder()
+//                    .messageType(MessageType.UNIRSE_SALA)
+//                    .body(new MessageBody("Jugador " + jugador.getNombre() + " se ha unido al juego"))
+//                    .build());
+//        } else {
+//            // Si no hay espacio en el tablero
+//            notificarJugadorError(jugador, "No hay espacio para más jugadores");
+//        }
+//    }
+//
+//    // Método para manejar los cambios en el tablero
+//    private void manejarPasarCambios(Message mensaje) {
+//        if (mensaje.getContent().getEstadoTablero() == null) {
+//            System.err.println("El mensaje no contiene un tablero válido.");
+//            return;
+//        }
+//
+//        // Actualiza el tablero del servidor
+//        Tablero tableroActualizado = mensaje.getContent().getEstadoTablero();
+//        tableroServidor.actualizarConMensaje(tableroActualizado);
+//
+//        System.out.println("Tablero del servidor actualizado con cambios del cliente.");
+//
+//        // Notifica a todos los clientes conectados
+//        notificarTodos(new Message.Builder()
+//                .messageType(MessageType.TABLERO_ACTUALIZADO)
+//                .body(new MessageBody("Tablero actualizado", tableroServidor))
+//                .build());
+//    }
+//
+//    // Método para enviar el estado del tablero a un cliente
+//    private void enviarEstadoTablero(ClientThread cliente) {
+//        MessageBody body = new MessageBody();
+//        body.setEstadoTablero(tableroServidor);  // El estado actual del tablero
+//        body.setMensaje("Tablero actualizado");  // Mensaje informativo
+//
+//        // Enviar el mensaje con el tablero actualizado
+//        Message mensaje = new Message.Builder()
+//                .messageType(MessageType.TABLERO_ACTUALIZADO)
+//                .body(body)
+//                .build();
+//
+//        cliente.sendMessage(mensaje);  // Enviar el mensaje al cliente que se unió
+//        System.out.println("Estado del tablero enviado al cliente.");
+//    }
+//
+//    // Método para eliminar un cliente de la lista de clientes conectados
+//    public void eliminarCliente(ClientThread cliente) {
+//        lock.lock();
+//        try {
+//            clientesConectados.remove(cliente);// Método para notificar a todos los clientes conectados
+//    private void notificarTodos(Message mensaje) {
+//        for (ClientThread cliente : clientesConectados) {
+//            System.out.println("Enviando mensaje a cliente: " + cliente.getJugador().getNombre());
+//            cliente.sendMessage(mensaje);
+//        }
+//    }
+//            System.out.println("Cliente eliminado.");
+//        } finally {
+//            lock.unlock();
+//        }
+//    }
+//
+//    // Método para notificar a todos los clientes conectados
+//    private void notificarTodos(Message mensaje) {
+//        for (ClientThread cliente : clientesConectados) {
+//            System.out.println("Enviando mensaje a cliente: " + cliente.getJugador().getNombre());
+//            cliente.sendMessage(mensaje);
+//        }
+//    }
+//
+//    private ClientThread obtenerClientePorJugador(Jugador jugador) {
+//        for (ClientThread cliente : clientesConectados) {
+//            if (cliente.getJugador() != null && cliente.getJugador().equals(jugador)) {
+//                return cliente;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    private void manejarError(Message mensaje) {
+//        String mensajeError = mensaje.getContent().getMensaje();
+//        Jugador jugador = mensaje.getSender();
+//
+//        System.err.println("Error recibido del jugador " + jugador.getNombre() + ": " + mensajeError);
+//
+//    }
+//
+//    private void notificarJugadorError(Jugador jugador, String mensajeError) {
+//        ClientThread cliente = obtenerClientePorJugador(jugador);
+//
+//        if (cliente != null) {
+//            cliente.sendMessage(new Message.Builder()
+//                    .messageType(MessageType.ERROR)
+//                    .body(new MessageBody(mensajeError))
+//                    .build());
+//        }
+//    }
+//
+//    // Método para manejar la desconexión de un cliente
+//    private void manejarDesconectarse(Message mensaje) {
+//        Jugador jugador = mensaje.getSender();
+//        ClientThread cliente = obtenerClientePorJugador(jugador);
+//
+//        if (cliente == null) {
+//            System.err.println("El jugador no está conectado.");
+//            return;
+//        }
+//
+//        eliminarCliente(cliente);
+//
+//        // Notificar a todos que el jugador se ha desconectado
+//        notificarTodos(new Message.Builder()
+//                .messageType(MessageType.DESCONECTARSE)
+//                .body(new MessageBody("Jugador desconectado: " + jugador.getNombre()))
+//                .build());
+//
+//        System.out.println("Jugador " + jugador.getNombre() + " se ha desconectado.");
+//    }
+//
+//    // Método para manejar errores
+//    private void manejarError(Message mensaje, ClientThread cliente) {
+//        System.err.println("Error recibido del cliente: " + mensaje.getContent().getMensaje());
+//    }
+//
+//    // Método para manejar la configuración del tablero (para servidor)
+//    private void manejarConfigurarTableroServidor(Message mensaje) {
+//        // Obtener el tablero actualizado del mensaje
+//        Tablero tableroActualizado = mensaje.getContent().getEstadoTablero();
+//
+//        // Actualizar el tablero del servidor
+//        tableroServidor.actualizarConMensaje(tableroActualizado);
+//
+//        // Notificar a todos los clientes conectados sobre la nueva configuración
+//        notificarTodos(new Message.Builder()
+//                .messageType(MessageType.CONFIGURAR_TABLERO)
+//                .body(new MessageBody("Tablero configurado en el servidor", tableroServidor))
+//                .build());
+//
+//        System.out.println("Tablero del servidor actualizado con la configuración.");
+//    }
+//
+//    // Método para manejar la actualización del tablero (cuando un cliente actualiza el tablero)
+//    private void manejarActualizacionTablero(Message mensaje, ClientThread cliente) {
+//        // Aquí puedes manejar la actualización del tablero, como propagar cambios
+//        System.out.println("Actualización de tablero recibida.");
+//    }
+//
+//    private Jugador jugadorNuevo() {
+//        int numeroJugador = tableroServidor.getJugadores().size() + 1;
+//        Color color = null;
+//        if (numeroJugador == 1) {
+//            color = Color.RED;
+//        }
+//        if (numeroJugador == 2) {
+//            color = Color.BLUE;
+//        }
+//        if (numeroJugador == 3) {
+//            color = Color.GREEN;
+//        }
+//        if (numeroJugador == 4) {
+//            color = Color.YELLOW;
+//        }
+//
+//        return new Jugador("Jugador " + numeroJugador, color);
+//    }
+//
+//}

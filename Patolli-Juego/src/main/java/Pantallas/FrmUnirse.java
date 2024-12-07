@@ -1,15 +1,13 @@
 package Pantallas;
 
-import Control.ControlPantalla;
-import Control.ControlPatolli;
+import PatolliCliente.ClienteControlador;
 import com.chat.tcpcommons.Message;
 import com.chat.tcpcommons.MessageBody;
 import com.chat.tcpcommons.MessageType;
-import servidor.Servidor;
-import entidades.EstadoDelJuego;
 import entidades.Jugador;
+import java.awt.Color;
 import javax.swing.JOptionPane;
-import servidor.ControlMessage;
+import tablero.Tablero;
 
 /**
  *
@@ -17,18 +15,21 @@ import servidor.ControlMessage;
  */
 public class FrmUnirse extends javax.swing.JFrame {
 
-    EstadoDelJuego estado = new EstadoDelJuego();
-//    private Servidor servidor = Servidor.getInstance();
-    FrmInicio unirse;
-    FrmTablero tablero;
+////    private ClienteControlador clienteControlador = new ClienteControlador();
+//    FrmInicio frmInicio;
+    private ClienteControlador cliente;
 
     /**
      * Creates new form FrmUnirse
      */
     public FrmUnirse() {
         initComponents();
-//        tablero = new FrmTablero();
+
     }
+//    public FrmUnirse(FrmInicio frmInicio) {
+//        initComponents();
+//        this.frmInicio = frmInicio;
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -41,7 +42,7 @@ public class FrmUnirse extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         btnAceptar = new javax.swing.JButton();
-        txtCodigoPartida = new javax.swing.JTextField();
+        txtNombreJugador = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -68,7 +69,7 @@ public class FrmUnirse extends javax.swing.JFrame {
                         .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(143, 143, 143)
-                        .addComponent(txtCodigoPartida, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtNombreJugador, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(185, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -77,7 +78,7 @@ public class FrmUnirse extends javax.swing.JFrame {
                 .addGap(53, 53, 53)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtCodigoPartida, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtNombreJugador, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(28, 28, 28)
                 .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(154, Short.MAX_VALUE))
@@ -87,35 +88,38 @@ public class FrmUnirse extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-        if (ControlPatolli.getInstance().unirseSala(txtCodigoPartida.getText().toUpperCase()).getTamaño() !=0){
-            tablero = new FrmTablero(ControlPatolli.getInstance(), "000");
-            tablero.inicializar();
-            tablero.setVisible(true);
-           
-            dispose();
-     
-        }
-        
-        
-        
-    }
+        try {
 
-    public void existeSala(boolean resultado) {
-        if (ControlPatolli.getInstance().host) {
-            return;
-        }
-        if (resultado) {
-            JOptionPane.showMessageDialog(null, "Uniéndose a la partida", "Partida encontrada", JOptionPane.INFORMATION_MESSAGE);
-            ControlPantalla controlPantalla = new ControlPantalla();
-            controlPantalla.PasarPantallaTablero(ControlPatolli.getInstance());
-            dispose();
-        } else {
-            JOptionPane.showMessageDialog(null, "No se encontró la partida", "Partida no encontrada", JOptionPane.INFORMATION_MESSAGE);
+            if (!txtNombreJugador.getText().isEmpty()) {
+                
+                cliente = new ClienteControlador (new Jugador (txtNombreJugador.getText(), Color.GREEN), false);
+                
+                cliente.enviarMensaje(new Message.Builder()
+                        .messageType(MessageType.CONECTARSE)
+                        .body(new MessageBody("CONECTANDO AL SERVIDOR"))
+                        .build());
+                // Enviar la solicitud para unirse al servidor
+                cliente.enviarMensaje(new Message.Builder()
+                        .messageType(MessageType.UNIRSE_SALA) // Tipo de mensaje para unirse
+                        .sender(cliente.getJugador()) // El jugador que se une
+                        .body(new MessageBody("Solicitud para unirse al juego")) // Cuerpo del mensaje
+                        .build());
 
+                // Esperamos que el servidor nos envíe el tablero actualizado
+                // El servidor nos enviará un mensaje con el tablero actual
+                // Mostrar un mensaje o cambiar la pantalla mientras el cliente espera
+                JOptionPane.showMessageDialog(null, "Esperando confirmación del servidor...");
+                dispose();
+
+            } else {
+                JOptionPane.showMessageDialog(rootPane, "Ingresa un nombre", "DATOS INCOMPLETOS", JOptionPane.WARNING_MESSAGE);
+            }
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Error al solicitar unirse: " + ex.getMessage());
         }
     }//GEN-LAST:event_btnAceptarActionPerformed
 
-   
     /**
      * @param args the command line arguments
      */
@@ -154,6 +158,6 @@ public class FrmUnirse extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JTextField txtCodigoPartida;
+    private javax.swing.JTextField txtNombreJugador;
     // End of variables declaration//GEN-END:variables
 }

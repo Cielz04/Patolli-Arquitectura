@@ -1,4 +1,6 @@
-package com.chat.tcpcommons;
+package PatolliCliente;
+
+import com.chat.tcpcommons.Message;
 
 
 /**

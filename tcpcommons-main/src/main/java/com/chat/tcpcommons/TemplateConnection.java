@@ -1,6 +1,7 @@
 package com.chat.tcpcommons;
 
 
+import PatolliCliente.ClientThread;
 import com.chat.tcpcommons.Message;
 
 /**
@@ -9,30 +10,27 @@ import com.chat.tcpcommons.Message;
  */
 public interface TemplateConnection {
     
-    default void proccessMessage(Message message) {
+    default void proccessMessage(Message message, ClientThread client) {
         switch (message.getMessageType()) {
-            case CONECTARSE ->onConectarse(message);
-            case CREAR_SALA ->onCrearSala(message);
-            case UNIRSE_SALA ->onUnirseSala(message);
-            case PASAR_OPCIONES ->onPasarOpciones(message);
-            case PASAR_CAMBIOS ->onPasarCambios(message);
-            case PASAR_JUGADORES ->onPasarJugadores(message);
-            case DESCONECTARSE ->onDisconnect(message);
+            case CONECTARSE ->onConectarse(message, client);
+            case DESCONECTARSE ->onDesconectarse(message, client);
+            case UNIRSE_SALA ->onUnirseSala(message, client);
+            case CONFIGURAR_TABLERO ->onConfigurarTablero(message, client);
+            case TABLERO_ACTUALIZADO ->onActualizarTablero(message, client);
+            case ERROR ->onError(message, client);
         }
     }
     
-    void onConectarse(Message message);
+    void onConectarse(Message message, ClientThread client);
     
-    void onCrearSala(Message message);
+    void onDesconectarse(Message message, ClientThread client);
     
-    void onUnirseSala(Message message);
+    void onUnirseSala(Message message, ClientThread client);
     
-    void onPasarOpciones(Message message);
+    void onConfigurarTablero(Message message, ClientThread client);
     
-    void onPasarJugadores(Message message);
+    void onActualizarTablero(Message message, ClientThread client);
 
-    void onPasarCambios(Message message);
-    
-    default void onDisconnect(Message message){}
+    void onError(Message message, ClientThread client);
     
 }

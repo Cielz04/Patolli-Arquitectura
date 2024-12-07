@@ -2,20 +2,17 @@ package com.chat.tcpcommons;
 
 import entidades.Jugador;
 import java.io.Serializable;
+import tablero.Tablero;
 
-/**
- *
- * @author felix
- */
 public class Message implements Serializable {
 
-    private MessageType messageType; // Tipo de mensaje
-    private MessageBody content;          // Contenido del mensaje
-    private Jugador sender;          // Jugador que envía el mensaje
-    private Jugador receiver;
-
-    // Constructor
-    public Message(MessageBody content, Jugador sender, Jugador receiver, MessageType messageType) {
+    private MessageType messageType;  
+    private MessageBody content;          
+    private Jugador sender;         
+    private Jugador receiver;      
+     private MessageBody body;
+    // Constructor actualizado
+    public Message(MessageType messageType, MessageBody content, Jugador sender, Jugador receiver) {
         this.messageType = messageType;
         this.content = content;
         this.sender = sender;
@@ -26,13 +23,20 @@ public class Message implements Serializable {
     public MessageType getMessageType() {
         return messageType;
     }
-    
-    public void setContent(MessageBody content){
-        this.content=content;
+
+    // Constructor
+    public Message(int numJugador) {
+        this.numJugador = numJugador;
     }
 
-    public void setMessageType(MessageType messageType) {
-        this.messageType = messageType;
+
+    public void setContent(MessageBody content) {
+        if (content == null) {
+            System.err.println("Advertencia: Se está intentando asignar un contenido nulo.");
+            this.content = new MessageBody("Contenido por defecto");
+        } else {
+            this.content = content;
+        }
     }
 
     public MessageBody getContent() {
@@ -40,6 +44,9 @@ public class Message implements Serializable {
     }
 
     public Jugador getSender() {
+        if (sender == null) {
+            System.err.println("El jugador no está configurado correctamente.");
+        }
         return sender;
     }
 
@@ -51,44 +58,56 @@ public class Message implements Serializable {
         return receiver;
     }
 
-    public void setReceiver(Jugador receiver) {
+    public MessageBody getBody() {
+        return body;
+    }
+
+        public void setReceiver(Jugador receiver) {
         this.receiver = receiver;
     }
-    
-    
 
+        
+    private int numJugador; // Número de jugado
+    // Getter para obtener el número del jugador
+    
+    
+    public int getNumJugador() {
+        return numJugador;
+    }
     // Builder para crear mensajes de manera fluida
     public static class Builder {
-        
         private Jugador receiver;
         private MessageType messageType;
         private MessageBody content;
         private Jugador sender;
 
         public Builder() {}
-        
+
         public Builder body(MessageBody content) {
             this.content = content;
             return this;
         }
-        
+
         public Builder sender(Jugador sender) {
             this.sender = sender;
             return this;
         }
-        
+
         public Builder receiver(Jugador receiver) {
             this.receiver = receiver;
             return this;
         }
-        
+
         public Builder messageType(MessageType messageType) {
             this.messageType = messageType;
             return this;
         }
-        
+
         public Message build() {
-            return new Message(this.content, this.sender, this.receiver, this.messageType);
+            return new Message(this.messageType, this.content, this.sender, this.receiver);
         }
+        
+        
     }
+    
 }

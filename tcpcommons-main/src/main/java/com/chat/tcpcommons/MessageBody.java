@@ -1,5 +1,6 @@
 package com.chat.tcpcommons;
 
+import entidades.Jugador;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,83 +12,92 @@ import tablero.Tablero;
  */
 public class MessageBody implements Serializable{
     
-    private String razonDesconexion;
-    private String codigoSala;
-    private List<Integer> montoJugadores= new ArrayList<>();
-    private int jugador;
-    private int tamanio;
-    private int jugadores;
-    private int monto; 
-    private int fichas;
-    private boolean existeSala;
-    private List<Integer> fichasJugador2Posicion= new ArrayList<>();
-    private List<Integer> fichasJugador1Posicion= new ArrayList<>();
-    private List<Integer> fichasJugador3Posicion= new ArrayList<>();
-    private List<Integer> fichasJugador4Posicion= new ArrayList<>();
+    private String mensaje;
+    private int cantidadFichas;
+    private List <Integer>  fichasJugador1Posicion;
+    private List <Integer>  fichasJugador2Posicion;
+    private List <Integer>  fichasJugador3Posicion;
+    private List <Integer>  fichasJugador4Posicion;
+    private int jugadorTurno = 0;
+    private int cantidadJugadores;
+    private boolean juegoTermino = false;
+    private boolean juegoInicia = false;
+    private int apuesta;
+    private List <Integer> cantidadMontoJugadores;
+    private int cantidadCasillasAspa;
+    private List <Jugador> jugadores;
+    private boolean salaEspera = true;
+    private int numJugador; 
+    private Tablero tablero;
+//    private Tablero estadoTablero;
 
-  
-    public String getCodigoSala() {
-        return codigoSala;
+    
+    private MessageBody body;
+
+    public MessageBody(Tablero tablero) {
+        this.tablero = tablero;
     }
 
-    public void setCodigoSala(String codigoSala) {
-        this.codigoSala = codigoSala;
+    public MessageBody(String mensaje, Tablero tablero) {
+        this.mensaje = mensaje;
+        this.tablero = tablero;
     }
 
-    public List<Integer> getMontoJugadores() {
-        return montoJugadores;
+    public MessageBody() {
     }
 
-    public void setMontoJugadores(List<Integer> montoJugadores) {
-        this.montoJugadores = montoJugadores;
+   public int getNumJugador() {
+        return numJugador;
     }
 
-    public int getJugador() {
-        return jugador;
+    // Setter para numJugador
+    public void setNumJugador(int numJugador) {
+        this.numJugador = numJugador;
+    }
+   
+    
+
+    // Método getBody() que retorna el objeto MessageBody
+    public MessageBody getBody() {
+        return body;
+    }
+//    public MessageBody(String mensaje, Tablero estadoTablero) {
+//        this.mensaje = mensaje;
+////        this.estadoTablero = estadoTablero;
+//    }
+
+    public MessageBody(String mensaje) {
+        this.mensaje = mensaje;
     }
 
-    public void setJugador(int jugador) {
-        this.jugador = jugador;
+//    public MessageBody(Tablero estadoTablero) {
+//        this.estadoTablero = estadoTablero;
+//    }
+
+    public String getMensaje() {
+        return mensaje;
     }
 
-    public int getTamaño() {
-        return tamanio;
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
+    }
+    
+
+
+//    public Tablero getEstadoTablero() {
+//        return estadoTablero;
+//    }
+
+//    public void setEstadoTablero(Tablero estadoTablero) {
+//        this.estadoTablero = estadoTablero;
+//    }
+
+    public int getCantidadFichas() {
+        return cantidadFichas;
     }
 
-    public void setTamaño(int tamanio) {
-        this.tamanio = tamanio;
-    }
-
-    public int getMonto() {
-        return monto;
-    }
-
-    public void setMonto(int monto) {
-        this.monto = monto;
-    }
-
-    public int getFichas() {
-        return fichas;
-    }
-
-    public void setFichas(int fichas) {
-        this.fichas = fichas;
-    }
-
-    public int getJugadores() {
-        return jugadores;
-    }
-
-    public void setJugadores(int jugadores) {
-        this.jugadores = jugadores;
-    }
-
-    public List<Integer> getFichasJugador2Posicion() {
-        return fichasJugador2Posicion;
-    }
-
-    public void setFichasJugador2Posicion(List<Integer> fichasJugador2Posicion) {
-        this.fichasJugador2Posicion = fichasJugador2Posicion;
+    public void setCantidadFichas(int cantidadFichas) {
+        this.cantidadFichas = cantidadFichas;
     }
 
     public List<Integer> getFichasJugador1Posicion() {
@@ -96,6 +106,14 @@ public class MessageBody implements Serializable{
 
     public void setFichasJugador1Posicion(List<Integer> fichasJugador1Posicion) {
         this.fichasJugador1Posicion = fichasJugador1Posicion;
+    }
+
+    public List<Integer> getFichasJugador2Posicion() {
+        return fichasJugador2Posicion;
+    }
+
+    public void setFichasJugador2Posicion(List<Integer> fichasJugador2Posicion) {
+        this.fichasJugador2Posicion = fichasJugador2Posicion;
     }
 
     public List<Integer> getFichasJugador3Posicion() {
@@ -114,20 +132,93 @@ public class MessageBody implements Serializable{
         this.fichasJugador4Posicion = fichasJugador4Posicion;
     }
 
-    public boolean isExisteSala() {
-        return existeSala;
+    public int getJugadorTurno() {
+        return jugadorTurno;
     }
 
-    public void setExisteSala(boolean existeSala) {
-        this.existeSala = existeSala;
+    public void setJugadorTurno(int jugadorTurno) {
+        this.jugadorTurno = jugadorTurno;
     }
 
-    public String getRazonDesconexion() {
-        return razonDesconexion;
+    public int getCantidadJugadores() {
+        return cantidadJugadores;
     }
 
-    public void setRazonDesconexion(String razonDesconexion) {
-        this.razonDesconexion = razonDesconexion;
+    public void setCantidadJugadores(int cantidadJugadores) {
+        this.cantidadJugadores = cantidadJugadores;
     }
+
+    public boolean isJuegoTermino() {
+        return juegoTermino;
+    }
+
+    public void setJuegoTermino(boolean juegoTermino) {
+        this.juegoTermino = juegoTermino;
+    }
+
+    public boolean isJuegoInicia() {
+        return juegoInicia;
+    }
+
+    public void setJuegoInicia(boolean juegoInicia) {
+        this.juegoInicia = juegoInicia;
+    }
+
+    public int getApuesta() {
+        return apuesta;
+    }
+
+    public void setApuesta(int apuesta) {
+        this.apuesta = apuesta;
+    }
+
+    public List<Integer> getCantidadMontoJugadores() {
+        return cantidadMontoJugadores;
+    }
+
+    public void setCantidadMontoJugadores(List<Integer> cantidadMontoJugadores) {
+        this.cantidadMontoJugadores = cantidadMontoJugadores;
+    }
+
+    public int getCantidadCasillasAspa() {
+        return cantidadCasillasAspa;
+    }
+
+    public void setCantidadCasillasAspa(int cantidadCasillasAspa) {
+        this.cantidadCasillasAspa = cantidadCasillasAspa;
+    }
+
+    public List<Jugador> getJugadores() {
+        return jugadores;
+    }
+
+    public void setJugadores(List<Jugador> jugadores) {
+        this.jugadores = jugadores;
+    }
+
+    public boolean isSalaEspera() {
+        return salaEspera;
+    }
+
+    public void setSalaEspera(boolean salaEspera) {
+        this.salaEspera = salaEspera;
+    }
+
+    public Tablero getTablero() {
+        return tablero;
+    }
+    
+    
+    
+    
+    
+    
+
+  
+    
+    
+    
+    
+    
     
 }
