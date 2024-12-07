@@ -15,7 +15,16 @@ import tablero.Tablero;
 import entidades.Jugador;
 import java.awt.Color;
 
-
+/**
+ * Clase que maneja la lógica del servidor de Patolli. Esta clase es responsable
+ * de recibir conexiones de los clientes, gestionar los mensajes enviados por
+ * los jugadores, actualizar el estado del juego y comunicar los cambios a todos
+ * los clientes conectados.
+ *
+ * El servidor maneja la conexión de los jugadores, el tablero del juego y la
+ * sincronización entre los jugadores mediante la gestión de los mensajes
+ * recibidos.
+ */
 public class ControlMessage extends Observable implements Runnable {
 
     private ServerSocket server;
@@ -26,6 +35,10 @@ public class ControlMessage extends Observable implements Runnable {
     private final List<ClientThread> clientesConectados;
     private int tablerou = 0;
 
+    /**
+     * Constructor que inicializa el servidor, el tablero y la lista de clientes
+     * conectados.
+     */
     public ControlMessage() {
         serverThread = new Thread(this);
         tableroServidor = new Tablero();
@@ -33,6 +46,9 @@ public class ControlMessage extends Observable implements Runnable {
         tableroServidor.setJuegoInicia(false);
     }
 
+    /**
+     * Inicia el servidor y espera conexiones en el puerto definido.
+     */
     public void init() {
         try {
             server = new ServerSocket(PORT);
@@ -43,6 +59,11 @@ public class ControlMessage extends Observable implements Runnable {
         }
     }
 
+    /**
+     * Método ejecutado por el hilo del servidor. Acepta conexiones entrantes y
+     * maneja la comunicación con los clientes mediante la creación de hilos
+     * para cada cliente.
+     */
     @Override
     public void run() {
         verificarTablero();
@@ -94,6 +115,11 @@ public class ControlMessage extends Observable implements Runnable {
 //        }
     }
 
+    /**
+     * Escucha los mensajes de un cliente y procesa los mensajes recibidos.
+     *
+     * @param cliente el hilo del cliente que envía los mensajes.
+     */
     private void escucharCliente(ClientThread cliente) {
         try {
             while (true) {
@@ -112,6 +138,9 @@ public class ControlMessage extends Observable implements Runnable {
         }
     }
 
+    /**
+     * Cierra el servidor de manera segura.
+     */
     private void cerrarServidor() {
         try {
             if (server != null) {
@@ -122,6 +151,12 @@ public class ControlMessage extends Observable implements Runnable {
         }
     }
 
+    /**
+     * Procesa un mensaje recibido del cliente y maneja diferentes tipos de
+     * mensajes, tales como conectar, desconectar, actualizar tablero, etc.
+     *
+     * @param mensaje el mensaje a procesar.
+     */
     public void procesarMensaje(Message mensaje) {
         lock.lock();
         try {
@@ -146,6 +181,11 @@ public class ControlMessage extends Observable implements Runnable {
         }
     }
 
+    /**
+     * Registra un nuevo cliente al servidor.
+     *
+     * @param cliente el cliente a agregar.
+     */
     private void agregarCliente(ClientThread cliente) {
         lock.lock();
         try {
@@ -155,6 +195,12 @@ public class ControlMessage extends Observable implements Runnable {
         }
     }
 
+    /**
+     * Maneja el mensaje de conexión de un jugador al servidor.
+     *
+     * @param mensaje el mensaje que contiene la información del jugador que se
+     * conecta.
+     */
     private void manejarConectarse(Message mensaje) {
         Jugador jugador = mensaje.getSender();
 
@@ -189,18 +235,19 @@ public class ControlMessage extends Observable implements Runnable {
                 .build());
     }
 
+    /**
+     * Maneja los cambios en el tablero enviados por los clientes y los
+     * distribuye a todos los clientes.
+     *
+     * @param mensaje el mensaje que contiene los cambios en el tablero.
+     */
     private void manejarPasarCambios(Message mensaje) {
         Tablero tableroActualizado = new Tablero();
         tableroActualizado.actualizarConMensaje(mensaje);
-        
+
         if (tableroActualizado == null) {
             System.err.println("El mensaje no contiene un tablero válido.");
             return;
-        }
-
-        if (tableroServidor.getJugadorTurno() == 0) {
-            tableroServidor.setJugadorTurno(1);
-
         }
 
         if (tableroServidor.getJugadorTurno() == 1) {
@@ -212,8 +259,13 @@ public class ControlMessage extends Observable implements Runnable {
             tableroServidor.setJugadorTurno(3);
 
         }
+
         if (tableroServidor.getJugadorTurno() == 3) {
-            tableroServidor.setJugadorTurno(0);
+            tableroServidor.setJugadorTurno(4);
+
+        }
+        if (tableroServidor.getJugadorTurno() == 4) {
+            tableroServidor.setJugadorTurno(1);
 
         }
 
@@ -229,6 +281,11 @@ public class ControlMessage extends Observable implements Runnable {
 //        );
     }
 
+    /**
+     * Envía el estado actual del tablero al cliente.
+     *
+     * @param cliente el cliente que recibirá el estado del tablero.
+     */
     private void enviarEstadoTablero(ClientThread cliente) {
         MessageBody body = new MessageBody("Estado del tablero actualizado", tableroServidor);
         Message mensaje = new Message.Builder()
@@ -238,6 +295,11 @@ public class ControlMessage extends Observable implements Runnable {
         cliente.sendMessage(mensaje);
     }
 
+    /**
+     * Maneja la desconexión de un jugador.
+     *
+     * @param mensaje el mensaje que indica la desconexión del jugador.
+     */
     private void manejarDesconectarse(Message mensaje) {
         Jugador jugador = mensaje.getSender();
         ClientThread cliente = obtenerClientePorJugador(jugador);
@@ -253,6 +315,11 @@ public class ControlMessage extends Observable implements Runnable {
                 .build());
     }
 
+    /**
+     * Elimina un cliente de la lista de clientes conectados.
+     *
+     * @param cliente el cliente a eliminar.
+     */
     private void eliminarCliente(ClientThread cliente) {
         lock.lock();
         try {
@@ -262,6 +329,12 @@ public class ControlMessage extends Observable implements Runnable {
         }
     }
 
+    /**
+     * Verifica si un jugador ya está registrado en el servidor.
+     *
+     * @param jugador el jugador a verificar.
+     * @return true si el jugador ya está registrado, false en caso contrario.
+     */
     private boolean esClienteRegistrado(Jugador jugador) {
         for (ClientThread cliente : clientesConectados) {
             if (cliente.getJugador() != null && cliente.getJugador().equals(jugador)) {
@@ -271,6 +344,13 @@ public class ControlMessage extends Observable implements Runnable {
         return false;
     }
 
+    /**
+     * Obtiene el hilo del cliente correspondiente a un jugador.
+     *
+     * @param jugador el jugador cuya información de cliente se desea obtener.
+     * @return el hilo del cliente correspondiente al jugador, o null si no se
+     * encuentra.
+     */
     private ClientThread obtenerClientePorJugador(Jugador jugador) {
         for (ClientThread cliente : clientesConectados) {
             if (cliente.getJugador() != null && cliente.getJugador().equals(jugador)) {
@@ -280,6 +360,12 @@ public class ControlMessage extends Observable implements Runnable {
         return null;
     }
 
+    /**
+     * Envía un mensaje de error a un cliente.
+     *
+     * @param mensaje el mensaje que contiene el error.
+     * @param error el mensaje de error a enviar.
+     */
     private void enviarError(Message mensaje, String error) {
         ClientThread cliente = obtenerClientePorJugador(mensaje.getSender());
         if (cliente != null) {
@@ -290,6 +376,11 @@ public class ControlMessage extends Observable implements Runnable {
         }
     }
 
+    /**
+     * Crea un nuevo jugador con un nombre y color asignado.
+     *
+     * @return el nuevo jugador creado.
+     */
     private Jugador jugadorNuevo() {
         int numeroJugador = tableroServidor.getJugadores().size() + 1;
         Color color = switch (numeroJugador) {
@@ -307,10 +398,14 @@ public class ControlMessage extends Observable implements Runnable {
         return new Jugador("Jugador " + numeroJugador, color);
     }
 
-    // Método para manejar cuando un jugador se une a la sala
+    /**
+     * Maneja cuando un jugador se une a la sala de juego.
+     *
+     * @param mensaje el mensaje que indica que un jugador se unió a la sala.
+     */
     private void manejarUnirseSala(Message mensaje) {
         verificarTablero();
-        
+
         if (mensaje == null || mensaje.getSender() == null) {
             System.err.println("Error: mensaje o remitente nulo en manejarUnirseSala");
             return;
@@ -331,6 +426,10 @@ public class ControlMessage extends Observable implements Runnable {
 
     }
 
+    /**
+     * Verifica si el tablero ha sido inicializado. Si no es así, lo
+     * reinicializa.
+     */
     private void verificarTablero() {
         if (tableroServidor == null) {
             tableroServidor = new Tablero();
@@ -338,15 +437,25 @@ public class ControlMessage extends Observable implements Runnable {
         }
     }
 
+    /**
+     * Maneja el procesamiento de mensajes de error recibidos de los jugadores.
+     *
+     * @param mensaje el mensaje que contiene el error enviado por el jugador.
+     */
     private ClientThread findClientForPlayer(Jugador jugador) {
         if (jugador == null || jugador.getNombre() == null) {
-        System.err.println("Error: Cannot find client for null player");
-        return null;
+            System.err.println("Error: Cannot find client for null player");
+            return null;
+        }
+
+        return obtenerClientePorJugador(jugador);
     }
 
-    return obtenerClientePorJugador(jugador);
-    }
-
+    /**
+     * Maneja el procesamiento de mensajes de error recibidos de los jugadores.
+     *
+     * @param mensaje el mensaje que contiene el error enviado por el jugador.
+     */
     private void manejarError(Message mensaje) {
         String mensajeError = mensaje.getContent().getMensaje();
         Jugador jugador = mensaje.getSender();
@@ -355,7 +464,11 @@ public class ControlMessage extends Observable implements Runnable {
 
     }
 
-    // Método para manejar la configuración del tablero (para servidor)
+    /**
+     * Maneja la configuración del tablero desde el servidor.
+     *
+     * @param mensaje el mensaje que contiene la configuración del tablero.
+     */
     private void manejarConfigurarTableroServidor(Message mensaje) {
         if (tableroServidor == null) {
             System.err.println("Error: tableroServidor es null");
@@ -383,7 +496,11 @@ public class ControlMessage extends Observable implements Runnable {
         System.out.println(tableroServidor.getApuesta());
     }
 
-    // Método para notificar a todos los clientes conectados
+    /**
+     * Notifica a todos los clientes conectados mediante un mensaje.
+     *
+     * @param mensaje el mensaje a enviar.
+     */
     private void notificarTodos(Message mensaje) {
         for (ClientThread cliente : clientesConectados) {
             System.out.println("Enviando mensaje a cliente: " + cliente.getJugador().getNombre());
@@ -391,6 +508,12 @@ public class ControlMessage extends Observable implements Runnable {
         }
     }
 
+    /**
+     * Notifica a un jugador un error al enviar un mensaje.
+     *
+     * @param jugador jugador con el error.
+     * @param mensajeError mensaje de error.
+     */
     private void notificarJugadorError(Jugador jugador, String mensajeError) {
         ClientThread cliente = obtenerClientePorJugador(jugador);
 
@@ -404,6 +527,11 @@ public class ControlMessage extends Observable implements Runnable {
         }
     }
 
+    /**
+     * Notificia a todos los observadores asociados en el servidor.
+     *
+     * @param obj mensaje.
+     */
     @Override
     public void notifyObservers(Object obj) {
         for (ClientThread cliente : clientesConectados) {
@@ -411,6 +539,11 @@ public class ControlMessage extends Observable implements Runnable {
         }
     }
 
+    /**
+     * Notificia a todos los clientes asociados en el servidor.
+     *
+     * @param obj mensaje.
+     */
     public void notifyClient(Object obj) {
         Message mensaje = (Message) obj;
         for (ClientThread cliente : clientesConectados) {

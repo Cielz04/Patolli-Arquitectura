@@ -85,6 +85,7 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
         aspa10.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
         aspa10.setForeground(new java.awt.Color(255, 255, 255));
         aspa10.setText("10 por aspa");
+        aspa10.setEnabled(false);
         aspa10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aspa10ActionPerformed(evt);
@@ -94,6 +95,7 @@ public class FrmConfigurarPartida extends javax.swing.JFrame {
         aspa14.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
         aspa14.setForeground(new java.awt.Color(255, 255, 255));
         aspa14.setText("14 por aspa");
+        aspa14.setEnabled(false);
         aspa14.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aspa14ActionPerformed(evt);

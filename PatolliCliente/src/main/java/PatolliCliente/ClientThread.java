@@ -12,6 +12,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase ClientThread que maneja la conexión entre un cliente y el servidor en
+ * un juego. Implementa las interfaces {@link Runnable}, {@link Serializable}, y
+ * {@link IObserver}. Se utiliza un patrón de observador para notificar eventos
+ * a los observadores registrados.
+ */
 public class ClientThread extends Observable implements Runnable, Serializable, IObserver {
 
     private static ClientThread hiloCliente;
@@ -24,6 +30,14 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
     private ClienteControlador cliente;
 //    private boolean connected = true;
 
+    /**
+     * Constructor de la clase ClientThread. Inicializa un hilo cliente para
+     * gestionar la conexión con el servidor y el jugador asociado.
+     *
+     * @param clientSocket el socket que representa la conexión del cliente con
+     * el servidor.
+     * @param jugador el objeto {@link Jugador} asociado a este cliente.
+     */
     public ClientThread(Socket clientSocket, Jugador jugador) {
         this.clientSocket = clientSocket;
         this.jugador = jugador;
@@ -31,14 +45,27 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
         this.observers = new ArrayList<>();
         initializeStreams();
     }
-    
-    public static ClientThread getInstance(Socket clientSocket, Jugador jugador){
-        if (hiloCliente == null){
-            hiloCliente = new ClientThread (clientSocket, jugador);
+
+    /**
+     * Devuelve la instancia única de {@code ClientThread}, creando una nueva si
+     * no existe.
+     *
+     * @param clientSocket el socket que representa la conexión del cliente con
+     * el servidor.
+     * @param jugador el objeto {@link Jugador} asociado a este cliente.
+     * @return la instancia única de {@code ClientThread}.
+     */
+    public static ClientThread getInstance(Socket clientSocket, Jugador jugador) {
+        if (hiloCliente == null) {
+            hiloCliente = new ClientThread(clientSocket, jugador);
         }
         return hiloCliente;
     }
 
+    /**
+     * Inicializa los flujos de entrada y salida asociados al cliente. Establece
+     * los streams en el orden correcto.
+     */
     private void initializeStreams() {
         try {
             // Inicializar flujos en el orden correcto
@@ -50,6 +77,11 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
         }
     }
 
+    /**
+     * Método que ejecuta el hilo del cliente. Escucha mensajes del servidor y
+     * los procesa. Notifica a los observadores cuando se reciben nuevos
+     * mensajes.
+     */
     @Override
     public void run() {
 
@@ -74,8 +106,12 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
             cerrarConexion();
         }
     }
-        
-    private void cerrarConexion() {         
+
+    /**
+     * Cierra la conexión del cliente, incluyendo los flujos de entrada/salida y
+     * el socket.
+     */
+    private void cerrarConexion() {
         try {
             if (in != null) {
                 in.close();
@@ -89,7 +125,6 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
         }
     }
 
-        
 //        try {
 //
 //            // Enviar mensaje de conexión al servidor
@@ -120,23 +155,26 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
 //            disconnect(); // Siempre desconecta para limpiar recursos
 //        }
 //    }
-
-    
+    /**
+     * Envía un mensaje al servidor a través del flujo de salida.
+     *
+     * @param mensaje el objeto {@link Message} que se enviará al servidor.
+     */
     public void sendMessage(Message mensaje) {
-    if (!connected) {
-        System.err.println("El cliente no está conectado. No se puede enviar el mensaje.");
-        return;
+        if (!connected) {
+            System.err.println("El cliente no está conectado. No se puede enviar el mensaje.");
+            return;
+        }
+        try {
+            out.writeObject(mensaje);
+            out.flush();
+            System.out.println("Mensaje enviado al servidor: " + mensaje.getContent().getMensaje());
+        } catch (IOException e) {
+            System.err.println("Error al enviar mensaje: " + e.getMessage());
+            connected = false;
+        }
     }
-    try {
-        out.writeObject(mensaje);
-        out.flush();
-        System.out.println("Mensaje enviado al servidor: " + mensaje.getContent().getMensaje());
-    } catch (IOException e) {
-        System.err.println("Error al enviar mensaje: " + e.getMessage());
-        connected = false;
-    }
-}
-    
+
 //    public void sendMessage(Message mensaje) {
 //        try {
 //            out.writeObject(mensaje);
@@ -145,7 +183,6 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
 //            System.err.println("Error al enviar mensaje: " + e.getMessage());
 //        }
 //    }
-
     /**
      * Desconecta el cliente, cerrando flujos y el socket.
      */
@@ -167,6 +204,12 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
         }
     }
 
+    /**
+     * Notifica a todos los observadores registrados un evento o mensaje
+     * recibido.
+     *
+     * @param obj el objeto que se notificará a los observadores.
+     */
     @Override
     public void notifyObservers(Object obj) {
         for (var observer : observers) {
@@ -174,27 +217,50 @@ public class ClientThread extends Observable implements Runnable, Serializable, 
         }
     }
 
+    /**
+     * Agrega un observador a la lista de observadores registrados.
+     *
+     * @param observer el observador que se desea agregar.
+     */
     public void addObserver(IObserver observer) {
         observers.add(observer);
     }
 
+    /**
+     * Elimina un observador de la lista de observadores registrados.
+     *
+     * @param observer el observador que se desea eliminar.
+     */
     public void removeObserver(IObserver observer) {
         observers.remove(observer);
     }
 
+    /**
+     * Obtiene el jugador asociado a este hilo cliente.
+     *
+     * @return el objeto {@link Jugador} asociado.
+     */
     public Jugador getJugador() {
         return jugador;
     }
 
+    /**
+     * Método llamado cuando se recibe una actualización desde otro observable.
+     *
+     * @param obj el objeto que se actualizó.
+     */
     @Override
     public void onUpdate(Object obj) {
         notifyObservers(obj);
     }
-
+    
+    /**
+     * Devuelve el flujo de entrada del cliente.
+     *
+     * @return el flujo de entrada {@link ObjectInputStream}.
+     */
     public ObjectInputStream getInputStream() {
         return in;
     }
-    
-    
 
 }
