@@ -1,12 +1,8 @@
-com\chat\tcpcommons\logging\ChatLoggerImpl.class
 com\chat\tcpcommons\Observable.class
-com\chat\tcpcommons\logging\LoggerFactory.class
 com\chat\tcpcommons\Message.class
 com\chat\tcpcommons\Message$Builder.class
-com\chat\tcpcommons\logging\ChatLoggerProxy.class
 com\chat\tcpcommons\TemplateConnection$1.class
 com\chat\tcpcommons\IObserver.class
-com\chat\tcpcommons\logging\IChatLogger.class
 com\chat\tcpcommons\TemplateConnection.class
 com\chat\tcpcommons\MessageBody.class
 com\chat\tcpcommons\MessageType.class

@@ -11,6 +11,7 @@ import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.ImageIcon;
@@ -48,6 +49,10 @@ public class FrmTablero extends javax.swing.JFrame {
     private String urlFichaJugador2 = "/Utilerias/ficha_verde.png";
     private String urlFichaJugador3 = "/Utilerias/ficha_amarilla.png";
     private String urlFichaJugador4 = "/Utilerias/ficha_morada.png";
+
+    List<Integer> casillasApuesta = Arrays.asList(4, 11, 21, 28, 38, 45, 55, 62);
+    List<Integer> casillasDobleTurno = Arrays.asList(7, 8, 24, 25, 41, 42, 58, 59);
+    List<Integer> casillasCentro = Arrays.asList(16, 33, 50, 67);
 
     // Constructor privado
     public FrmTablero(Tablero tablero, ClienteControlador clienteControlador) {
@@ -94,10 +99,8 @@ public class FrmTablero extends javax.swing.JFrame {
     }
 
     public void setJugadorEnTurno(int jugadorEnTurno) {
-        this.jugadorEnTurno = jugadorEnTurno+1;
+        this.jugadorEnTurno = jugadorEnTurno + 1;
     }
-    
-    
 
     private void actualizarTurno() {
 
@@ -226,9 +229,9 @@ public class FrmTablero extends javax.swing.JFrame {
         } else {
             btnLanzar.setEnabled(false);
         }
-        
-        System.out.println("Jugador en turno "+jugadorEnTurno);
-        System.out.println("Jugador que eres "+numJugador);
+
+        System.out.println("Jugador en turno " + jugadorEnTurno);
+        System.out.println("Jugador que eres " + numJugador);
 
         actualizarPosicionFichas();
 
@@ -250,6 +253,8 @@ public class FrmTablero extends javax.swing.JFrame {
         inicializarAspa(tableroCentro, 2, 2, true);
 
         lblApuestaGlobal.setText("APUESTA GLOBAL: " + String.valueOf(tableroLocal.getApuesta()));
+        lblMontoJugador.setText("MONTO: " + String.valueOf(tableroLocal.getCantidadMontoJugadores()));
+        lblTurno.setText("TURNO: " + String.valueOf(tableroLocal.getJugadorTurno()));
 
         asignarNumeroCasillas();
         //Ejemplo de uso
@@ -318,14 +323,12 @@ public class FrmTablero extends javax.swing.JFrame {
         casilla.repaint();
         System.out.println("");
 
-        
-        
         if (jugadorEnTurno == 1) {
             // Agregar la ficha a la nueva casilla
             Integer indiceFicha = tableroLocal.getFichasJugador1Posicion().indexOf(indiceActual);
             agregarFicha(nuevaCasilla, urlFichaJugador1);
             tableroLocal.getFichasJugador1Posicion().add(nuevaPosicion);
-            tableroLocal.getFichasJugador1Posicion().remove(indiceFicha); 
+            tableroLocal.getFichasJugador1Posicion().remove(indiceFicha);
         }
         if (jugadorEnTurno == 2) {
             // Agregar la ficha a la nueva casilla
@@ -352,6 +355,29 @@ public class FrmTablero extends javax.swing.JFrame {
         // Asegurarse de que la casilla destino se repinte
         casilla.repaint();
         nuevaCasilla.repaint();
+
+        if (casillasApuesta.contains(nuevaPosicion)) {
+            System.out.println("¡Apuesta! El jugador " + jugadorEnTurno + " paga $5.");
+            // Definir la cantidad a perder en la apuesta
+            int cantidadPerdida = 5;
+
+            // Restar la cantidad a perder del jugador en turno
+            int montoActual = tableroLocal.getCantidadMontoJugadores().get(jugadorEnTurno-1);
+            montoActual -= cantidadPerdida;
+            tableroLocal.getCantidadMontoJugadores().set(jugadorEnTurno-1, montoActual);
+        }
+
+        if (casillasDobleTurno.contains(nuevaPosicion)) {
+            // Casilla de doble turno: Habilitar de nuevo el lanzamiento de dado para este jugador
+            System.out.println("¡Doble turno! El jugador " + jugadorEnTurno + " vuelve a tirar.");
+            // Habilitar el botón de lanzar para este jugador
+            btnLanzar.setEnabled(true);
+            return;  // No se pasa el turno, el jugador puede tirar de nuevo
+        }
+
+//        if (casillasCentro.contains(nuevaPosicion)) {
+//            
+//        }
 
         System.out.println("Ficha movida de casilla " + indiceActual + " a casilla " + nuevaPosicion + ".");
         ultimoTiro = 0;
@@ -384,7 +410,7 @@ public class FrmTablero extends javax.swing.JFrame {
         }
 
         if (jugadorEnTurno == 4) {
-            body.setJugadorTurno(0);
+            body.setJugadorTurno(1);
         }
 
         body.setJugadorTurno(jugadorEnTurno);
@@ -408,6 +434,13 @@ public class FrmTablero extends javax.swing.JFrame {
         clienteControlador.enviarMensaje(mensaje);
     }
 
+//    private boolean esCasillaEspecial(Casilla casilla) {
+//    int numeroCasilla = casilla.getNumeroCasilla();
+//    // Lista de números de casillas especiales
+//    List<Integer> casillasEspeciales = Arrays.asList(4, 8, 12, 16, 20); // Ejemplo de números
+//
+//    return casillasEspeciales.contains(numeroCasilla);
+//}
     /**
      * Metodo que dibuja el tablero
      */
@@ -581,6 +614,8 @@ public class FrmTablero extends javax.swing.JFrame {
         txtCodigo = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         lblApuestaGlobal = new javax.swing.JLabel();
+        lblMontoJugador = new javax.swing.JLabel();
+        lblTurno = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tablero");
@@ -709,7 +744,7 @@ public class FrmTablero extends javax.swing.JFrame {
 
         txtCodigo.setFont(new java.awt.Font("STIX Two Text", 1, 14)); // NOI18N
         txtCodigo.setForeground(new java.awt.Color(255, 255, 255));
-        txtCodigo.setText("HolaMundo2307");
+        txtCodigo.setText("000");
 
         jLabel1.setFont(new java.awt.Font("STIX Two Text", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
@@ -717,7 +752,15 @@ public class FrmTablero extends javax.swing.JFrame {
 
         lblApuestaGlobal.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lblApuestaGlobal.setForeground(new java.awt.Color(255, 255, 255));
-        lblApuestaGlobal.setText("jLabel2");
+        lblApuestaGlobal.setText("ApuestaGlobal");
+
+        lblMontoJugador.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblMontoJugador.setForeground(new java.awt.Color(255, 255, 255));
+        lblMontoJugador.setText("Monto");
+
+        lblTurno.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblTurno.setForeground(new java.awt.Color(255, 255, 255));
+        lblTurno.setText("Turno:");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -744,11 +787,13 @@ public class FrmTablero extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addContainerGap(294, Short.MAX_VALUE)
                         .addComponent(tableroIzq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(btnRendirse, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblApuestaGlobal, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblMontoJugador)
+                            .addComponent(lblApuestaGlobal, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(11, 11, 11)))
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
@@ -766,12 +811,14 @@ public class FrmTablero extends javax.swing.JFrame {
                                 .addContainerGap(195, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblTurno, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(27, 27, 27))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(105, 105, 105))))
+                        .addComponent(txtCodigo)
+                        .addGap(130, 130, 130))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -784,13 +831,17 @@ public class FrmTablero extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(jPanel3Layout.createSequentialGroup()
                                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(14, 14, 14)
+                                    .addComponent(lblTurno))
                                 .addComponent(tableroArriba, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(44, 44, 44)
-                        .addComponent(lblApuestaGlobal, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblApuestaGlobal, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblMontoJugador)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
@@ -908,6 +959,8 @@ public class FrmTablero extends javax.swing.JFrame {
     private javax.swing.JLabel lblCania3;
     private javax.swing.JLabel lblCania4;
     private javax.swing.JLabel lblCania5;
+    private javax.swing.JLabel lblMontoJugador;
+    private javax.swing.JLabel lblTurno;
     private javax.swing.JPanel tableroAbajo;
     private javax.swing.JPanel tableroArriba;
     private javax.swing.JPanel tableroCentro;
